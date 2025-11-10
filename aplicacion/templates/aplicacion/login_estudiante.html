@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingreso Estudiante</title>
+    <!-- Estilos de presentación -->
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; background-color: #f4f4f9; }
+        .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        input[type="text"], input[type="password"], input[type="email"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        /* Botón Estudiante (usamos azul primario) */
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .errorlist { color: red; list-style-type: none; padding: 0; margin-top: 5px; }
+        hr { width: 100%; max-width: 400px; margin: 30px 0; border-color: #eee; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Iniciar Sesión como Estudiante</h1>
+        
+<form method="post" action="{% url 'login_estudiante' %}">
+            {% csrf_token %} 
+            
+            <!-- Campo Correo Electrónico / Nombre de Usuario -->
+            <div class="form-group">
+                <!-- Solución estática para Correo Electrónico -->
+                <label for="{{ login_form.username.id_for_label }}">Correo Electrónico</label>
+                {{ login_form.username }}           <!-- Renderiza el campo de entrada -->
+                {% for error in login_form.username.errors %}
+                    <p class="errorlist">{{ error }}</p>
+                {% endfor %}
+            </div>
+            
+            <!-- Campo Contraseña -->
+            <div class="form-group">
+                <!-- Solución estática para Contraseña -->
+                <label for="{{ login_form.password.id_for_label }}">Contraseña</label>
+                {{ login_form.password }}           <!-- Renderiza el campo de entrada -->
+                {% for error in login_form.password.errors %}
+                    <p class="errorlist">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Errores no relacionados con campos específicos (ej. usuario/contraseña incorrectos) -->
+            {% for error in login_form.non_field_errors %}
+                <p class="errorlist">{{ error }}</p>
+            {% endfor %}
+            
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <p>¿No tienes cuenta? 
+        <a href="{% url 'registro_estudiante' %}">Regístrate aquí</a>
+    </p>
+    
+    <p><a href="{% url 'index' %}">Volver a selección de perfil</a></p>
+</body>
+</html>
