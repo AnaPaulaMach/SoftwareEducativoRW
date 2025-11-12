@@ -1,0 +1,5 @@
+# Django 5.2.8 requiere Python >= 3.10
+# Compatible con Python 3.10, 3.11, 3.12, 3.13
+Django>=5.2.8,<6.0
+sqlparse>=0.3.1
+
