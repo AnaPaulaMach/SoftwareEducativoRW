@@ -1,6 +1,7 @@
 from django import forms
 from .models import Usuario
 from django.contrib.auth.forms import AuthenticationForm # <-- Necesario para los Login Forms
+from .models import Clase
 
 # --- Formulario Base para todos los registros ---
 # Modificación en aplicacion/forms.py
@@ -164,3 +165,23 @@ class ProfesorLoginForm(AuthenticationForm):
         self.fields['password'].widget.attrs.update(
             {'placeholder': 'Tu contraseña'} 
         )
+
+
+class ClaseForm(forms.ModelForm):
+    class Meta:
+        model = Clase
+        fields = ['materia', 'carrera', 'descripcion']
+        widgets = {
+            'descripcion': forms.Textarea(attrs={'rows': 3}),
+        }
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Hacer obligatorios
+        self.fields['materia'].required = True
+        self.fields['carrera'].required = True
+
+        # Dejar opcional
+        self.fields['descripcion'].required = False

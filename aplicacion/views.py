@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
@@ -8,6 +8,14 @@ from django.db import DatabaseError
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import logout
+import random
+import string
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Clase
+from .forms import ClaseForm
+
+
 
 # Importar los modelos nuevos
 from .models import QuizAttempt, NivelUnlock
@@ -181,12 +189,66 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect 
 
 # --- NUEVAS VISTAS NECESARIAS ---
+# arriba del archivo, asegurate de tener:
+import random
+import string
+from django.contrib.auth.decorators import login_required
+from .models import Clase
+from .forms import ClaseForm
+
+# función utilitaria para generar códigos únicos
+def generar_codigo_unico(length=6):
+    """Genera un código alfanumérico único para Clase."""
+    while True:
+        codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+        if not Clase.objects.filter(codigo_acceso=codigo).exists():
+            return codigo
 
 @login_required
 def generar_codigo_clase_view(request):
-    """Vista placeholder para Generar código de clase."""
-    # TODO: Implementar la lógica real aquí
-    return render(request, 'aplicacion/profesor/profesor_generar_codigo.html', {'message': 'Generar Código (WIP)'})
+    profesor = request.user
+
+    # carga inicial de clases del profesor (mostramos siempre la lista actualizada)
+    clases_creadas = Clase.objects.filter(profesor=profesor).order_by('-creado_en')
+
+    if request.method == "POST":
+        form = ClaseForm(request.POST)
+        if form.is_valid():
+            # creamos la instancia sin guardar (para asignar profesor y codigo)
+            clase = form.save(commit=False)
+            clase.profesor = profesor
+            clase.codigo_acceso = generar_codigo_unico()
+            clase.save()
+
+            # recargar lista para que incluya la nueva clase
+            clases_creadas = Clase.objects.filter(profesor=profesor).order_by('-creado_en')
+
+            mensaje = f"Código de clase para {clase.materia or 'la materia'} de {clase.carrera or 'la carrera'} creado con éxito."
+
+            # devolver la página mostrando el resultado y ocultando el form
+            return render(request, "aplicacion/profesor/profesor_generar_codigo.html", {
+                "form": ClaseForm(),                # formulario vacio en caso de crear otra
+                "clase": clase,                     # clase recien creada (para mostrar codigo)
+                "mensaje": mensaje,
+                "clases_creadas": clases_creadas,   # lista actualizada
+                "mostrar_form": False,              # ocultar form tras crear la clase
+            })
+        else:
+            # si el form no es válido caemos aquí: mostramos el form con errores
+            return render(request, "aplicacion/profesor/profesor_generar_codigo.html", {
+                "form": form,
+                "clases_creadas": clases_creadas,
+                "mostrar_form": True,
+            })
+
+    # GET: mostrar el formulario por defecto
+    form = ClaseForm()
+    return render(request, "aplicacion/profesor/profesor_generar_codigo.html", {
+        "form": form,
+        "clases_creadas": clases_creadas,
+        "mostrar_form": True,
+    })
+
 
 @login_required
 def configurar_niveles_view(request):
@@ -215,3 +277,95 @@ def logout_view(request):
 @login_required 
 def perfil_profesor_view(request):
     return render(request, 'aplicacion/profesor/perfil_profesor.html')
+
+@login_required
+def crear_clase_view(request):
+    """
+    Crea una clase en la BD.
+    Espera POST con: codigo, descripcion
+    """
+    if request.method != "POST":
+        return HttpResponseBadRequest("Método inválido")
+
+    try:
+        data = json.loads(request.body)
+    except:
+        return HttpResponseBadRequest("JSON inválido")
+
+    codigo = data.get("codigo")
+    descripcion = data.get("descripcion", "")
+
+    if not codigo:
+        return HttpResponseBadRequest("Falta el código")
+
+    # Guarda en DB
+    clase = Clase.objects.create(
+        codigo_acceso=codigo,
+        descripcion=descripcion,
+        profesor=request.user
+    )
+
+    return JsonResponse({
+        "ok": True,
+        "id": clase.id,
+        "codigo": clase.codigo_acceso,
+        "descripcion": clase.descripcion,
+        "creado_en": clase.creado_en.strftime("%d/%m/%Y %H:%M")
+    })
+
+
+@login_required
+def listar_clases_view(request):
+    """
+    Devuelve todas las clases creadas por el profesor.
+    """
+    clases = Clase.objects.filter(profesor=request.user).order_by("-creado_en")
+
+    return JsonResponse({
+        "clases": [
+            {
+                "id": c.id,
+                "codigo": c.codigo_acceso,
+                "descripcion": c.descripcion,
+                "creado_en": c.creado_en.strftime("%d/%m/%Y %H:%M")
+            }
+            for c in clases
+        ]
+    })   
+
+@login_required
+def editar_clase_view(request, clase_id):
+    clase = get_object_or_404(Clase, id=clase_id)
+
+    # Solo el profesor creador puede editarla
+    if clase.profesor != request.user:
+        return HttpResponseForbidden("No tienes permiso para editar esta clase.")
+
+    if request.method == "POST":
+        form = ClaseForm(request.POST, instance=clase)
+        if form.is_valid():
+            form.save()
+            return redirect("generar_codigo_clase")
+    else:
+        form = ClaseForm(instance=clase)
+
+    return render(request, "aplicacion/profesor/editar_clase.html", {
+        "form": form,
+        "clase": clase
+    })
+
+@login_required
+def eliminar_clase_view(request, clase_id):
+    clase = get_object_or_404(Clase, id=clase_id)
+
+    # Verifica que solo el profesor dueño pueda eliminarla
+    if clase.profesor != request.user:
+        return HttpResponseForbidden("No tienes permiso para eliminar esta clase.")
+
+    if request.method == "POST":
+        clase.delete()
+        return redirect("generar_codigo_clase")
+
+    return render(request, "aplicacion/profesor/eliminar_clase.html", {
+        "clase": clase
+    })

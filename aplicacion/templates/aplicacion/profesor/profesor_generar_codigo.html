@@ -1,9 +1,98 @@
-<!DOCTYPE html>
-<html>
-<head><title>Generar codigo de clase</title></head>
-<body>
-    <h1>Página de {{ message }}</h1>
-    <p>Esta es la página para generar el codigo de clase.</p>
+{% extends 'aplicacion/profesor/base_profesor.html' %}
+
+{% block title %}Generar Código de Clase{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+
+<h2 class="page-title">Generar Nuevo Código de Clase</h2>
+
+<div class="code-container">
+
+    {% if mostrar_form %}
+
+<div class="info-container">
+    <div class="info-wrapper">
+        <span class="info-button">ℹ️ Información </span>
+        <div class="tooltip">
+        <h3>¿Qué permite esta sección?</h3>
+        <p>
+            Generar un <strong>código de acceso</strong> para una clase, que los estudiantes usarán para unirse al juego educativo.
+        </p>
+
+        <h3>¿Para qué sirve?</h3>
+        <p>
+            Permite distinguir a los estudiantes de distintas materias (si dicta varias) y realizar un seguimiento más personalizado por curso.
+        </p>
+    </div>
+    </div>
+</div>
+
+        <!-- FORMULARIO PARA CREAR CLASE -->
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" name="crear_clase" class="btn-generar">
+                Generar Código
+            </button>
+        </form>
+
+    {% else %}
+        {% if mensaje %}
+            <p class="instructions" style="font-weight:600;">{{ mensaje }}</p>
+        {% endif %}
+
+        {% if clase %}
+            <span class="code-display">{{ clase.codigo_acceso }}</span>
+        {% endif %}
+        <br><br>
+        <a href="{% url 'generar_codigo_clase' %}" class="btn-nueva">
+            Crear nuevo codigo de clase
+        </a>
+    {% endif %}
+
+</div>
+
+<!-- LISTA DE CLASES PREVIAS -->
+<div class="clases-list">
+    <h3 style="text-align:center; color:#1a5c92;">Clases creadas previamente</h3>
+
+    {% for clase in clases_creadas %}
+        <div class="clase-item">
+            
+            <div>
+                <span class="codigo-tag">{{ clase.codigo_acceso }}</span>
+
+                <span class="clase-info">
+                    — {{ clase.materia }} ({{ clase.carrera }})
+                </span>
+
+                {% if clase.descripcion %}
+                    <br>
+                    <span class="clase-desc">{{ clase.descripcion }}</span>
+                {% endif %}
+            </div>
+
+            <div class="acciones">
+                <a href="{% url 'editar_clase' clase.id %}" class="btn-edit">Editar</a>
+                <a href="{% url 'eliminar_clase' clase.id %}" class="btn-delete">Eliminar</a>
+
+                <br>
+                <small style="color:#666;">
+                    {{ clase.creado_en|date:"d/m/Y H:i" }}
+                </small>
+            </div>
+
+        </div>
+    {% empty %}
+        <p style="text-align:center; color:#777;">Todavía no generaste ninguna clase.</p>
+    {% endfor %}
+</div>
+
     <a href="{% url 'perfil_profesor' %}">Volver al Panel</a>
-</body>
-</html>
+
+{% endblock %}

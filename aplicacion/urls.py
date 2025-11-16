@@ -18,16 +18,19 @@ urlpatterns = [
     # 4. Perfiles
     path('perfil/profesor/', views.perfil_profesor_view, name='perfil_profesor'),
     # *** Rutas de Navegación del Profesor (Botones) ***
-    path('profesor/generar-codigo/', views.generar_codigo_clase_view, name='generar_codigo_clase'), # <-- ¡AGREGADA!
+        path("profesor/generar-codigo/", views.generar_codigo_clase_view, name="generar_codigo_clase"),
+
     path('profesor/configurar-niveles/', views.configurar_niveles_view, name='configurar_niveles'), # <-- ¡AGREGADA!
     path('profesor/ver-respuestas/', views.ver_respuestas_view, name='ver_respuestas'),
-    
+    # Editar / Eliminar Clase
+    path('profesor/clase/<int:clase_id>/editar/', views.editar_clase_view, name='editar_clase'),
+    path('profesor/clase/<int:clase_id>/eliminar/', views.eliminar_clase_view, name='eliminar_clase'),
+
+
     path('perfil/estudiante/', views.perfil_estudiante_view, name='perfil_estudiante'),
     path('juego/capa1/', views.juego_capa_1_view, name='juego_capa_1'),
     path('juego/capa2/', views.juego_capa_2_view, name='juego_capa_2'),
     path('juego/save_result/', views.save_quiz_result, name='save_quiz_result'),
-    path('', views.index, name='index'),
-
     path('logout/', views.logout_view, name='logout'),
 ]
 

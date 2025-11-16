@@ -263,3 +263,15 @@ textarea {
 .review-item.incorrect-review { border-color: #dc3545; background-color: #ffe6e6; }
 .correct-answer { color: #4CAF50; font-weight: bold; margin-top: 5px; }
 .explanation-text { font-size: 0.9em; color: #0077B6; margin-top: 5px; }
+
+.errorlist {
+    color: red;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    list-style: none; /* ← saca la viñeta */
+}
+
+.errorlist li {
+    margin: 3px 0;
+}

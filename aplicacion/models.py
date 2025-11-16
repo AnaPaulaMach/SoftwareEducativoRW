@@ -38,9 +38,6 @@ class Usuario(AbstractUser):
         verbose_name='Correo Institucional (Profesor)'
     )
     
-    # Campos que ya existen en AbstractUser:
-    # username, first_name, last_name, email, password, etc.
-    
     def __str__(self):
         return f"{self.username} - {self.get_rol_display()}"
         
@@ -57,6 +54,7 @@ class Usuario(AbstractUser):
 
 class NivelUnlock(models.Model):
     """Registra niveles desbloqueados por usuario para persistencia."""
+    # Usamos settings.AUTH_USER_MODEL (cadena de texto)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='unlocked_levels')
     level = models.PositiveIntegerField()
     unlocked_at = models.DateTimeField(auto_now_add=True)
@@ -69,13 +67,33 @@ class NivelUnlock(models.Model):
         return f"{self.user.username} - Nivel {self.level}"
 
 
+
 class QuizAttempt(models.Model):
     """Guarda intentos de quizzes con las respuestas para auditoría o revisión."""
+    # Usamos settings.AUTH_USER_MODEL (cadena de texto)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quiz_attempts')
     level = models.PositiveIntegerField(default=1)
     score = models.IntegerField()
-    answers = models.JSONField(default=dict)  # estructura: [{id:..., type:..., answer:...}, ...]
+    answers = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - Nivel {self.level} - {self.score} pts - {self.created_at.isoformat()}"
+
+class Clase(models.Model):
+    codigo_acceso = models.CharField(max_length=15, unique=True)
+    profesor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'rol': 'PROFESOR'}
+    )
+
+    carrera = models.CharField(max_length=120, null=True, blank=True)
+    materia = models.CharField(max_length=120, null=True, blank=True)
+    descripcion = models.TextField(null=True, blank=True)
+
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Clase {self.codigo_acceso} por {self.profesor.username}"
+

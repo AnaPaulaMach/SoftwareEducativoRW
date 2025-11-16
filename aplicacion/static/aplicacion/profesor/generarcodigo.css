@@ -1,0 +1,161 @@
+
+    .page-title {
+        color: #1a5c92;
+        text-align: center;
+        margin-top: 15px;
+        font-size: 1.8em;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+    .code-container {
+        max-width: 550px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #f0f8ff;
+        border: 1px solid #cceeff;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .code-display {
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #007bff;
+        padding: 15px 20px;
+        border: 2px dashed #007bff;
+        border-radius: 5px;
+        margin: 20px 0;
+        display: inline-block;
+    }
+    .btn-generar, .btn-nueva {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.1em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 15px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-generar:hover, .btn-nueva:hover {
+        background-color: #218838;
+    }
+    .instructions {
+        color: #555;
+        font-size: 1em;
+        margin-bottom: 15px;
+    }
+    .clases-list {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #ffffff;
+        border: 1px solid #e3e3e3;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .clase-item {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .clase-item:last-child {
+        border-bottom: none;
+    }
+    .codigo-tag {
+        font-weight: 800;
+        color: #007bff;
+        font-size: 1.1em;
+    }
+    .clase-desc {
+        color: #444;
+        font-size: 0.95em;
+        margin-left: 8px;
+    }
+
+
+/* Editar y eliminar */
+    .btn-edit,
+.btn-delete {
+    display: inline-block;
+    width: 100px;        /* mismo ancho */
+    text-align: center;
+    padding: 8px 0;      /* mismo alto */
+    font-size: 0.9em;
+    border-radius: 4px;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 5px;   /* separación entre ambos */
+}
+
+/* Colores individuales */
+.btn-edit {
+    background: #1a73e8;
+}
+.btn-edit:hover {
+    background: #1259b0;
+}
+
+.btn-delete {
+    background: #d9534f;
+}
+.btn-delete:hover {
+    background: #b52b27;
+}
+
+/* Alinear botones en columna */
+.acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Contenedor alineado a la derecha */
+.info-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+/* Wrapper del botón + tooltip */
+.info-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Botón Info */
+.info-button {
+    background-color: #000000;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Tooltip */
+.tooltip {
+    display: none;
+    position: absolute;
+    right: 0; /* Para que salga alineado con el botón */
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 260px;
+    border-radius: 8px;
+    top: 40px;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Mostrar tooltip al pasar el mouse */
+.info-wrapper:hover .tooltip {
+    display: block;
+}

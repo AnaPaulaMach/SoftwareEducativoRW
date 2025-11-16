@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'aplicacion/profesor/panelprincipal.css' %}">
+    <link rel="stylesheet" href="{% static 'aplicacion/profesor/generarcodigo.css' %}">
+
+    <title>{% block title %}Aventura TCP/IP: Panel de Profesor{% endblock %}</title>
+    <!-- BLOQUE PARA CSS ESPECÍFICO DE PÁGINA (como el de generar código) -->
+    {% block extra_css %}{% endblock %} 
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <!-- BARRA SUPERIOR (Decorativa) -->
+        <div class="barra-superior">
+            <div class="puntos">
+                <div class="punto" style="background-color: #f66; margin-left: -5px;"></div>
+                <div class="punto" style="background-color: #fc4;"></div>
+                <div class="punto" style="background-color: #3c3;"></div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO COMPARTIDO Y NAVEGACIÓN -->
+        <div class="contenido">
+            <!-- Encabezado y Botón de Cerrar Sesión -->
+            <div class="header">
+                <div>
+                    <span class="titulo-app">AVENTURA TCP/IP:</span><br>
+                    <span class="subtitulo">CARRERA DE CAPAS 🏁</span>
+                </div>
+                <div class="info-profesor">
+                    <p>Profesor: {{ user.get_full_name|default:user.username }}</p>
+                    <a href="{% url 'logout' %}" class="btn-cerrar-sesion">Cerrar Sesión</a>
+                </div>
+            </div>
+            
+            <!-- Barra de Opciones/Navegación -->
+            <div class="barra-opciones">
+                <a href="{% url 'generar_codigo_clase' %}" class="opcion-btn">Generar código de clase</a>
+                <a href="{% url 'configurar_niveles' %}" class="opcion-btn">Configurar Niveles</a>
+                <a href="{% url 'ver_respuestas' %}" class="opcion-btn">Ver Respuestas</a>
+            </div>
+
+            <!-- BLOQUE PRINCIPAL: AQUÍ CARGARÁ EL CONTENIDO ÚNICO DE CADA VISTA -->
+            <div class="main-content-area">
+                <!-- Mostrar Mensajes de Django (éxito/error) aquí para todas las páginas -->
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% block content %}
+                <!-- El contenido único de la página irá en este bloque. -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

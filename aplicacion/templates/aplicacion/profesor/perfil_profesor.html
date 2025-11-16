@@ -1,43 +1,79 @@
-<!DOCTYPE html>
-{% load static %}  <html lang="es">
-<!-- <html lang="es"> -->
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="{% static 'aplicacion/profesor/panelprincipal.css' %}">
-  <title>Aventura TCP/IP: Perfil del Profesor</title>
+{% extends 'aplicacion/profesor/base_profesor.html' %}
 
-</head>
-<body>
+{% block title %}Panel de Control - Profesor{% endblock %}
 
-  <div class="contenedor-principal">
-    <div class="barra-superior">
-      <div class="puntos">
-        <div class="punto" style="background-color: #f66; margin-left: -5px;"></div>
-        <div class="punto" style="background-color: #fc4;"></div>
-        <div class="punto" style="background-color: #3c3;"></div>
-      </div>
-    </div>
+{% block extra_css %}
+<style>
+    .panel-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #f0f8ff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        text-align: center;
+    }
 
-    <div class="contenido">
-      <div class="header">
-        <div>
-          <span class="titulo-app">AVENTURA TCP/IP:</span><br>
-          <span class="subtitulo">CARRERA DE CAPAS 🏁</span>
-        </div>
-        <div class="info-profesor">
-          <p>Profesor: {{ user.get_full_name|default:user.username }}</p>
-          <a href="{% url 'logout' %}" class="btn-cerrar-sesion">Cerrar Sesión</a>
-        </div>
-      </div>
-      
-      <div class="barra-opciones">
-        <a href="{% url 'generar_codigo_clase' %}" class="opcion-btn">Generar código de clase</a>
-        <a href="{% url 'configurar_niveles' %}" class="opcion-btn">Configurar Niveles</a>
-        <a href="{% url 'ver_respuestas' %}" class="opcion-btn">Ver Respuestas</a>
-      </div>
+    .panel-container h2 {
+        color: #1a5c92;
+        margin-bottom: 15px;
+        font-size: 2em;
+    }
 
-    </div>
-  </div>
+    .panel-container p {
+        font-size: 1.15em;
+        color: #555;
+        margin-bottom: 20px;
+    }
 
-</body>
-</html>
+    .panel-options {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-size: 1.1em;
+    }
+
+    .panel-options li {
+        background-color: #ffffff;
+        border: 1px solid #dfe8f7;
+        padding: 12px 15px;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        text-align: left;
+    }
+
+    .panel-options li::before {
+        content: "➤ ";
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .panel-container .note {
+        margin-top: 25px;
+        font-style: italic;
+        color: #777;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="panel-container">
+    <h2>Panel de Control</h2>
+    <p>
+        Desde aquí puede gestionar sus clases y realizar seguimiento del progreso de los estudiantes.
+        Estas son las opciones disponibles:
+    </p>
+
+    <ul class="panel-options">
+        <li>Crear códigos de acceso para sus grupos de estudiantes (Generar código de clase).</li>
+        <li>Habilitar u ocultar los niveles que los estudiantes pueden jugar (Configurar Niveles).</li>
+        <li>Revisar los resultados de los estudiantes (Ver Respuestas).</li>
+    </ul>
+
+    <p class="note">
+        Comience seleccionando una opción en la barra superior.
+    </p>
+</div>
+{% endblock %}
