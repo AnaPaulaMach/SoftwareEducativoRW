@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.utils import timezone
 from django.db import DatabaseError
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.contrib.auth import logout
 
 # Importar los modelos nuevos
 from .models import QuizAttempt, NivelUnlock
@@ -39,7 +42,7 @@ def login_profesor_view(request):
     else:
         form = ProfesorLoginForm()
     
-    return render(request, 'aplicacion/login_profesor.html', {'login_form': form})
+    return render(request, 'aplicacion/profesor/login_profesor.html', {'login_form': form})
 
 def login_estudiante_view(request):
     if request.method == 'POST':
@@ -56,7 +59,7 @@ def login_estudiante_view(request):
     else:
         form = EstudianteLoginForm()
     
-    return render(request, 'aplicacion/login_estudiante.html', {'login_form': form})
+    return render(request, 'aplicacion/estudiante/login_estudiante.html', {'login_form': form})
 
 # (Eliminamos login_view redundante)
 
@@ -71,7 +74,7 @@ def registro_profesor_view(request):
     else:
         form = ProfesorRegistroForm()
         
-    return render(request, 'aplicacion/registro_profesor.html', {'form': form})
+    return render(request, 'aplicacion/profesor/registro_profesor.html', {'form': form})
 
 
 def registro_estudiante_view(request):
@@ -92,10 +95,10 @@ def registro_estudiante_view(request):
     else:
         form = EstudianteRegistroForm()
         
-    return render(request, 'aplicacion/registro_estudiante.html', {'form': form})
+    return render(request, 'aplicacion/estudiante/registro_estudiante.html', {'form': form})
 
 def perfil_profesor_view(request):
-    return render(request, 'aplicacion/perfil_profesor.html')
+    return render(request, 'aplicacion/profesor/perfil_profesor.html')
 
 
 def perfil_estudiante_view(request):
@@ -112,7 +115,7 @@ def perfil_estudiante_view(request):
             unlocked_level_2 = False
             # Opcional: podríamos loguear el error en un logger si se desea.
 
-    return render(request, 'aplicacion/perfil_estudiante.html', {'unlocked_level_2': unlocked_level_2})
+    return render(request, 'aplicacion/estudiante/perfil_estudiante.html', {'unlocked_level_2': unlocked_level_2})
 
 
 @login_required
@@ -156,9 +159,59 @@ def save_quiz_result(request):
 # --- VISTA DEL JUEGO (NUEVA VISTA) ---
 def juego_capa_1_view(request):
     """Renderiza la actividad de arrastrar y soltar para el Nivel 1 (Capa de Aplicación)."""
-    return render(request, 'aplicacion/juego_capa_1.html')
+    return render(request, 'aplicacion/estudiante/juego_capa_1.html')
 
 
 def juego_capa_2_view(request):
     """Plantilla placeholder para Nivel 2."""
-    return render(request, 'aplicacion/juego_capa_2.html')
+    return render(request, 'aplicacion/estudiante/juego_capa_2.html')
+
+def index(request):
+    """
+    Función de vista simple que devuelve un mensaje de 'Hola, mundo'.
+    """
+    return HttpResponse("<h1>¡Hola, mundo desde Django!</h1>")
+
+
+# aplicacion/views.py
+# ... (Mantén todos tus imports y funciones anteriores) ...
+
+from django.contrib.auth import logout # ¡Necesitas este import para el logout!
+from django.contrib.auth.decorators import login_required 
+from django.shortcuts import render, redirect 
+
+# --- NUEVAS VISTAS NECESARIAS ---
+
+@login_required
+def generar_codigo_clase_view(request):
+    """Vista placeholder para Generar código de clase."""
+    # TODO: Implementar la lógica real aquí
+    return render(request, 'aplicacion/profesor/profesor_generar_codigo.html', {'message': 'Generar Código (WIP)'})
+
+@login_required
+def configurar_niveles_view(request):
+    """Vista placeholder para Configurar Niveles."""
+    # TODO: Implementar la lógica real aquí
+    return render(request, 'aplicacion/profesor/profesor_configurar_niveles.html', {'message': 'Configurar Niveles (WIP)'})
+
+@login_required
+def ver_respuestas_view(request):
+    """Vista placeholder para Ver Respuestas."""
+    # TODO: Implementar la lógica real aquí
+    return render(request, 'aplicacion/profesor/profesor_ver_respuestas.html', {'message': 'Ver Respuestas (WIP)'})
+
+
+# --- VISTA DE LOGOUT ---
+
+def logout_view(request):
+    """Cierra la sesión del usuario y redirige al index."""
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect('index') # Redirige a la URL con name='index'
+
+# ... (Mantén todas tus funciones anteriores) ...
+
+# Asegúrate de que tu vista perfil_profesor_view quede así (si no la habías decorado):
+@login_required 
+def perfil_profesor_view(request):
+    return render(request, 'aplicacion/profesor/perfil_profesor.html')

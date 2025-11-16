@@ -1,0 +1,156 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    /* Implementamos el fondo con degradado sutil */
+    background: linear-gradient(180deg, #e0f7fa 0%, #f7fcf7 20%, #f7fcf7 100%);
+    
+    /* Cambiamos la alineación para centrar el contenido (título y contenedor) */
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-direction: column; /* Apila los elementos verticalmente */
+    
+    min-height: 100vh;
+    padding-top: 20px; /* Separación superior para un mejor look */
+}
+
+/* 2. Contenedor Principal (Simula la tarjeta de la aplicación) */
+.contenedor-principal {
+    width: 90%;
+    max-width: 1000px;
+    background-color: #fff;
+    border: none;
+    border-radius: 10px; /* Bordes más redondeados */
+    /* Sombra suave y moderna, similar a la tarjeta del estudiante */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    overflow: hidden;
+    /* Eliminar barra superior de simulación si no se usa */
+}
+
+/* 3. Contenido (Padding interno) */
+.contenido {
+    padding: 30px;
+}
+
+/* 4. Encabezado de Título (Similar a la imagen del estudiante) */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee; /* Separador sutil */
+    padding-bottom: 15px;
+}
+
+/* .titulo-app {
+    font-size: 2.5em;  Tamaño ligeramente reducido 
+    font-weight: bold;
+    color: #004d99; Azul más oscuro y profesional 
+    line-height: 1.1;
+    text-transform: uppercase;
+
+}
+
+.subtitulo {
+    font-size: 1.3em;
+    color: #333;
+    margin-top: 2px;
+    display: inline-block;
+} */
+
+.titulo-app {
+    font-size: 2.2em;
+    /* Aumentamos el peso de la fuente para más impacto, similar al 800 */
+    font-weight: 800; 
+    
+    color: #1a5c92; 
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+/* 3. Ajuste del Subtítulo */
+.subtitulo {
+    font-size: 1.3em;
+    color: #333;
+    margin-top: 2px;
+    display: inline-block;
+    background: none; 
+    font-weight: bold;
+}
+/* 5. Información del Profesor y Cerrar Sesión */
+.info-profesor {
+    text-align: right;
+    font-size: 0.9em;
+}
+
+.info-profesor p {
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
+    color: #555;
+    font-weight: bold;
+}
+
+/* Botón "Cerrar Sesión" (Estilo discreto) */
+.btn-cerrar-sesion {
+    background-color: transparent; 
+    color: #dc3545; /* Rojo de Bootstrap para una sensación de peligro/salir */
+    border: 1px solid #dc3545;
+    padding: 6px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.9em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-weight: normal;
+}
+
+.btn-cerrar-sesion:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* 6. Barra de Opciones (La barra de navegación del profesor) */
+.barra-opciones {
+    display: flex;
+    background-color: #f8f9fa; /* Fondo muy claro para la barra */
+    border: 1px solid #ddd;
+    border-radius: 8px; 
+    overflow: hidden;
+    margin-top: 25px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave */
+}
+
+.opcion-btn {
+    flex: 1;
+    text-align: center;
+    padding: 18px 0; /* Padding vertical generoso */
+    background-color: #1a5c92; /* Azul principal fuerte */
+    color: white;
+    text-decoration: none;
+    font-size: 1.0em;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-right: 1px solid rgba(255, 255, 255, 0.1); /* Separador blanco sutil */
+}
+
+/* Estilo del botón "activo" (el primero, 'Generar Código', que asumimos como principal) */
+.opcion-btn:nth-child(1) {
+    background-color: #3c8dbc; /* Azul más claro para diferenciar la opción principal/activa */
+}
+
+.opcion-btn:hover {
+    background-color: #007bff; /* Azul de hover más claro */
+}
+
+.opcion-btn:last-child {
+    border-right: none;
+}
+
+/* 7. Barra Superior (Eliminada para simplificar y acercarse a la estética de la imagen) */
+/* Si mantienes el HTML de la barra superior, puedes mantener los estilos antiguos o eliminarlos */
+.barra-superior {
+    display: none; /* Ocultar la barra de simulación de ventana */
+}

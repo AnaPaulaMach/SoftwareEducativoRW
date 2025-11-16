@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load static %}  <html lang="es">
+<!-- <html lang="es"> -->
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{% static 'aplicacion/profesor/panelprincipal.css' %}">
+  <title>Aventura TCP/IP: Perfil del Profesor</title>
+
+</head>
+<body>
+
+  <div class="contenedor-principal">
+    <div class="barra-superior">
+      <div class="puntos">
+        <div class="punto" style="background-color: #f66; margin-left: -5px;"></div>
+        <div class="punto" style="background-color: #fc4;"></div>
+        <div class="punto" style="background-color: #3c3;"></div>
+      </div>
+    </div>
+
+    <div class="contenido">
+      <div class="header">
+        <div>
+          <span class="titulo-app">AVENTURA TCP/IP:</span><br>
+          <span class="subtitulo">CARRERA DE CAPAS 🏁</span>
+        </div>
+        <div class="info-profesor">
+          <p>Profesor: {{ user.get_full_name|default:user.username }}</p>
+          <a href="{% url 'logout' %}" class="btn-cerrar-sesion">Cerrar Sesión</a>
+        </div>
+      </div>
+      
+      <div class="barra-opciones">
+        <a href="{% url 'generar_codigo_clase' %}" class="opcion-btn">Generar código de clase</a>
+        <a href="{% url 'configurar_niveles' %}" class="opcion-btn">Configurar Niveles</a>
+        <a href="{% url 'ver_respuestas' %}" class="opcion-btn">Ver Respuestas</a>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
