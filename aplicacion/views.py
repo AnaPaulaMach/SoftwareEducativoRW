@@ -14,6 +14,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Clase
 from .forms import ClaseForm
+from django.contrib import messages
+from .models import PerfilEstudiante
 
 
 
@@ -108,9 +110,9 @@ def registro_estudiante_view(request):
 def perfil_profesor_view(request):
     return render(request, 'aplicacion/profesor/perfil_profesor.html')
 
-
+""" 
 def perfil_estudiante_view(request):
-    """Muestra el menú de niveles para el estudiante."""
+    Muestra el menú de niveles para el estudiante.
     # Comprobar en la base de datos si el usuario ya desbloqueó el nivel 2
     unlocked_level_2 = False
     if request.user.is_authenticated:
@@ -124,6 +126,38 @@ def perfil_estudiante_view(request):
             # Opcional: podríamos loguear el error en un logger si se desea.
 
     return render(request, 'aplicacion/estudiante/perfil_estudiante.html', {'unlocked_level_2': unlocked_level_2})
+ """
+@login_required
+def perfil_estudiante_view(request):
+    usuario = request.user
+    perfil, _ = PerfilEstudiante.objects.get_or_create(user=usuario)
+
+    clase_id = request.session.get("clase_estudiante")
+
+    clase = None
+    if clase_id:
+        try:
+            clase = Clase.objects.get(id=clase_id)
+        except Clase.DoesNotExist:
+            pass
+
+    # Si no hay clase en sesión, restaurar desde perfil
+    if not clase and perfil.ultima_clase:
+        request.session["clase_estudiante"] = perfil.ultima_clase.id
+        return redirect("perfil_estudiante")
+
+    # Si sigue sin clase → pedir código
+    if not clase:
+        return redirect("join_clase")
+
+    # Nivel desbloqueado (si lo usás)
+    unlocked_level_2 = NivelUnlock.objects.filter(user=request.user, level=2).exists()
+
+    return render(request, 'aplicacion/estudiante/perfil_estudiante.html', {
+        'unlocked_level_2': unlocked_level_2,
+        'clase': clase
+    })
+
 
 
 @login_required
@@ -369,3 +403,56 @@ def eliminar_clase_view(request, clase_id):
     return render(request, "aplicacion/profesor/eliminar_clase.html", {
         "clase": clase
     })
+
+ #vista donde el estudiante ingresa su código.
+@login_required
+def join_clase_view(request):
+    """
+    El estudiante ingresa un código → se guarda en sesión
+    y también en PerfilEstudiante. Así queda registrado
+    como su última clase usada.
+    """
+    if request.method == "POST":
+        codigo = request.POST.get("codigo", "").strip().upper()
+
+        try:
+            clase = Clase.objects.get(codigo_acceso=codigo)
+        except Clase.DoesNotExist:
+            messages.error(request, "El código ingresado no corresponde a ninguna clase.")
+            return render(request, "aplicacion/estudiante/join_clase.html")
+
+        # Guardamos en sesión
+        request.session["clase_estudiante"] = clase.id
+
+        # Guardar como última clase del estudiante
+        perfil, _ = PerfilEstudiante.objects.get_or_create(user=request.user)
+        perfil.ultima_clase = clase
+        perfil.save()
+
+        # Inscribir al estudiante en la clase si no estaba
+        clase.estudiantes.add(request.user)
+
+        return redirect("perfil_estudiante")
+
+    return render(request, "aplicacion/estudiante/join_clase.html")
+
+@login_required
+def reset_codigo_view(request):
+    request.session.pop("clase_estudiante", None)
+    request.session.pop("unlocked_level_2", None)
+    return redirect("join_clase")
+
+@login_required
+def salir_clase_view(request):
+    """
+    Borra la clase actual y permite ingresar otro código.
+    """
+    # Eliminar de la sesión
+    request.session.pop("clase_estudiante", None)
+
+    # Eliminar de PerfilEstudiante
+    perfil, _ = PerfilEstudiante.objects.get_or_create(user=request.user)
+    perfil.ultima_clase = None
+    perfil.save()
+
+    return redirect("join_clase")

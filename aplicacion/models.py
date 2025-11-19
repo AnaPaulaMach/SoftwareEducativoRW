@@ -87,6 +87,13 @@ class Clase(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={'rol': 'PROFESOR'}
     )
+    
+    estudiantes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="clases_inscripto",
+        limit_choices_to={'rol': 'ESTUDIANTE'}
+    )
 
     carrera = models.CharField(max_length=120, null=True, blank=True)
     materia = models.CharField(max_length=120, null=True, blank=True)
@@ -97,3 +104,14 @@ class Clase(models.Model):
     def __str__(self):
         return f"Clase {self.codigo_acceso} por {self.profesor.username}"
 
+class PerfilEstudiante(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    ultima_clase = models.ForeignKey(
+        Clase,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"

@@ -1,127 +1,141 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Perfil del Estudiante</title>
+
     <!-- Cargamos los estilos externos -->
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
 </head>
+
 <body>
     <script>
         // Limpieza inmediata: eliminar cualquier flag antiguo de desbloqueo antes de procesar la UI
-        try { localStorage.removeItem('unlocked_level_2'); } catch(e) { /* ignore */ }
+        try { localStorage.removeItem('unlocked_level_2'); } catch (e) { /* ignore */ }
     </script>
-    
+
     <!-- TÍTULO DE LA APLICACIÓN: FUERA de la tarjeta -->
     <h1 class="title">AVENTURA TCP/IP: CARRERA DE CAPAS 🏁</h1>
-   
     <!-- Contenedor principal de la tarjeta de perfil -->
+
     <div class="profile-container">
 
         {% if user.is_authenticated %}
-            
-            <!-- CONTENEDOR DEL ALIAS Y ROL (MUESTRA INFORMACIÓN DEL PERFIL) -->
-            <div class="profile-meta">
-                <!-- Se accede al Alias (o Username por defecto) y al Rol -->
-                Alias: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
+
+        <!-- CONTENEDOR DEL ALIAS Y ROL (MUESTRA INFORMACIÓN DEL PERFIL) -->
+        <div class="profile-meta">
+            <!-- Se accede al Alias (o Username por defecto) y al Rol -->
+            Alias: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
+            <br><br>
+            <a style="background-color: transparent; color: #dc3545; border: 1px solid #dc3545;
+                padding: 6px 15px;text-align: center;text-decoration: none;display: inline-block;font-size: 0.9em;
+                cursor: pointer;border-radius: 5px;transition: all 0.3s;font-weight: normal;" href="{% url 'logout' %}"
+                class="btn-cerrar-sesion">Cerrar Sesión</a>
+        </div>
+
+        <div class="profile-header">
+            <h1>¡Bienvenido/a, {{ user.first_name }} {{ user.last_name }}!</h1>
+            <p><strong>Carrera:</strong> {{ clase.carrera }} || <strong>Materia:</strong> {{ clase.materia }} </p>
+            <p><strong>Profesor:</strong> {{ clase.profesor.username }} || <strong>Código de Clase:</strong>
+                <strong>{{clase.codigo_acceso }}</strong></p>
+                                            <hr style="margin-top: 30px;">
+
+        </div>
+
+        <!-- Sección de Niveles del Juego -->
+        <h3 style="text-align: center; color: #0077B6; margin-bottom: 30px;">Elige la Capa para Iniciar la Carrera</h3>
+
+        <div class="game-levels">
+
+            <!-- NIVEL 1: CAPA DE APLICACIÓN (Desbloqueado) -->
+            <div class="level-card unlocked">
+                <h3>Nivel 1</h3>
+                <p>Capa de Aplicación</p>
+                <a href="{% url 'juego_capa_1' %}" class="level-button">
+                    INICIAR
+                </a>
             </div>
 
-            <div class="profile-header">
-                <h2>Perfil del Estudiante</h2>
-                <h1>¡Bienvenido/a, {{ user.first_name }} {{ user.last_name }}!</h1> 
-                <hr style="margin-top: 30px;">
+            <!-- NIVEL 2: CAPA DE TRANSPORTE -->
+            <div id="level-2-card" class="level-card {% if unlocked_level_2 %}unlocked{% else %}locked{% endif %}">
+                {% if not unlocked_level_2 %}
+                <span class="locked-icon">🔒</span>
+                {% endif %}
+                <h3>Nivel 2</h3>
+                <p>Capa de Transporte</p>
+                <a href="{% if unlocked_level_2 %}{% url 'juego_capa_2' %}{% else %}#{% endif %}" class="level-button"
+                    id="level-2-button">
+                    {% if unlocked_level_2 %}INICIAR{% else %}BLOQUEADO{% endif %}
+                </a>
             </div>
 
-            <!-- Sección de Niveles del Juego -->
-            <h3 style="text-align: center; color: #0077B6; margin-bottom: 30px;">Elige la Capa para Iniciar la Carrera</h3>
-
-            <div class="game-levels">
-                
-                <!-- NIVEL 1: CAPA DE APLICACIÓN (Desbloqueado) -->
-                <div class="level-card unlocked">
-                    <h3>Nivel 1</h3>
-                    <p>Capa de Aplicación</p>
-                    <a href="{% url 'juego_capa_1' %}" class="level-button">
-                        INICIAR
-                    </a>
-                </div>
-
-                <!-- NIVEL 2: CAPA DE TRANSPORTE -->
-                <div id="level-2-card" class="level-card {% if unlocked_level_2 %}unlocked{% else %}locked{% endif %}">
-                    {% if not unlocked_level_2 %}
-                        <span class="locked-icon">🔒</span>
-                    {% endif %}
-                    <h3>Nivel 2</h3>
-                    <p>Capa de Transporte</p>
-                    <a href="{% if unlocked_level_2 %}{% url 'juego_capa_2' %}{% else %}#{% endif %}" class="level-button" id="level-2-button">
-                        {% if unlocked_level_2 %}INICIAR{% else %}BLOQUEADO{% endif %}
-                    </a>
-                </div>
-
-                <!-- NIVEL 3: CAPA DE RED (Bloqueado) -->
-                <div class="level-card locked">
-                    <span class="locked-icon">🔒</span>
-                    <h3>Nivel 3</h3>
-                    <p>Capa de Red</p>
-                    <a href="#" class="level-button">
-                        BLOQUEADO
-                    </a>
-                </div>
-                
-                <!-- NIVEL 4: CAPA DE ENLACE (Bloqueado) -->
-                <div class="level-card locked">
-                    <span class="locked-icon">🔒</span>
-                    <h3>Nivel 4</h3>
-                    <p>Capa de Enlace</p>
-                    <a href="#" class="level-button">
-                        BLOQUEADO
-                    </a>
-                </div>
-
-                <!-- NIVEL 5: CAPA FÍSICA (Bloqueado) -->
-                <div class="level-card locked">
-                    <span class="locked-icon">🔒</span>
-                    <h3>Nivel 5</h3>
-                    <p>Capa Física</p>
-                    <a href="#" class="level-button">
-                        BLOQUEADO
-                    </a>
-                </div>
-
-                <!-- Nivel FINAL -->
-                <div class="level-card locked">
-                    <span class="locked-icon">🔒</span>
-                    <h3>FINAL</h3>
-                    <p>Prueba Global</p>
-                    <a href="#" class="level-button">
-                        BLOQUEADO
-                    </a>
-                </div>
+            <!-- NIVEL 3: CAPA DE RED (Bloqueado) -->
+            <div class="level-card locked">
+                <span class="locked-icon">🔒</span>
+                <h3>Nivel 3</h3>
+                <p>Capa de Red</p>
+                <a href="#" class="level-button">
+                    BLOQUEADO
+                </a>
             </div>
-            
+
+            <!-- NIVEL 4: CAPA DE ENLACE (Bloqueado) -->
+            <div class="level-card locked">
+                <span class="locked-icon">🔒</span>
+                <h3>Nivel 4</h3>
+                <p>Capa de Enlace</p>
+                <a href="#" class="level-button">
+                    BLOQUEADO
+                </a>
+            </div>
+
+            <!-- NIVEL 5: CAPA FÍSICA (Bloqueado) -->
+            <div class="level-card locked">
+                <span class="locked-icon">🔒</span>
+                <h3>Nivel 5</h3>
+                <p>Capa Física</p>
+                <a href="#" class="level-button">
+                    BLOQUEADO
+                </a>
+            </div>
+
+            <!-- Nivel FINAL -->
+            <div class="level-card locked">
+                <span class="locked-icon">🔒</span>
+                <h3>FINAL</h3>
+                <p>Prueba Global</p>
+                <a href="#" class="level-button">
+                    BLOQUEADO
+                </a>
+            </div>
+        </div>
+
         {% else %}
-            <h1>Acceso Denegado</h1>
-            <p>Necesitas iniciar sesión para ver esta página.</p>
+        <h1>Acceso Denegado</h1>
+        <p>Necesitas iniciar sesión para ver esta página.</p>
         {% endif %}
-        
-        <!-- Enlace de retorno/logout -->
-        <p class="link-return" style="margin-top: 30px;">
-            <a href="{% url 'index' %}">Volver a selección de perfil</a>
+
+        <p style="margin-top:30px; text-align:center;">
+            <a href="{% url 'salir_clase' %}" class="btn btn-warning">
+                Salir e ingresar con otro código
+            </a>
+
         </p>
 
     </div>
-    
+
     <script>
         // Sincronizar localStorage con el estado del servidor.
         // Ya no permitimos que un valor antiguo en localStorage fuerce el desbloqueo.
-        (function(){
+        (function () {
             try {
                 var serverUnlocked = "{{ unlocked_level_2|yesno:'true,false' }}" === "true";
                 if (serverUnlocked) {
-                    try { localStorage.setItem('unlocked_level_2', 'true'); } catch(e){}
+                    try { localStorage.setItem('unlocked_level_2', 'true'); } catch (e) { }
                 } else {
-                    try { localStorage.removeItem('unlocked_level_2'); } catch(e){}
+                    try { localStorage.removeItem('unlocked_level_2'); } catch (e) { }
                 }
             } catch (e) {
                 console.warn('No se pudo sincronizar localStorage para desbloqueo de niveles.');
@@ -130,3 +144,5 @@
     </script>
 
 </body>
+
+</html>

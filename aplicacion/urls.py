@@ -32,5 +32,9 @@ urlpatterns = [
     path('juego/capa2/', views.juego_capa_2_view, name='juego_capa_2'),
     path('juego/save_result/', views.save_quiz_result, name='save_quiz_result'),
     path('logout/', views.logout_view, name='logout'),
+    path('estudiante/ingresar-clase/', views.join_clase_view, name='join_clase'),
+path("reset-codigo/", views.reset_codigo_view, name="reset_codigo"),
+path("salir-clase/", views.salir_clase_view, name="salir_clase"),
+
 ]
 
