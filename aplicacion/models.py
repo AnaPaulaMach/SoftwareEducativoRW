@@ -115,3 +115,23 @@ class PerfilEstudiante(models.Model):
 
     def __str__(self):
         return f"Perfil de {self.user.username}"
+
+
+# Mantiene la habilitación/bloqueo de cada nivel por clase.
+class NivelClase(models.Model):
+    clase = models.ForeignKey(
+        Clase,
+        on_delete=models.CASCADE,
+        related_name="niveles_config"
+    )
+    level = models.PositiveIntegerField()
+    habilitado = models.BooleanField(default=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('clase', 'level')
+        ordering = ['level']
+
+    def __str__(self):
+        estado = "Habilitado" if self.habilitado else "Bloqueado"
+        return f"{self.clase.codigo_acceso} - Nivel {self.level} ({estado})"

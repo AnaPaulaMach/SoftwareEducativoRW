@@ -50,26 +50,51 @@
         <div class="game-levels">
 
             <!-- NIVEL 1: CAPA DE APLICACIÓN (Desbloqueado) -->
-            <div class="level-card unlocked">
+            {# Evaluamos estado del nivel según la configuración del profesor #}
+            {% with nivel1=niveles_habilitados.1 %}
+            <div class="level-card {% if nivel1 %}unlocked{% else %}locked{% endif %}">
+                {% if not nivel1 %}
+                <span class="locked-icon">🔒</span>
+                {% endif %}
                 <h3>Nivel 1</h3>
                 <p>Capa de Aplicación</p>
-                <a href="{% url 'juego_capa_1' %}" class="level-button">
+                <a href="{% if nivel1 %}{% url 'juego_capa_1' %}{% else %}#{% endif %}" class="level-button">
+                    {% if nivel1 %}INICIAR{% else %}BLOQUEADO{% endif %}
+                </a>
+                {% if not nivel1 %}
+                    <p class="level-note">Nivel bloqueado por el profesor.</p>
+                {% endif %}
+            </div>
+            {% endwith %}
+
+            <!-- NIVEL 2: CAPA DE TRANSPORTE -->
+            {% with nivel2=niveles_habilitados.2 %}
+            {% if puede_jugar_nivel_2 %}
+            <div id="level-2-card" class="level-card unlocked">
+                <h3>Nivel 2</h3>
+                <p>Capa de Transporte</p>
+                <a href="{% url 'juego_capa_2' %}" class="level-button" id="level-2-button">
                     INICIAR
                 </a>
             </div>
-
-            <!-- NIVEL 2: CAPA DE TRANSPORTE -->
-            <div id="level-2-card" class="level-card {% if unlocked_level_2 %}unlocked{% else %}locked{% endif %}">
-                {% if not unlocked_level_2 %}
+            {% else %}
+            <div id="level-2-card" class="level-card locked">
                 <span class="locked-icon">🔒</span>
-                {% endif %}
                 <h3>Nivel 2</h3>
                 <p>Capa de Transporte</p>
-                <a href="{% if unlocked_level_2 %}{% url 'juego_capa_2' %}{% else %}#{% endif %}" class="level-button"
-                    id="level-2-button">
-                    {% if unlocked_level_2 %}INICIAR{% else %}BLOQUEADO{% endif %}
+                <a href="#" class="level-button" id="level-2-button">
+                    BLOQUEADO
                 </a>
+                <p class="level-note">
+                    {% if not nivel2 %}
+                        Nivel bloqueado por el profesor.
+                    {% else %}
+                        Debes completar el nivel anterior para continuar.
+                    {% endif %}
+                </p>
             </div>
+            {% endif %}
+            {% endwith %}
 
             <!-- NIVEL 3: CAPA DE RED (Bloqueado) -->
             <div class="level-card locked">

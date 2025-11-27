@@ -27,6 +27,30 @@
         margin: 20px 0;
         display: inline-block;
     }
+.code-container form p {
+    text-align: left;
+    margin-bottom: 18px;
+}
+.code-container form p label {
+    display: inline-block;
+    width: 110px;
+    text-align: right;
+    font-weight: 600;
+    margin-right: 10px;
+    vertical-align: top;
+    color: #1a5c92;
+}
+.code-container form p input,
+.code-container form p textarea {
+    width: 60%;
+    font-size: 1em;
+    padding: 6px 8px;
+    border: 1px solid #c5d9f3;
+    border-radius: 6px;
+}
+.code-container form p textarea {
+    min-height: 80px;
+}
     .btn-generar, .btn-nueva {
         background-color: #28a745;
         color: white;

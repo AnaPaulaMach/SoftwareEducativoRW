@@ -33,11 +33,25 @@
                         <div style="flex-grow: 1;">
                             <label class="dark-label" for="{{ form.first_name.id_for_label }}">Nombre</label>
                             {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="field-error">
+                                    {% for error in form.first_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                         <!-- Campo Apellido -->
                         <div style="flex-grow: 1;">
                             <label class="dark-label" for="{{ form.last_name.id_for_label }}">Apellido</label>
                             {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="field-error">
+                                    {% for error in form.last_name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     
@@ -45,36 +59,49 @@
                     <div class="form-group dark-row">
                         <label class="dark-label" for="{{ form.correo_institucional.id_for_label }}">Correo Institucional</label>
                         {{ form.correo_institucional }}
+                        {% if form.correo_institucional.errors %}
+                            <div class="field-error">
+                                {% for error in form.correo_institucional.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                     
                     <!-- Campo: Contraseña -->
                     <div class="form-group dark-row">
                         <label class="dark-label" for="{{ form.password.id_for_label }}">Contraseña</label>
                         {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="field-error">
+                                {% for error in form.password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- Campo: Confirmar Contraseña -->
                     <div class="form-group dark-row">
                         <label class="dark-label" for="{{ form.password_confirm.id_for_label }}">Confirmar Contraseña</label>
                         {{ form.password_confirm }}
+                        {% if form.password_confirm.errors %}
+                            <div class="field-error">
+                                {% for error in form.password_confirm.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                     
                     <!-- 1. BLOQUE CENTRALIZADO DE TODOS LOS ERRORES (MOVIDO AQUÍ) -->
-                    <div class="error-summary">
-                        
-                        <!-- Errores NO de campo (Ej: Contraseñas no coinciden) -->
-                        {% for error in form.non_field_errors %}
-                            <p class="errorlist errorlist-bottom">{{ error }}</p>
-                        {% endfor %}
-
-                        <!-- Errores de campo (Ej: Correo ya existe) -->
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <!-- CAMBIO CLAVE: SOLO MOSTRAMOS EL MENSAJE DE ERROR, SIN LA ETIQUETA DEL CAMPO -->
+                    {% if form.non_field_errors %}
+                        <div class="error-summary">
+                            {% for error in form.non_field_errors %}
                                 <p class="errorlist errorlist-bottom">{{ error }}</p>
                             {% endfor %}
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endif %}
                     
                     <!-- Botón Enviar (ALINEADO AL CENTRO) -->
                     <div class="action-buttons" style="justify-content: center; margin-top: 20px;">

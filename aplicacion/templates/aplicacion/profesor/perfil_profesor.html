@@ -38,16 +38,33 @@
     .panel-options li {
         background-color: #ffffff;
         border: 1px solid #dfe8f7;
-        padding: 12px 15px;
-        border-radius: 6px;
+        padding: 14px 18px;
+        border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
     }
 
-    .panel-options li::before {
-        content: "➤ ";
-        color: #007bff;
-        font-weight: bold;
+    .panel-options li .option-text {
+        flex: 1;
+        color: #1a3c5a;
+    }
+
+    .panel-options li .panel-link {
+        background: #0d6efd;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: background 0.2s ease;
+    }
+
+    .panel-options li .panel-link:hover {
+        background: #0b5ed7;
     }
 
     .panel-container .note {
@@ -66,10 +83,29 @@
         Estas son las opciones disponibles:
     </p>
 
+    {# Tarjetas de acceso rápido a las secciones docentes #}
     <ul class="panel-options">
-        <li>Crear códigos de acceso para sus grupos de estudiantes (Generar código de clase).</li>
-        <li>Habilitar u ocultar los niveles que los estudiantes pueden jugar (Configurar Niveles).</li>
-        <li>Revisar los resultados de los estudiantes (Ver Respuestas).</li>
+        <li>
+            <div class="option-text">
+                Crear códigos de acceso para sus grupos de estudiantes.<br>
+                <small>(Generar código de clase)</small>
+            </div>
+            <a href="{% url 'generar_codigo_clase' %}" class="panel-link">Gestionar</a>
+        </li>
+        <li>
+            <div class="option-text">
+                Habilitar u ocultar los niveles que los estudiantes pueden jugar.<br>
+                <small>(Configurar Niveles)</small>
+            </div>
+            <a href="{% url 'configurar_niveles' %}" class="panel-link">Abrir</a>
+        </li>
+        <li>
+            <div class="option-text">
+                Revisar los resultados y puntuaciones de los estudiantes.<br>
+                <small>(Ver Respuestas)</small>
+            </div>
+            <a href="{% url 'ver_respuestas' %}" class="panel-link">Ver tabla</a>
+        </li>
     </ul>
 
     <p class="note">

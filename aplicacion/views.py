@@ -1,35 +1,48 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib.auth.decorators import login_required
 import json
-from django.utils import timezone
-from django.db import DatabaseError
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.auth import logout
 import random
 import string
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import Clase
-from .forms import ClaseForm
+
 from django.contrib import messages
-from .models import PerfilEstudiante
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
-
-
-# Importar los modelos nuevos
-from .models import QuizAttempt, NivelUnlock
-# NO NECESITAMOS AuthenticationForm aquí
-
-# ¡IMPORTAMOS LOS FORMULARIOS!
 from .forms import (
-    EstudianteRegistroForm, 
+    ClaseForm,
+    ConfigurarNivelesForm,
+    EstudianteLoginForm,
+    EstudianteRegistroForm,
+    ProfesorLoginForm,
     ProfesorRegistroForm,
-    EstudianteLoginForm,  
-    ProfesorLoginForm     
-) 
+    SeleccionarClaseForm,
+)
+
+from .models import (
+    Clase,
+    NivelClase,
+    NivelUnlock,
+    PerfilEstudiante,
+    QuizAttempt,
+)
+
+# Helper que garantiza que cada clase tenga 5 registros de configuración.
+def asegurar_configuracion_niveles(clase):
+    """
+    Garantiza que exista configuración para los cinco niveles de la clase.
+    """
+    configuraciones = {
+        cfg.level: cfg for cfg in NivelClase.objects.filter(clase=clase)
+    }
+    for level in range(1, 6):
+        if level not in configuraciones:
+            configuraciones[level] = NivelClase.objects.create(
+                clase=clase,
+                level=level,
+                habilitado=True,
+            )
+    return configuraciones
 
 # --- VISTAS DE NAVEGACIÓN ---
 
@@ -150,12 +163,20 @@ def perfil_estudiante_view(request):
     if not clase:
         return redirect("join_clase")
 
-    # Nivel desbloqueado (si lo usás)
+    # Mapa con los niveles permitidos/deshabilitados por el profesor.
+    nivel_configuraciones = asegurar_configuracion_niveles(clase)
+    niveles_habilitados = {
+        level: cfg.habilitado for level, cfg in nivel_configuraciones.items()
+    }
+
     unlocked_level_2 = NivelUnlock.objects.filter(user=request.user, level=2).exists()
+    puede_jugar_nivel_2 = unlocked_level_2 and niveles_habilitados.get(2, False)
 
     return render(request, 'aplicacion/estudiante/perfil_estudiante.html', {
         'unlocked_level_2': unlocked_level_2,
-        'clase': clase
+        'clase': clase,
+        'niveles_habilitados': niveles_habilitados,
+        'puede_jugar_nivel_2': puede_jugar_nivel_2,
     })
 
 
@@ -253,6 +274,7 @@ def generar_codigo_clase_view(request):
             clase.profesor = profesor
             clase.codigo_acceso = generar_codigo_unico()
             clase.save()
+            asegurar_configuracion_niveles(clase)
 
             # recargar lista para que incluya la nueva clase
             clases_creadas = Clase.objects.filter(profesor=profesor).order_by('-creado_en')
@@ -286,15 +308,79 @@ def generar_codigo_clase_view(request):
 
 @login_required
 def configurar_niveles_view(request):
-    """Vista placeholder para Configurar Niveles."""
-    # TODO: Implementar la lógica real aquí
-    return render(request, 'aplicacion/profesor/profesor_configurar_niveles.html', {'message': 'Configurar Niveles (WIP)'})
+    if request.user.rol != 'PROFESOR':
+        return redirect('index')
+
+    clases = Clase.objects.filter(profesor=request.user).order_by('-creado_en')
+    clase_id = request.POST.get('clase') or request.GET.get('clase')
+    clase_seleccionada = None
+
+    if clase_id:
+        clase_seleccionada = get_object_or_404(Clase, id=clase_id, profesor=request.user)
+        request.session["clase_configuracion_profesor"] = clase_id
+    elif request.session.get("clase_configuracion_profesor"):
+        clase_seleccionada = Clase.objects.filter(
+            id=request.session["clase_configuracion_profesor"],
+            profesor=request.user
+        ).first()
+    elif clases.exists():
+        clase_seleccionada = clases.first()
+
+    niveles_form = None
+    if clase_seleccionada:
+        configuraciones = asegurar_configuracion_niveles(clase_seleccionada)
+
+        if request.method == "POST" and request.POST.get('accion') == 'guardar_niveles':
+            niveles_form = ConfigurarNivelesForm(request.POST)
+            if niveles_form.is_valid():
+                # Guardamos el estado de cada checkbox sobre la clase actual.
+                for level in range(1, 6):
+                    cfg = configuraciones[level]
+                    cfg.habilitado = niveles_form.cleaned_data[f'level_{level}']
+                    cfg.save()
+                messages.success(request, "La configuración de niveles se actualizó correctamente.")
+                return redirect(f"{reverse('configurar_niveles')}?clase={clase_seleccionada.id}")
+        else:
+            initial = {f'level_{lvl}': cfg.habilitado for lvl, cfg in configuraciones.items()}
+            niveles_form = ConfigurarNivelesForm(initial=initial)
+
+    select_form = SeleccionarClaseForm(
+        profesor=request.user,
+        initial={'clase': clase_seleccionada.id if clase_seleccionada else None}
+    )
+
+    return render(request, 'aplicacion/profesor/profesor_configurar_niveles.html', {
+        'clases': clases,
+        'select_form': select_form,
+        'clase_seleccionada': clase_seleccionada,
+        'niveles_form': niveles_form,
+    })
+
 
 @login_required
 def ver_respuestas_view(request):
-    """Vista placeholder para Ver Respuestas."""
-    # TODO: Implementar la lógica real aquí
-    return render(request, 'aplicacion/profesor/profesor_ver_respuestas.html', {'message': 'Ver Respuestas (WIP)'})
+    if request.user.rol != 'PROFESOR':
+        return redirect('index')
+
+    clases = Clase.objects.filter(profesor=request.user).order_by('-creado_en')
+    clase_id = request.GET.get('clase') or request.POST.get('clase')
+    clase_seleccionada = None
+    intentos = []
+
+    if clase_id:
+        clase_seleccionada = get_object_or_404(Clase, id=clase_id, profesor=request.user)
+    elif clases.exists():
+        clase_seleccionada = clases.first()
+
+    if clase_seleccionada:
+        estudiantes_ids = clase_seleccionada.estudiantes.values_list('id', flat=True)
+        intentos = QuizAttempt.objects.filter(user_id__in=estudiantes_ids).select_related('user').order_by('-created_at')
+
+    return render(request, 'aplicacion/profesor/profesor_ver_respuestas.html', {
+        'clases': clases,
+        'clase_seleccionada': clase_seleccionada,
+        'intentos': intentos,
+    })
 
 
 # --- VISTA DE LOGOUT ---
@@ -420,6 +506,8 @@ def join_clase_view(request):
         except Clase.DoesNotExist:
             messages.error(request, "El código ingresado no corresponde a ninguna clase.")
             return render(request, "aplicacion/estudiante/join_clase.html")
+
+        asegurar_configuracion_niveles(clase)
 
         # Guardamos en sesión
         request.session["clase_estudiante"] = clase.id

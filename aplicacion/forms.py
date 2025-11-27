@@ -1,7 +1,8 @@
+import re
+
 from django import forms
-from .models import Usuario
-from django.contrib.auth.forms import AuthenticationForm # <-- Necesario para los Login Forms
-from .models import Clase
+from django.contrib.auth.forms import AuthenticationForm  # <-- Necesario para los Login Forms
+from .models import Clase, Usuario
 
 # --- Formulario Base para todos los registros ---
 # Modificación en aplicacion/forms.py
@@ -9,25 +10,27 @@ from .models import Clase
 # --- Formulario Base para todos los registros ---
 class BaseRegistroForm(forms.ModelForm):
     """Define los campos comunes a ambos roles y los hace requeridos."""
-    
+
     # Redefinimos los campos para forzar la propiedad required=True
     # (El campo ya está en el modelo Usuario, pero lo definimos aquí para el Formulario)
     first_name = forms.CharField(max_length=150, label='Nombre')
     last_name = forms.CharField(max_length=150, label='Apellido')
-    
+    password = forms.CharField(
+        label='Contraseña',
+        widget=forms.PasswordInput,
+        help_text='Mínimo 8 caracteres, con letras y números.'
+    )
+
     # Campo extra para confirmar la contraseña
     password_confirm = forms.CharField(
-        widget=forms.PasswordInput, 
+        widget=forms.PasswordInput,
         label='Confirmar Contraseña'
     )
-    
+
     class Meta:
         model = Usuario
         # Campos comunes a ambos: nombre, apellido, contraseña
         fields = ['first_name', 'last_name', 'password', 'password_confirm']
-        widgets = {
-            'password': forms.PasswordInput(),
-        }
         labels = {
             'first_name': 'Nombre',
             'last_name': 'Apellido',
@@ -46,9 +49,53 @@ class BaseRegistroForm(forms.ModelForm):
             )
         return cleaned_data
 
+    def clean_password(self):
+        password = self.cleaned_data.get("password", "")
+        if not password:
+            return password
+
+        errors = []
+        if len(password) < 8:
+            errors.append("Debe tener al menos 8 caracteres.")
+        if not re.search(r"[A-Z]", password):
+            errors.append("Debe incluir al menos una letra mayúscula.")
+        if not re.search(r"[a-z]", password):
+            errors.append("Debe incluir al menos una letra minúscula.")
+        if not re.search(r"\d", password):
+            errors.append("Debe incluir al menos un número.")
+
+        if errors:
+            raise forms.ValidationError(
+                "La contraseña no cumple los requisitos: " + " ".join(errors)
+            )
+        return password
+
+    def clean_first_name(self):
+        nombre = (self.cleaned_data.get("first_name") or "").strip()
+        if not nombre:
+            raise forms.ValidationError("Ingresa un nombre válido.")
+        return nombre
+
+    def clean_last_name(self):
+        apellido = (self.cleaned_data.get("last_name") or "").strip()
+        if not apellido:
+            raise forms.ValidationError("Ingresa un apellido válido.")
+        return apellido
+
 # --- Formulario de Registro para ESTUDIANTE ---
 class EstudianteRegistroForm(BaseRegistroForm):
-    
+    username = forms.EmailField(
+        label='Correo Electrónico',
+        max_length=254,
+        help_text='Usaremos tu correo para iniciar sesión.'
+    )
+    alias = forms.CharField(
+        label='Alias / Nickname',
+        max_length=100,
+        required=True,
+        help_text='Entre 3 y 100 caracteres.'
+    )
+
     class Meta(BaseRegistroForm.Meta):
         # Campos del estudiante: los comunes + alias + un 'username' para login
         fields = BaseRegistroForm.Meta.fields + ['username', 'alias']
@@ -76,6 +123,12 @@ class EstudianteRegistroForm(BaseRegistroForm):
         if commit:
             user.save()
         return user
+
+    def clean_alias(self):
+        alias = (self.cleaned_data.get("alias") or "").strip()
+        if len(alias) < 3:
+            raise forms.ValidationError("El alias debe tener al menos 3 caracteres.")
+        return alias
 
 # --- Formulario de Registro para PROFESOR ---
 class ProfesorRegistroForm(BaseRegistroForm):
@@ -185,3 +238,36 @@ class ClaseForm(forms.ModelForm):
 
         # Dejar opcional
         self.fields['descripcion'].required = False
+
+
+# Selector reutilizable para que el profesor elija una clase propia.
+class SeleccionarClaseForm(forms.Form):
+    clase = forms.ModelChoiceField(
+        queryset=Clase.objects.none(),
+        label='Seleccionar clase',
+        empty_label='Seleccione una clase'
+    )
+
+    def __init__(self, *args, **kwargs):
+        profesor = kwargs.pop('profesor')
+        super().__init__(*args, **kwargs)
+        self.fields['clase'].queryset = Clase.objects.filter(profesor=profesor).order_by('-creado_en')
+        self.fields['clase'].widget.attrs.update({'class': 'select-clase'})
+
+
+NIVEL_CHOICES = (
+    (1, 'Nivel 1 - Capa de Aplicación'),
+    (2, 'Nivel 2 - Capa de Transporte'),
+    (3, 'Nivel 3 - Capa de Red'),
+    (4, 'Nivel 4 - Capa de Enlace'),
+    (5, 'Nivel 5 - Capa Física'),
+)
+
+
+# Form plano con un toggle por nivel (checkbox) para habilitar/bloquear.
+class ConfigurarNivelesForm(forms.Form):
+    level_1 = forms.BooleanField(label=NIVEL_CHOICES[0][1], required=True, initial=True, disabled=True)
+    level_2 = forms.BooleanField(label=NIVEL_CHOICES[1][1], required=False)
+    level_3 = forms.BooleanField(label=NIVEL_CHOICES[2][1], required=False)
+    level_4 = forms.BooleanField(label=NIVEL_CHOICES[3][1], required=False)
+    level_5 = forms.BooleanField(label=NIVEL_CHOICES[4][1], required=False)
