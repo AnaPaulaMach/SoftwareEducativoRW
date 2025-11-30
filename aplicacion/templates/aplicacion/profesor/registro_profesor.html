@@ -3,7 +3,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro Profesor</title>
+    
+    <!-- Favicon para Profesor -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
+    
     <!-- Cargamos los estilos que están en aplicacion/static/aplicacion/style.css -->
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
 </head>
@@ -127,5 +132,26 @@
     <p class="link-return">
         <a href="{% url 'index' %}">Volver a selección de perfil</a>
     </p>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <!-- Lado izquierdo (marca + info) -->
+            <div class="footer-left">
+                <p class="footer-brand">Aventura TCP/IP</p>
+                <p class="footer-meta">
+                    Desarrollado por: Coria Luz Antonella, Proserpio Eliana Naily y Ana Paula Machado
+                </p>
+                <p class="footer-meta">
+                    Informática Educativa · Licenciatura en Sistemas de Información · UNSE · 2025
+                </p>
+            </div>
+            <!-- Lado derecho (tags estilo moderno) -->
+            <div class="footer-right">
+                <span class="footer-tag">Proyecto académico</span>
+                <span class="footer-tag footer-role">Versión 1.0</span>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

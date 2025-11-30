@@ -4,7 +4,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil del Estudiante</title>
+
+    <!-- Favicon para Estudiante -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
 
     <!-- Cargamos los estilos externos -->
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
@@ -26,17 +30,14 @@
 
         <!-- CONTENEDOR DEL ALIAS Y ROL (MUESTRA INFORMACIÓN DEL PERFIL) -->
         <div class="profile-meta">
-            <!-- Se accede al Alias (o Username por defecto) y al Rol -->
-            Alias: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
-            <br><br>
-            <a style="background-color: transparent; color: #dc3545; border: 1px solid #dc3545;
-                padding: 6px 15px;text-align: center;text-decoration: none;display: inline-block;font-size: 0.9em;
-                cursor: pointer;border-radius: 5px;transition: all 0.3s;font-weight: normal;" href="{% url 'logout' %}"
-                class="btn-cerrar-sesion">Cerrar Sesión</a>
+            <div class="profile-info">
+                🎓 Alias: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
+            </div>
+            <a href="{% url 'logout' %}" class="btn-cerrar-sesion">Cerrar Sesión</a>
         </div>
 
         <div class="profile-header">
-            <h1>¡Bienvenido/a, {{ user.first_name }} {{ user.last_name }}!</h1>
+            <h1>🎓 ¡Bienvenido/a, {{ user.first_name }} {{ user.last_name }}!</h1>
             <p><strong>Carrera:</strong> {{ clase.carrera }} || <strong>Materia:</strong> {{ clase.materia }} </p>
             <p><strong>Profesor:</strong> {{ clase.profesor.username }} || <strong>Código de Clase:</strong>
                 <strong>{{clase.codigo_acceso }}</strong></p>
@@ -56,7 +57,7 @@
                 {% if not nivel1 %}
                 <span class="locked-icon">🔒</span>
                 {% endif %}
-                <h3>Nivel 1</h3>
+                <h3>📱 Nivel 1</h3>
                 <p>Capa de Aplicación</p>
                 <a href="{% if nivel1 %}{% url 'juego_capa_1' %}{% else %}#{% endif %}" class="level-button">
                     {% if nivel1 %}INICIAR{% else %}BLOQUEADO{% endif %}
@@ -71,7 +72,7 @@
             {% with nivel2=niveles_habilitados.2 %}
             {% if puede_jugar_nivel_2 %}
             <div id="level-2-card" class="level-card unlocked">
-                <h3>Nivel 2</h3>
+                <h3>🚚 Nivel 2</h3>
                 <p>Capa de Transporte</p>
                 <a href="{% url 'juego_capa_2' %}" class="level-button" id="level-2-button">
                     INICIAR
@@ -99,7 +100,7 @@
             <!-- NIVEL 3: CAPA DE RED (Bloqueado) -->
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
-                <h3>Nivel 3</h3>
+                <h3>🌐 Nivel 3</h3>
                 <p>Capa de Red</p>
                 <a href="#" class="level-button">
                     BLOQUEADO
@@ -109,7 +110,7 @@
             <!-- NIVEL 4: CAPA DE ENLACE (Bloqueado) -->
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
-                <h3>Nivel 4</h3>
+                <h3>🔗 Nivel 4</h3>
                 <p>Capa de Enlace</p>
                 <a href="#" class="level-button">
                     BLOQUEADO
@@ -119,7 +120,7 @@
             <!-- NIVEL 5: CAPA FÍSICA (Bloqueado) -->
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
-                <h3>Nivel 5</h3>
+                <h3>⚡ Nivel 5</h3>
                 <p>Capa Física</p>
                 <a href="#" class="level-button">
                     BLOQUEADO
@@ -129,7 +130,7 @@
             <!-- Nivel FINAL -->
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
-                <h3>FINAL</h3>
+                <h3>🏆 FINAL</h3>
                 <p>Prueba Global</p>
                 <a href="#" class="level-button">
                     BLOQUEADO
@@ -167,6 +168,27 @@
             }
         })();
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <!-- Lado izquierdo (marca + info) -->
+            <div class="footer-left">
+                <p class="footer-brand">Aventura TCP/IP</p>
+                <p class="footer-meta">
+                    Desarrollado por: Coria Luz Antonella, Proserpio Eliana Naily y Ana Paula Machado
+                </p>
+                <p class="footer-meta">
+                    Informática Educativa · Licenciatura en Sistemas de Información · UNSE · 2025
+                </p>
+            </div>
+            <!-- Lado derecho (tags estilo moderno) -->
+            <div class="footer-right">
+                <span class="footer-tag">Proyecto académico</span>
+                <span class="footer-tag footer-role">Versión 1.0</span>
+            </div>
+        </div>
+    </footer>
 
 </body>
 

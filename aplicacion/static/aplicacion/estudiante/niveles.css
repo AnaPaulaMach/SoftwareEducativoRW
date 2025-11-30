@@ -192,6 +192,40 @@
             background-color: #f7f7f7;
             border-radius: 5px;
         }
+        .review-item.correct-review {
+            border-left-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+        .review-item.incorrect-review {
+            border-left-color: #dc3545;
+            background-color: #ffebee;
+        }
+        .user-answer {
+            margin: 8px 0;
+            font-weight: 600;
+            color: #333;
+        }
+        .explanation-text {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .hint-text {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #0b486b;
+            font-style: italic;
+            padding: 8px;
+            background-color: #e3f2fd;
+            border-left: 3px solid #0077B6;
+            border-radius: 4px;
+        }
+        .hint-text strong {
+            color: #004d99;
+            font-weight: 700;
+        }
 
         /* --- Estilos para la Tarjeta de Rúbrica Final (más llamativa) --- */
         .rubric-card {
@@ -317,3 +351,39 @@
   gap: 15px; /* <-- separa cada ítem arrastrable verticalmente */
 }
 
+
+/* Campo para completar texto (preguntas tipo fill) */
+.fill-input {
+    padding: 10px;
+    font-size: 1em;
+    width: 80%;
+    max-width: 420px;
+    border-radius: 8px;
+    border: 2px solid #B0D7F5;
+}
+
+/* Bloque de secuencia (preguntas tipo sequence) */
+.seq-list {
+    border: 2px dashed #B0D7F5;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+.sequence-item {
+    background: #fff;
+    margin: 6px 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #B0D7F5;
+    cursor: grab;
+    text-align: left;
+}
+.sequence-item[draggable="false"] {
+    cursor: default;
+}
+
+.sequence-help {
+    font-size: 0.9em;
+    color: #555;
+}

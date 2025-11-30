@@ -1,4 +1,5 @@
 /* aplicacion/static/aplicacion/style.css */
+/* Última actualización: 2024 - Fix botón y responsive */
 
 /* --- CONFIGURACIÓN BASE Y ESTILOS GENERALES --- */
 
@@ -9,12 +10,15 @@ body {
     background: linear-gradient(180deg, #e0f7fa 0%, #f7fcf7 20%, #f7fcf7 100%);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
+    padding: 20px;
     text-align: center;
-    padding-top: 20px; 
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 /* Estilo del título principal (AVENTURA TCP/IP) */
@@ -56,7 +60,7 @@ body {
 
 /* --- ESTILOS DE TARJETA (LOGIN/REGISTRO/PERFIL) --- */
 
-.auth-card, .profile-container {
+.auth-card {
     background-color: white;
     padding: 40px 50px;
     border-radius: 16px;
@@ -67,9 +71,16 @@ body {
     margin-top: 30px; 
 }
 .profile-container {
+    background-color: white;
+    padding: 40px 50px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
     max-width: 900px; /* Más ancho para el perfil de estudiante y menú de niveles */
-    margin-top: 30px; /* dejar espacio bajo el título para que no quede estático arriba */
-    margin-bottom: 30px;
+    margin: 30px auto;
+    text-align: left;
+    box-sizing: border-box;
+    position: relative;
 }
 
 /* Contenedor para layout de formulario en dos columnas (registro) */
@@ -192,14 +203,28 @@ textarea {
 /* --- ESTILOS DE PERFIL Y ALIAS (INSIGNIA) --- */
 
 .profile-meta {
-    text-align: right; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
     font-size: 1.2em; 
     color: #0077B6; 
     margin-bottom: 20px;
     padding-bottom: 5px;
     border-bottom: none; 
     width: 100%;
+    box-sizing: border-box;
 }
+
+.profile-meta > br {
+    display: none;
+}
+
+.profile-info {
+    flex: 1;
+}
+
 .profile-meta strong {
     color: white; 
     background-color: #28A745; /* VERDE DE LA INSIGNIA */
@@ -209,6 +234,22 @@ textarea {
     margin-left: 15px;
     font-size: 0.9em;
     box-shadow: 0 3px 6px rgba(40, 167, 69, 0.4);
+}
+.profile-meta .btn-cerrar-sesion {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 6px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.9em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-weight: normal;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 /* --- ESTILOS DE BOTONES (GENERAL Y NAVEGACIÓN) --- */
@@ -262,20 +303,37 @@ textarea {
 
 /* --- ESTILOS ESPECÍFICOS DEL MENÚ DE JUEGO (PERFIL ESTUDIANTE) --- */
 
-.game-levels { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 20px 0; }
+.game-levels { 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
 .level-card {
     background-color: #f7f7f7;
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 20px;
-    width: 180px;
     text-align: center;
     transition: transform 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
 }
 .unlocked .level-button { background-color: #4CAF50; color: white; }
 .locked { background-color: #eee; opacity: 0.6; cursor: not-allowed; }
 .locked .level-button { background-color: #9E9E9E; color: white; cursor: not-allowed; }
-.level-button { display: block; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; text-decoration: none; }
+.level-button { 
+    display: block; 
+    width: 100%; 
+    padding: 10px; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    text-decoration: none;
+    box-sizing: border-box;
+    border: none;
+}
 .level-note {
     margin-top: 10px;
     font-size: 0.85em;
@@ -315,3 +373,255 @@ textarea {
     margin: 3px 0;
 }
 
+/* --- MEDIA QUERIES PARA DISEÑO RESPONSIVE --- */
+
+/* Tablets (hasta 768px) */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 15px;
+        overflow-x: hidden;
+    }
+    
+    .profile-container {
+        padding: 30px 25px;
+        max-width: 95%;
+        width: calc(100% - 30px);
+        margin: 20px auto;
+        box-sizing: border-box;
+    }
+    
+    .game-levels {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .level-card {
+        padding: 15px;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+    
+    .level-button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .profile-meta {
+        font-size: 1em;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .profile-info {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .profile-header h1 {
+        font-size: 1.5em;
+    }
+    
+    .title {
+        font-size: 2em;
+        padding: 0 15px;
+    }
+    
+    .form-layout {
+        flex-direction: column;
+    }
+    
+    .login-side-box {
+        flex-basis: 100%;
+    }
+}
+
+/* Móviles (hasta 480px) */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 10px;
+        padding-top: 15px;
+        overflow-x: hidden;
+    }
+    
+    .profile-container {
+        padding: 20px 15px;
+        max-width: 100%;
+        width: calc(100% - 20px);
+        margin: 15px auto;
+        border-radius: 12px;
+        box-sizing: border-box;
+    }
+    
+    .game-levels {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 10px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .level-card {
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+    
+    .level-button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .profile-meta {
+        font-size: 0.9em;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .profile-info {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .profile-meta strong {
+        display: block;
+        margin: 5px 0;
+        margin-left: 0;
+    }
+    
+    .btn-cerrar-sesion {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding: 8px 15px;
+    }
+    
+    .profile-header h1 {
+        font-size: 1.3em;
+    }
+    
+    .profile-header p {
+        font-size: 0.9em;
+    }
+    
+    .title {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+    
+    .auth-card {
+        padding: 25px 20px;
+        max-width: 100%;
+        margin: 15px auto;
+    }
+    
+    h3 {
+        font-size: 1.1em;
+    }
+}
+
+/* --- FOOTER MODERNO --- */
+.footer {
+    width: 100%;
+    background: linear-gradient(180deg, #f5f9ff 0%, #eaf3ff 100%);
+    border-top: 1px solid rgba(0, 77, 153, 0.15);
+    margin-top: 60px;
+    padding: 18px 24px;
+    box-sizing: border-box;
+    box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Lado izquierdo */
+.footer-left p {
+    margin: 0;
+}
+
+.footer-brand {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #004d99;
+}
+
+.footer-meta {
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-top: 2px;
+}
+
+/* Lado derecho: tags tipo pill */
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.footer-tag {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: #004d99;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.footer-role {
+    background-color: #16a34a; /* verde tipo botón INICIAR */
+}
+
+/* Links dentro del footer (por si los usás) */
+.footer a {
+    color: #004d99;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.footer a:hover {
+    opacity: 0.7;
+}
+
+/* --- Responsive --- */
+@media screen and (max-width: 768px) {
+    .footer {
+        margin-top: 40px;
+        padding: 16px 18px;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .footer-inner {
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-left, .footer-right {
+        justify-content: center;
+    }
+}

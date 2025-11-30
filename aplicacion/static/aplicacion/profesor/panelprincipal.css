@@ -185,3 +185,54 @@ body {
     color: #721c24; /* Rojo oscuro para el texto */
     border: 1px solid #f5c6cb;
 }
+
+/* --- FOOTER MODERNO --- */
+.footer {
+    width: 100%;
+    background-color: #f0f0f0;
+    border-top: 2px solid #004d99;
+    padding: 20px;
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #333;
+    box-sizing: border-box;
+}
+
+.footer p {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+.footer .footer-developers {
+    font-weight: 600;
+    color: #004d99;
+    margin-bottom: 8px;
+}
+
+.footer .footer-course {
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive para footer */
+@media screen and (max-width: 768px) {
+    .footer {
+        padding: 15px;
+        font-size: 0.85em;
+        margin-top: 30px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .footer {
+        padding: 12px;
+        font-size: 0.8em;
+        margin-top: 20px;
+    }
+    
+    .footer p {
+        margin: 4px 0;
+        line-height: 1.5;
+    }
+}
