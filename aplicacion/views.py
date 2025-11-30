@@ -169,14 +169,39 @@ def perfil_estudiante_view(request):
         level: cfg.habilitado for level, cfg in nivel_configuraciones.items()
     }
 
-    unlocked_level_2 = NivelUnlock.objects.filter(user=request.user, level=2).exists()
-    puede_jugar_nivel_2 = unlocked_level_2 and niveles_habilitados.get(2, False)
+    # Lógica de desbloqueo secuencial para el estudiante
+    # El nivel 1 siempre está disponible si el profesor lo habilita
+    puede_jugar_nivel_1 = niveles_habilitados.get(1, False)
+
+    # Para el Nivel 2, necesita haber pasado el Nivel 1 Y que el profesor lo habilite
+    unlocked_level_1_by_student = QuizAttempt.objects.filter(user=request.user, level=1, score__gte=7).exists()
+    puede_jugar_nivel_2 = unlocked_level_1_by_student and niveles_habilitados.get(2, False)
+
+    # Para el Nivel 3, necesita haber pasado el Nivel 2 Y que el profesor lo habilite
+    unlocked_level_2_by_student = QuizAttempt.objects.filter(user=request.user, level=2, score__gte=7).exists()
+    puede_jugar_nivel_3 = unlocked_level_2_by_student and niveles_habilitados.get(3, False)
+
+    # Para el Nivel 4, necesita haber pasado el Nivel 3 Y que el profesor lo habilite
+    unlocked_level_3_by_student = QuizAttempt.objects.filter(user=request.user, level=3, score__gte=7).exists()
+    puede_jugar_nivel_4 = unlocked_level_3_by_student and niveles_habilitados.get(4, False)
+
+    # Para el Nivel 5, necesita haber pasado el Nivel 4 Y que el profesor lo habilite
+    unlocked_level_4_by_student = QuizAttempt.objects.filter(user=request.user, level=4, score__gte=7).exists()
+    puede_jugar_nivel_5 = unlocked_level_4_by_student and niveles_habilitados.get(5, False)
+
+    # Para el Nivel FINAL, necesita haber pasado el Nivel 5 Y que el profesor lo habilite
+    unlocked_level_5_by_student = QuizAttempt.objects.filter(user=request.user, level=5, score__gte=7).exists()
+    puede_jugar_nivel_final = unlocked_level_5_by_student and niveles_habilitados.get(6, False)
 
     return render(request, 'aplicacion/estudiante/perfil_estudiante.html', {
-        'unlocked_level_2': unlocked_level_2,
         'clase': clase,
         'niveles_habilitados': niveles_habilitados,
+        'puede_jugar_nivel_1': puede_jugar_nivel_1,
         'puede_jugar_nivel_2': puede_jugar_nivel_2,
+        'puede_jugar_nivel_3': puede_jugar_nivel_3,
+        'puede_jugar_nivel_4': puede_jugar_nivel_4,
+        'puede_jugar_nivel_5': puede_jugar_nivel_5,
+        'puede_jugar_nivel_final': puede_jugar_nivel_final,
     })
 
 
@@ -209,13 +234,8 @@ def save_quiz_result(request):
         answers=answers,
     )
 
-    # Si aplica, desbloquear Nivel 2
-    try:
-        if score > 8:
-            NivelUnlock.objects.get_or_create(user=request.user, level=2)
-    except Exception:
-        # no bloquear el flujo si algo falla secundario
-        pass
+    # Nota: El desbloqueo de niveles se maneja en perfil_estudiante_view
+    # basándose en QuizAttempt con score >= 7, no necesitamos NivelUnlock aquí
 
     return JsonResponse({'ok': True, 'attempt_id': attempt.id})
 
@@ -228,6 +248,22 @@ def juego_capa_1_view(request):
 def juego_capa_2_view(request):
     """Plantilla placeholder para Nivel 2."""
     return render(request, 'aplicacion/estudiante/juego_capa_2.html')
+
+def juego_capa_3_view(request):
+    """Plantilla para Nivel 3 - Capa de Red."""
+    return render(request, 'aplicacion/estudiante/juego_capa_3.html')
+
+def juego_capa_4_view(request):
+    """Plantilla para Nivel 4 - Capa de Enlace."""
+    return render(request, 'aplicacion/estudiante/juego_capa_4.html')
+
+def juego_capa_5_view(request):
+    """Plantilla para Nivel 5 - Capa Física."""
+    return render(request, 'aplicacion/estudiante/juego_capa_5.html')
+
+def juego_final_view(request):
+    """Plantilla para Nivel FINAL - Prueba Global."""
+    return render(request, 'aplicacion/estudiante/juego_final.html')
 
 def index(request):
     """

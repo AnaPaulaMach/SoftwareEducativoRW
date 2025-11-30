@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 3: Capa de Red</title>
+    
+    <!-- Favicon para Nivel 3 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+    
+    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/niveles.css' %}">
+    <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
+</head>
+<body>
+    {% if user.is_authenticated %}
+    
+    <h1 class="title" style="margin-top: 30px; margin-bottom: 10px;">AVENTURA TCP/IP: CARRERA DE CAPAS 🏁</h1>
+
+    <div class="game-area">
+        
+        <div class="game-profile-meta">
+            Jugando como: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
+        </div>
+        
+        <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel 3: Capa de Red</h2>
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
+        
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <form id="quiz-form" onsubmit="return false;"> 
+            <div id="questions-container">
+                </div>
+            
+            <div id="score-results" style="display: none;">
+                <div class="score-display">Puntuación Final: <span id="final-score"></span>/10</div>
+                <div id="feedback-final" class="feedback"></div>
+                
+                <div id="review-container">
+                    <h4>Revisión Detallada (Aciertos y Errores)</h4>
+                    <div id="review-list"></div>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <button type="button" id="prev-btn" disabled>← Anterior</button>
+                <button type="button" id="check-btn">Verificar</button>
+                <button type="button" id="next-btn" disabled>Siguiente →</button>
+                <button type="button" id="finish-btn" style="display:none;">Finalizar</button>
+            </div>
+        </form>
+
+        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al Menú de Niveles</a>
+    </div>
+
+    <script>
+        window.QUIZ_CONFIG = {
+          saveResultUrl: "{% url 'save_quiz_result' %}",
+          imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
+          imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
+          imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
+        };
+
+        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Capa de Red) ---------
+        window.QUIZ_QUESTIONS = [
+  {
+    id: 1,
+    type: "mc",
+    text: "¿Cuál de las siguientes opciones describe mejor la función principal de la Capa de Red?",
+    options: [
+      "Encapsular bits en la tarjeta de red y acceder al medio físico",
+      "Determinar la ruta y direccionar datagramas entre redes de origen y destino",
+      "Mantener sesiones estables entre aplicaciones de extremo a extremo",
+      "Cifrar y autenticar los datos antes de enviarlos"
+    ],
+    correct_answer: "Determinar la ruta y direccionar datagramas entre redes de origen y destino",
+    explanation:
+      "En el modelo de cinco capas, la Capa de Red se encarga del direccionamiento lógico y el enrutamiento de datagramas entre redes, utilizando protocolos como IP."
+  },
+  {
+    id: 2,
+    type: "mc",
+    text: "Al atravesar varios routers desde el origen hasta el destino, ¿qué elemento del encabezado cambia en cada salto?",
+    options: [
+      "La dirección IP de destino",
+      "La dirección IP de origen",
+      "Las direcciones MAC de origen y destino",
+      "El número de puerto de transporte"
+    ],
+    correct_answer: "Las direcciones MAC de origen y destino",
+    explanation:
+      "La Capa de Red mantiene las direcciones IP de origen y destino, mientras que en cada enlace cambian las direcciones MAC utilizadas por la Capa de Enlace."
+  },
+  {
+    id: 3,
+    type: "tf",
+    text: "En la Capa de Red, la unidad de datos que se transporta suele denominarse <strong>datagrama IP</strong>.",
+    options: ["Verdadero", "Falso"],
+    correct_answer: "Verdadero",
+    explanation:
+      "En la Capa de Red, el protocolo IP trabaja con datagramas: unidades de datos que contienen las direcciones IP de origen y destino y otros campos como TTL."
+  },
+  {
+    id: 4,
+    type: "fill",
+    text: "El campo del encabezado IP que evita que un datagrama quede circulando indefinidamente en la red se llama:",
+    placeholder: "Escribe el nombre del campo (tres letras)",
+    correct_answer: "ttl",
+    explanation:
+      "El campo <strong>Time To Live (TTL)</strong> se decrementa en cada salto. Cuando llega a cero, el datagrama se descarta para evitar bucles de enrutamiento."
+  },
+  {
+    id: 5,
+    type: "drag_drop",
+    text: "Relaciona cada elemento de la Capa de Red con su descripción correspondiente.",
+    drag_items: [
+      { value: "datagrama", label: "Datagrama IP" },
+      { value: "router", label: "Router" },
+      { value: "ip", label: "Dirección IP" },
+      { value: "tabla", label: "Tabla de enrutamiento" }
+    ],
+    drop_zones: [
+      { function: "unidad", label: "Unidad de datos que viaja en la Capa de Red" },
+      { function: "dispositivo", label: "Dispositivo que reenvía datagramas entre redes" },
+      { function: "identificador", label: "Identificador lógico de un host o interfaz" },
+      { function: "estructura", label: "Estructura que almacena rutas hacia redes de destino" }
+    ],
+    correct_map: {
+      unidad: "datagrama",
+      dispositivo: "router",
+      identificador: "ip",
+      estructura: "tabla"
+    },
+    explanation:
+      "En la Capa de Red, el datagrama IP es la unidad de datos, el router reenvía datagramas, la dirección IP identifica lógicamente a cada host o interfaz y la tabla de enrutamiento guía las decisiones de reenvío."
+  },
+  {
+    id: 6,
+    type: "sequence",
+    text: "Ordena de forma simplificada el recorrido de un datagrama IP desde un host de origen hasta un servidor remoto.",
+    sequence_items: [
+      { key: "origen", label: "Host de origen envía el datagrama a su router de borde" },
+      { key: "router_local", label: "Router local consulta su tabla de enrutamiento" },
+      { key: "routers_intermedios", label: "Routers intermedios reenvían el datagrama hacia la red destino" },
+      { key: "router_destino", label: "Router de la red destino entrega el datagrama a la red local" },
+      { key: "host_destino", label: "Host de destino recibe el datagrama y lo pasa a la capa superior" }
+    ],
+    correct_sequence: [
+      "origen",
+      "router_local",
+      "routers_intermedios",
+      "router_destino",
+      "host_destino"
+    ],
+    explanation:
+      "Primero el host de origen envía al router de borde, luego los routers consultan tablas de enrutamiento y reenvían el datagrama hasta llegar al router de la red destino, que finalmente lo entrega al host de destino."
+  },
+  {
+    id: 7,
+    type: "mc",
+    text: "¿Cuál de los siguientes protocolos pertenece a la Capa de Red en el modelo de cinco capas?",
+    options: ["TCP", "IP", "HTTP", "FTP"],
+    correct_answer: "IP",
+    explanation:
+      "El protocolo IP (Internet Protocol) opera en la Capa de Red. TCP y UDP pertenecen a la Capa de Transporte, mientras que HTTP y FTP trabajan en la Capa de Aplicación."
+  },
+  {
+    id: 8,
+    type: "tf",
+    text: "La Capa de Red se encarga de entregar datos entre procesos de aplicación que se ejecutan en un mismo host.",
+    options: ["Verdadero", "Falso"],
+    correct_answer: "Falso",
+    explanation:
+      "La entrega entre procesos (por número de puerto) es responsabilidad de la Capa de Transporte. La Capa de Red se centra en el encaminamiento entre hosts y redes."
+  },
+  {
+    id: 9,
+    type: "mc",
+    text: "¿Qué podría ocurrir si el campo TTL de los datagramas IP no se decrementara en cada router?",
+    options: [
+      "Los datagramas podrían quedar atrapados en bucles de enrutamiento de forma indefinida",
+      "Se reduciría el tamaño del encabezado IP y mejoraría el rendimiento",
+      "Los routers dejarían de fragmentar datagramas grandes",
+      "No habría ningún impacto en el recorrido de los datagramas"
+    ],
+    correct_answer:
+      "Los datagramas podrían quedar atrapados en bucles de enrutamiento de forma indefinida",
+    explanation:
+      "El TTL existe precisamente para evitar que un datagrama viva para siempre en la red en caso de configuraciones erróneas o bucles de enrutamiento."
+  },
+  {
+    id: 10,
+    type: "mc",
+    text: "En el contexto de la Capa de Red, ¿qué entendemos por <strong>enrutamiento</strong>?",
+    options: [
+      "Asignar direcciones MAC a cada interfaz de red",
+      "Seleccionar el camino que seguirán los datagramas para llegar a la red destino",
+      "Controlar la velocidad de transmisión entre emisor y receptor",
+      "Aumentar la confiabilidad mediante retransmisiones y confirmaciones"
+    ],
+    correct_answer:
+      "Seleccionar el camino que seguirán los datagramas para llegar a la red destino",
+    explanation:
+      "El enrutamiento consiste en decidir, a partir de la tabla de enrutamiento, por qué salida (next hop) debe reenviarse cada datagrama para alcanzar su red de destino."
+  }
+];
+
+      </script>
+      <script src="{% static 'aplicacion/estudiante/juego_capa_3.js' %}"></script>
+    {% else %}
+        <h1>Acceso Denegado</h1>
+        <p>Necesitas iniciar sesión para ver esta página.</p>
+    </div>
+    {% endif %}
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <!-- Lado izquierdo (marca + info) -->
+            <div class="footer-left">
+                <p class="footer-brand">Aventura TCP/IP</p>
+                <p class="footer-meta">
+                    Desarrollado por: Coria Luz Antonella, Proserpio Eliana Naily y Ana Paula Machado
+                </p>
+                <p class="footer-meta">
+                    Informática Educativa · Licenciatura en Sistemas de Información · UNSE · 2025
+                </p>
+            </div>
+            <!-- Lado derecho (tags estilo moderno) -->
+            <div class="footer-right">
+                <span class="footer-tag">Proyecto académico</span>
+                <span class="footer-tag footer-role">Versión 1.0</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+

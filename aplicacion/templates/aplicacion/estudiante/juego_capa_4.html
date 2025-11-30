@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 4: Capa de Enlace</title>
+    
+    <!-- Favicon para Nivel 4 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
+    
+    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/niveles.css' %}">
+    <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
+</head>
+<body>
+    {% if user.is_authenticated %}
+    
+    <h1 class="title" style="margin-top: 30px; margin-bottom: 10px;">AVENTURA TCP/IP: CARRERA DE CAPAS 🏁</h1>
+
+    <div class="game-area">
+        
+        <div class="game-profile-meta">
+            Jugando como: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
+        </div>
+        
+        <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel 4: Capa de Enlace</h2>
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
+        
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <form id="quiz-form" onsubmit="return false;"> 
+            <div id="questions-container">
+                </div>
+            
+            <div id="score-results" style="display: none;">
+                <div class="score-display">Puntuación Final: <span id="final-score"></span>/10</div>
+                <div id="feedback-final" class="feedback"></div>
+                
+                <div id="review-container">
+                    <h4>Revisión Detallada (Aciertos y Errores)</h4>
+                    <div id="review-list"></div>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <button type="button" id="prev-btn" disabled>← Anterior</button>
+                <button type="button" id="check-btn">Verificar</button>
+                <button type="button" id="next-btn" disabled>Siguiente →</button>
+                <button type="button" id="finish-btn" style="display:none;">Finalizar</button>
+            </div>
+        </form>
+
+        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al Menú de Niveles</a>
+    </div>
+
+    <script>
+        window.QUIZ_CONFIG = {
+          saveResultUrl: "{% url 'save_quiz_result' %}",
+          imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
+          imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
+          imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
+        };
+
+        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Capa de Enlace) ---------
+        window.QUIZ_QUESTIONS = [
+            // TODO: Agregar preguntas aquí
+        ];
+      </script>
+      <script src="{% static 'aplicacion/estudiante/juego_capa_4.js' %}"></script>
+    {% else %}
+        <h1>Acceso Denegado</h1>
+        <p>Necesitas iniciar sesión para ver esta página.</p>
+    </div>
+    {% endif %}
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <!-- Lado izquierdo (marca + info) -->
+            <div class="footer-left">
+                <p class="footer-brand">Aventura TCP/IP</p>
+                <p class="footer-meta">
+                    Desarrollado por: Coria Luz Antonella, Proserpio Eliana Naily y Ana Paula Machado
+                </p>
+                <p class="footer-meta">
+                    Informática Educativa · Licenciatura en Sistemas de Información · UNSE · 2025
+                </p>
+            </div>
+            <!-- Lado derecho (tags estilo moderno) -->
+            <div class="footer-right">
+                <span class="footer-tag">Proyecto académico</span>
+                <span class="footer-tag footer-role">Versión 1.0</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
