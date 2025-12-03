@@ -1,43 +1,48 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nivel 2: Capa de Transporte</title>
-    
+
     <!-- Favicon para Nivel 2 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚚</text></svg>">
-    
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚚</text></svg>">
+    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/capa2.css' %}">
+
     <link rel="stylesheet" href="{% static 'aplicacion/estudiante/niveles.css' %}">
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
 </head>
+
 <body>
     {% if user.is_authenticated %}
-    
+
     <h1 class="title" style="margin-top: 30px; margin-bottom: 10px;">AVENTURA TCP/IP: CARRERA DE CAPAS 🏁</h1>
 
     <div class="game-area">
-        
+
         <div class="game-profile-meta">
             Jugando como: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
         </div>
-        
+
         <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel 2: Capa de Transporte</h2>
-        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
-        
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span
+                id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
+
         <div class="progress-bar-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
 
-        <form id="quiz-form" onsubmit="return false;"> 
+        <form id="quiz-form" onsubmit="return false;">
             <div id="questions-container">
-                </div>
-            
+            </div>
+
             <div id="score-results" style="display: none;">
                 <div class="score-display">Puntuación Final: <span id="final-score"></span>/10</div>
                 <div id="feedback-final" class="feedback"></div>
-                
+
                 <div id="review-container">
                     <h4>Revisión Detallada (Aciertos y Errores)</h4>
                     <div id="review-list"></div>
@@ -52,61 +57,277 @@
             </div>
         </form>
 
-        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al Menú de Niveles</a>
+        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al
+            Menú de Niveles</a>
     </div>
 
     <script>
         window.QUIZ_CONFIG = {
-          saveResultUrl: "{% url 'save_quiz_result' %}",
-          imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
-          imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
-          imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
+            saveResultUrl: "{% url 'save_quiz_result' %}",
+            imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
+            imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
+            imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
         };
 
-        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Capa de Transporte) ---------
+        // BANCO DE PREGUNTAS
         window.QUIZ_QUESTIONS = [
-            // P1: DRAG & DROP - Función a Protocolo
-            { id: 1, type: 'drag_drop', text: "P1. ¡Asocia la función de transporte con el Protocolo que la realiza!",
-        drag_items: [
-            { value: 'puerto_', label: 'Número de puerto' },
-            { value: 'control_f', label: 'Control de flujo' },
-            { value: 'segment_', label: 'Segmentación' }
-        ],
-        drop_zones: [
-            { function: 'puerto', label: 'Identificador que permite dirigir los datos a la aplicación correcta' },
-            { function: 'controlf', label: 'Mecanismo que evita que el emisor sature al receptor' },
-            { function: 'segment', label: 'Proceso de dividir mensajes en unidades más pequeñas para transmitir' }
-        ],
-        correct_map: { 'puerto': 'puerto_', 'controlf': 'control_f', 'segment': 'segment_' },
-        answer: {}, checked: false, score_value: 1
-    },
-            // P2: OPCIÓN MÚLTIPLE
-            { id: 2, type: 'mc', text: "P2. ¿Cuál es el protocolo de la Capa de Transporte que garantiza la entrega confiable de datos?", options: ['UDP', 'TCP', 'IP', 'HTTP'], correct_answer: 'TCP', explanation: "TCP (Transmission Control Protocol) es el protocolo que garantiza la entrega confiable de datos mediante confirmaciones y retransmisiones.", answer: null, checked: false, score_value: 1 },
-            // P3: VERDADERO/FALSO
-            { id: 3, type: 'tf', text: "P3. V/F: UDP es un protocolo orientado a conexión que garantiza la entrega ordenada de los datos.", options: ['Verdadero', 'Falso'], correct_answer: 'Falso', explanation: "Falso. UDP es un protocolo sin conexión (connectionless) que no garantiza la entrega ni el orden de los datos.", answer: null, checked: false, score_value: 1 },
-            // P4: OPCIÓN MÚLTIPLE
-            { id: 4, type: 'mc', text: "P4. ¿Cuál es la PDU (Unidad de Datos de Protocolo) principal que maneja la Capa de Transporte?", options: ['Paquetes', 'Tramas', 'Segmentos', 'Bits'], correct_answer: 'Segmentos', explanation: "La Capa de Transporte trabaja con 'Segmentos', que son las unidades de datos que encapsula esta capa.", answer: null, checked: false, score_value: 1 },
-            // P5: VERDADERO/FALSO
-            { id: 5, type: 'tf', text: "P5. V/F: El puerto 80 es el puerto estándar utilizado para el protocolo HTTP.", options: ['Verdadero', 'Falso'], correct_answer: 'Verdadero', explanation: "Verdadero. El puerto 80 es el puerto estándar para HTTP (Hypertext Transfer Protocol).", answer: null, checked: false, score_value: 1 },
-            // P6: OPCIÓN MÚLTIPLE
-            { id: 6, type: 'mc', text: "P6. ¿Qué protocolo de transporte es más adecuado para aplicaciones en tiempo real como videollamadas?", options: ['TCP', 'UDP', 'IP', 'FTP'], correct_answer: 'UDP', explanation: "UDP es más adecuado para aplicaciones en tiempo real porque tiene menor latencia al no tener que esperar confirmaciones.", answer: null, checked: false, score_value: 1 },
-            // P7: VERDADERO/FALSO
-            { id: 7, type: 'tf', text: "P7. V/F: TCP utiliza un mecanismo de ventana deslizante para controlar el flujo de datos.", options: ['Verdadero', 'Falso'], correct_answer: 'Verdadero', explanation: "Verdadero. TCP utiliza ventana deslizante (sliding window) para controlar el flujo y evitar saturar al receptor.", answer: null, checked: false, score_value: 1 },
-            // P8: OPCIÓN MÚLTIPLE
-            { id: 8, type: 'mc', text: "P8. ¿Cuál es el rango de puertos bien conocidos (well-known ports)?", options: ['0-1023', '1024-49151', '49152-65535', '0-65535'], correct_answer: '0-1023', explanation: "Los puertos bien conocidos van del 0 al 1023 y están reservados para servicios estándar.", answer: null, checked: false, score_value: 1 },
-            // P9: VERDADERO/FALSO
-            { id: 9, type: 'tf', text: "P9. V/F: El handshake de tres vías (three-way handshake) es utilizado por UDP para establecer conexiones.", options: ['Verdadero', 'Falso'], correct_answer: 'Falso', explanation: "Falso. El handshake de tres vías es utilizado por TCP, no por UDP. UDP no establece conexiones.", answer: null, checked: false, score_value: 1 },
-            // P10: OPCIÓN MÚLTIPLE
-            { id: 10, type: 'mc', text: "P10. ¿Qué función principal cumple la Capa de Transporte en el modelo TCP/IP?", options: ['Enrutamiento de paquetes', 'Comunicación extremo a extremo entre aplicaciones', 'Transmisión física de bits', 'Detección de errores en tramas'], correct_answer: 'Comunicación extremo a extremo entre aplicaciones', explanation: "La Capa de Transporte proporciona comunicación extremo a extremo (end-to-end) entre procesos de aplicación.", answer: null, checked: false, score_value: 1 }
+            {
+                id: 1,
+                type: 'drag_drop',
+                text: "Complete los dos campos faltantes de la cabecera del segmento UDP. (Arrastre a los recuadros sin texto)",
+                drag_items: [
+                    { value: 'puerto_dest', label: 'N° puerto destino' },
+                    { value: 'longitud', label: 'Longitud' },
+                    { value: 'numsec', label: 'N° de secuencia' },
+                    { value: 'ventanarec', label: 'Ventana de Recepción' }
+                ],
+
+                drop_zones: [
+                    { function: 'campo1', label: 'N° puerto origen', active: false },
+                    { function: 'campo2', label: '___________', active: true },
+                    { function: 'campo3', label: '___________', active: true },
+                    { function: 'campo4', label: 'Checksum', active: false },
+                    { function: 'campo5', label: 'Datos de Aplicación (MENSAJE)', active: false },
+                ],
+
+                correct_map: {
+                    'campo2': 'puerto_dest',
+                    'campo3': 'longitud'
+                },
+
+                answer: {},
+                checked: false,
+                score_value: 1,
+                //explanation: "Campos correctos: N° puerto destino y Longitud.",
+                correct_msg: "¡Excelente! Completaste correctamente los campos del segmento UDP.",
+                incorrect_msg: "Incorrecto. 🔎 Pista: revisá si los campos que elegiste pertenecen a UDP y si están en el orden correcto. Uno indica a dónde va el segmento y el otro está relacionado con su tamaño."
+
+            },
+
+            {
+                id: 2,
+                type: "mc",
+                text: "Seleccione las características que corresponden al protocolo TCP. (4 opciones)",
+
+                options: [
+                    { value: "bidireccional", label: "Permite la transferencia bidireccional de datos" },
+                    { value: "orientado_conexion", label: "Es orientado a la conexión" },
+                    { value: "control_flujo", label: "Implementa control de flujo" },
+                    { value: "no_conexion", label: "No requiere establecer una conexión previa" },
+                    { value: "sin_control", label: "No realiza control de flujo" },
+                    { value: "mss", label: "Utiliza el parámetro MSS para indicar el tamaño máximo del segmento" }
+
+                ],
+
+                // Respuestas correctas (pueden ser varias)
+                correct_answer: [
+                    "bidireccional",
+                    "mss",
+                    "orientado_conexion",
+                    "control_flujo"
+                ],
+
+                answer: [],       // El jugador marcará aquí
+                checked: false,
+                score_value: 1,
+
+                correct_msg: "¡Bien hecho! Todas las opciones seleccionadas corresponden a TCP.",
+                incorrect_msg: "Hay elecciones incorrectas. 🔎 Pista: 4 de las opciones son correctas. " +
+                    "Recordá que TCP requiere establecer una conexión y controlar el flujo, por eso incluye más campos que UDP."
+            },
+
+            {
+                id: 3,
+                type: "tf",
+                text: `Indique si es verdadero o falso el proceso de Establecimiento de Conexión mencionado en el video.<br><br>
+         <video width="350" controls>
+           <source src="/static/aplicacion/videos/establecimientoTCP.mp4" type="video/mp4">
+         </video>`,
+                correct_answer: "verdadero",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+
+                correct_msg: "¡Muy bien! El video muestra correctamente el establecimiento de tres fases en TCP.",
+                incorrect_msg: "Incorrecto. TCP establece la conexión mediante tres fases antes de transmitir datos, asegurando una comunicación confiable."
+            },
+
+            {
+                id: 4,
+                type: "tf",
+                text: `La capa de transporte provee la comunicación lógica entre las diversas aplicaciones de red.
+                El servicio brindado se implementa a través de los protocolos de la capa de transporte. <br>
+                En internet se cuenta unicamente con el protocolo TCP.`,
+                correct_answer: "falso",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+
+
+                correct_msg: "¡Muy bien! Además de TCP, en Internet existe el protocolo UDP.",
+                incorrect_msg: "Incorrecto. TCP no es el único protocolo; UDP también se utiliza para transmisión de datos sin conexión, como en streaming."
+
+            },
+
+            {
+                id: 5,
+                type: "mc",
+                text: "¿Cómo logra la capa de Transporte entregar los datos recibidos de la capa de Red al proceso correcto de la capa de Aplicación?",
+                options: [
+                    { value: "multiplexacion", label: "Usando multiplexación y desmultiplexación con números de puerto" },
+                    { value: "solo_ip", label: "Usando únicamente la dirección IP del host receptor" },
+                    { value: "tcp_udp", label: "Combinando TCP y UDP para determinar a qué proceso enviar los datos" },
+                    { value: "orden_paquetes", label: "Ordenando los paquetes en el mismo orden en que llegaron sin diferenciar procesos" }
+                ],
+                correct_answer: "multiplexacion",
+                checked: false,
+                score_value: 1,
+                correct_msg: "¡Correcto! La capa de Transporte usa multiplexación y desmultiplexación para entregar los datos al proceso adecuado según el número de puerto.",
+                incorrect_msg: "Incorrecto. 🔎 Pista: Observá cómo la capa de Transporte distingue entre distintos procesos en el mismo host, ¿qué mecanismo podría usar?"
+            },
+
+            {
+                id: 6,
+                type: "drag_drop",
+                text: "Arrastra cada campo de la cabecera TCP al tamaño de bits correspondiente",
+                drag_items: [
+                    { value: "ventana", label: "Ventana de recepción" },
+                    { value: "num_secuencia", label: "Número de secuencia" },
+                    { value: "longitud_cabecera", label: "Longitud de cabecera" }
+                ],
+                drop_zones: [
+                    { function: "ventana_bits16", label: "Campo de 16 bits", active: true },
+                    { function: "num_secuencia_bits32", label: "Campo de 32 bits", active: true },
+                    { function: "longitud_cabecera_bits4", label: "Campo de 4 bits", active: true }
+                ],
+                correct_map: {
+                    ventana_bits16: "ventana",
+                    num_secuencia_bits32: "num_secuencia",
+                    longitud_cabecera_bits4: "longitud_cabecera"
+                },
+
+                checked: false,
+                score_value: 1,
+                correct_msg: "¡Excelente! Cada campo está en el tamaño correcto.",
+                incorrect_msg: "Revisa bien los tamaños de los campos de la cabecera TCP."
+            },
+            // Pregunta id 7 – Capa de Transporte con imágenes
+            {
+                id: 7,
+                type: "drag_drop",
+                text: "Arrastrá el nombre correcto a la imagen correspondiente. Recordá: TCP es confiable y orientado a conexión, UDP es no confiable y sin conexión.",
+                drag_items: [
+                    { value: "TCP", label: "TCP" },
+                    { value: "UDP", label: "UDP" }
+                ],
+                drop_zones: [
+                    {
+                        function: "tcp_zone",
+                        //label: "Segmento TCP", 
+                        image: "/static/aplicacion/Imagenes/segmentoTCP.png",
+                        active: true
+                    },
+                    {
+                        function: "udp_zone",
+                        // label: "Segmento UDP", 
+                        image: "/static/aplicacion/Imagenes/segmentoUDP.png",
+                        active: true
+                    }
+                ],
+                correct_map: {
+                    tcp_zone: "TCP",
+                    udp_zone: "UDP"
+                },
+                checked: false,
+                score_value: 1,
+                correct_msg: "¡Correcto! Identificaste correctamente los segmentos TCP y UDP.",
+                incorrect_msg: "Revisá los conceptos: TCP es confiable y orientado a conexión, UDP es no confiable y sin conexión."
+            },
+            //
+            {
+                id: 8,
+                type: "mc", // multiple-choice
+                text: "Marque los servicios que NO se ofrecen en la capa de transporte de Internet. (2 opciones)",
+                options: [
+                    { value: "reliable_delivery", label: "Entrega confiable y en orden (TCP)" },
+                    { value: "congestion_control", label: "Control de congestión" },
+                    { value: "flow_control", label: "Control de flujo" },
+                    { value: "connection_setup", label: "Establecimiento de conexión" },
+                    { value: "guaranteed_delay", label: "Garantías de retardo" },
+                    { value: "guaranteed_bandwidth", label: "Garantías de ancho de banda" }
+                ],
+                correct_answer: ["guaranteed_delay", "guaranteed_bandwidth"], // las que no se ofrecen
+                checked: false,
+                score_value: 1,
+                correct_msg: "¡Correcto! La capa de transporte no garantiza retardo ni ancho de banda.",
+                incorrect_msg: "Revisá los conceptos: TCP y UDP no pueden garantizar retardo ni ancho de banda."
+            }, {
+                id: 9,
+                type: "mc", // multiple-choice simple
+                text: "¿Qué representa esta imagen?",
+                image: "/static/aplicacion/Imagenes/cierredeconexion.png", // ruta de la imagen
+                options: [
+                    { value: "connection_close", label: "Cierre de una conexión" },
+                    { value: "connection_setup", label: "Establecimiento de conexión" },
+                    { value: "retransmission", label: "Retransmisión" }
+                ],
+                correct_answer: "connection_close",
+                checked: false,
+                score_value: 1,
+                correct_msg: "¡Correcto! La imagen representa el cierre de una conexión TCP.",
+                incorrect_msg: "Incorrecto. 🔎 Pista: ambos extremos hacen un acuerdo para terminar su sesión. "
+            },
+
+            {
+                id: 10,
+                type: "drag_drop",
+                text: "Arrastrá el nombre correcto a cada concepto descrito abajo.",
+                drag_items: [
+                    { value: "seq", label: "Número de secuencia" },
+                    { value: "ack", label: "Reconocimiento (ACK)" },
+                    { value: "checksum", label: "Suma de comprobación (checksum)" }
+                ],
+                drop_zones: [
+                    {
+                        function: "seq_zone",
+                        label: "Se emplea para numerar secuencialmente los paquetes de datos que fluyen del emisor hacia el receptor.",
+                        active: true
+                    },
+                    {
+                        function: "ack_zone",
+                        label: "El receptor utiliza estos paquetes para indicar al emisor que un paquete o un conjunto de paquetes ha sido recibido correctamente. ",
+                        active: true
+                    },
+                    {
+                        function: "checksum_zone",
+                        label: " Utilizada para detectar errores de bit en un paquete transmitido.",
+                        active: true
+                    }
+                ],
+                correct_map: {
+                    seq_zone: "seq",
+                    ack_zone: "ack",
+                    checksum_zone: "checksum"
+                },
+                checked: false,
+                score_value: 1,
+                correct_msg: "¡Correcto! Identificaste correctamente los tres conceptos.",
+                incorrect_msg: "Revisá los conceptos de TCP: cada uno tiene un rol distinto en la transmisión de datos."
+            }
+
         ];
     </script>
-      <script src="{% static 'aplicacion/estudiante/juego_capa_2.js' %}"></script>
+
+
+    <script src="{% static 'aplicacion/estudiante/juego_capa_2.js' %}"></script>
     {% else %}
-        <h1>Acceso Denegado</h1>
-        <p>Necesitas iniciar sesión para ver esta página.</p>
+    <h1>Acceso Denegado</h1>
+    <p>Necesitas iniciar sesión para ver esta página.</p>
     </div>
     {% endif %}
-    
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
@@ -128,4 +349,5 @@
         </div>
     </footer>
 </body>
+
 </html>

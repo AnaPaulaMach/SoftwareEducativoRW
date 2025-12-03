@@ -1,0 +1,86 @@
+.drop-container {
+    display: flex;
+    flex-direction: column; /* Cada fila una debajo de otra */
+}
+
+.drop-row {
+    display: flex;
+    flex-direction: row; /* Elementos en fila */
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.dropzone {
+    min-width: 150px; /* opcional */
+    padding: 8px;
+}
+
+/*Pregunta 7*/
+/* Contenedor de los ítems para arrastrar */
+/* Contenedor general de la pregunta 7 */
+.drag-drop7-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Contenedor de imágenes + dropboxes */
+.images-drop-container {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+}
+
+/* Cada columna de imagen + dropzone */
+.drop-column7 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Imagen */
+.drop-image7 img {
+    width: 150px;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Dropzone debajo de la imagen */
+.drop-column7 .dropzone {
+    width: 150px;
+    height: 50px;
+    border: 2px dashed #0077B6;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+/* Contenedor de ítems arrastrables */
+.drag-container7 {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Estilo de los ítems arrastrables */
+.drag-container7 .draggable {
+    padding: 8px 12px;
+    border: 2px solid #0077B6;
+    border-radius: 6px;
+    background-color: #e0f0ff;
+    cursor: grab;
+    user-select: none;
+    font-weight: bold;
+}
+.drag-container7 .draggable:active {
+    cursor: grabbing;
+}
+
