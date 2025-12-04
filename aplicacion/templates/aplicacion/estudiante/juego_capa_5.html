@@ -10,6 +10,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     
     <link rel="stylesheet" href="{% static 'aplicacion/estudiante/niveles.css' %}">
+    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/capa5.css' %}">
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
 </head>
 <body>
@@ -63,12 +64,267 @@
           imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
         };
 
-        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Capa Física) ---------
+        // --------- BANCO DE PREGUNTAS (Capa Física - se mostrarán 10 al azar) ---------
         window.QUIZ_QUESTIONS = [
-            // TODO: Agregar preguntas aquí
+            {
+                id: 1,
+                type: "tf",
+                text: "Verdadero o Falso: El medio físico puede tener muchas formas, y un mismo bit puede atravesar varios tipos de medio físico diferentes entre el origen y el destino.",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+                correct_answer: "verdadero",
+                hint: "Pensá en cómo viaja Internet desde tu casa hasta tu proveedor: puede empezar en WiFi y luego pasar por cobre o fibra.",
+                explanation: "A lo largo del recorrido, la señal puede pasar por WiFi, cable de cobre, fibra óptica, etc. El medio físico no es único en toda la ruta.",
+                correct_msg: "¡Correcto! El mismo bit puede ir cambiando de 'vehículo' físico en su recorrido.",
+                incorrect_msg: "No es correcto. El medio físico no es único en todo el trayecto."
+            },
+            {
+                id: 2,
+                type: "mc",
+                text: "¿Cuál de los siguientes grupos corresponde estrictamente a medios guiados?",
+                options: [
+                    { value: "a", label: "Radio terrestre, Satélite, Microondas" },
+                    { value: "b", label: "Cable de cobre de par trenzado, Cable coaxial, Fibra óptica" },
+                    { value: "c", label: "Bluetooth, WiFi, Ethernet" },
+                    { value: "d", label: "Ondas de radio, Infrarrojo, Par trenzado" }
+                ],
+                correct_answer: "b",
+                hint: "Los medios guiados confinan la señal en un conductor físico sólido.",
+                explanation: "Los medios guiados usan un soporte físico (cobre, coaxial, fibra) que guía la señal.",
+                correct_msg: "¡Bien! Par trenzado, coaxial y fibra son medios claramente guiados.",
+                incorrect_msg: "Incorrecto. Recordá que los medios guiados necesitan un cable o guía física."
+            },
+            {
+                id: 3,
+                type: "mc",
+                text: "Relacionando categorías de UTP y velocidad típica: ¿cuál es la afirmación correcta?",
+                options: [
+                    { value: "a1_b2", label: "Cat5: 10 Mbps a 1 Gbps, Cat6: hasta 10 Gbps" },
+                    { value: "a2_b1", label: "Cat5: hasta 10 Gbps, Cat6: 10 Mbps a 1 Gbps" },
+                    { value: "ambas_1gbps", label: "Cat5 y Cat6 solo soportan 1 Gbps máximo" }
+                ],
+                correct_answer: "a1_b2",
+                hint: "Las categorías más altas soportan mayores frecuencias y velocidades.",
+                explanation: "Cat5 suele usarse hasta 1 Gbps, mientras que Cat6 está diseñada para llegar hasta 10 Gbps en ciertos escenarios.",
+                correct_msg: "¡Exacto! Cat5: hasta 1 Gbps, Cat6: hasta 10 Gbps.",
+                incorrect_msg: "No es correcto. Pensá en que Cat6 es una evolución de Cat5."
+            },
+            {
+                id: 4,
+                type: "tf",
+                text: "Verdadero o Falso: En el cable de par trenzado, los hilos se trenzan principalmente para que el cable sea más resistente físicamente al estirarlo.",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+                correct_answer: "falso",
+                hint: "Pensá en interferencias eléctricas y diafonía entre pares de cables.",
+                explanation: "Los hilos se trenzan para reducir interferencias y diafonía, no por resistencia mecánica.",
+                correct_msg: "¡Correcto! El objetivo principal es electromagnético, no mecánico.",
+                incorrect_msg: "Incorrecto. El trenzado sirve para disminuir interferencias, no para estirar más el cable."
+            },
+            {
+                id: 5,
+                type: "sequence",
+                text: "Ordená los medios físicos de menor a mayor inmunidad a interferencias electromagnéticas (EMI).",
+                sequence_items: [
+                    { key: "utp", label: "Par trenzado no apantallado (UTP)" },
+                    { key: "coaxial", label: "Cable coaxial (apantallado)" },
+                    { key: "fibra", label: "Fibra óptica" }
+                ],
+                correct_answer: ["utp", "coaxial", "fibra"],
+                hint: "Pensá en cuál está más expuesto a interferencias y cuál casi no le afectan los campos eléctricos.",
+                explanation: "UTP no tiene pantalla; el coaxial sí, y la fibra usa luz, prácticamente inmune a EMI.",
+                correct_msg: "¡Muy bien! UTP < Coaxial < Fibra en inmunidad a EMI.",
+                incorrect_msg: "El orden no es correcto. Revisá qué medio ofrece más protección frente a interferencias."
+            },
+            {
+                id: 6,
+                type: "mc",
+                text: "En fibra óptica, ¿qué representa cada pulso de luz que viaja por el núcleo?",
+                options: [
+                    { value: "paquete", label: "Un paquete" },
+                    { value: "trama", label: "Una trama" },
+                    { value: "bit", label: "Un bit" },
+                    { value: "byte", label: "Un byte" }
+                ],
+                correct_answer: "bit",
+                hint: "La Capa Física trabaja con la unidad más básica de información digital.",
+                explanation: "La capa física transmite bits (1 o 0), no estructuras lógicas como tramas o paquetes.",
+                correct_msg: "¡Correcto! Cada pulso de luz representa un bit.",
+                incorrect_msg: "Incorrecto. La Capa Física no ve estructuras complejas, solo bits."
+            },
+            {
+                id: 7,
+                type: "tf",
+                text: "Verdadero o Falso: En medios no guiados, como WiFi o satélite, las ondas se propagan por la atmósfera o el espacio exterior.",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+                correct_answer: "verdadero",
+                hint: "No hay un cable físico que contenga la señal, esta viaja libremente.",
+                explanation: "En medios no guiados la señal se propaga por el aire o el vacío, sin un conductor físico.",
+                correct_msg: "¡Bien! Describiste correctamente los medios no guiados.",
+                incorrect_msg: "No es correcto. Los medios no guiados no usan conductores físicos."
+            },
+            {
+                id: 8,
+                type: "mc",
+                situacion_hipotetica: true,
+                text: "Un ingeniero necesita atravesar paredes y dar conectividad a usuarios móviles en distancias cortas. ¿Qué medio físico está utilizando?",
+                options: [
+                    { value: "fibra", label: "Fibra monomodo" },
+                    { value: "radio", label: "Canales de radio terrestres (ej. WiFi)" },
+                    { value: "microondas", label: "Enlace de microondas punto a punto" }
+                ],
+                correct_answer: "radio",
+                hint: "Pensá en tecnologías como WiFi dentro de un edificio.",
+                explanation: "La radio terrestre (WiFi) permite movilidad y puede atravesar ciertas paredes en distancias cortas.",
+                correct_msg: "¡Correcto! Ese escenario describe canales de radio terrestres.",
+                incorrect_msg: "Incorrecto. Fibra y microondas punto a punto no dan esa movilidad local."
+            },
+            {
+                id: 9,
+                type: "mc",
+                text: "¿Cuál es la función principal de un Hub (concentrador) en una red Ethernet en estrella, vista desde la Capa Física?",
+                options: [
+                    { value: "almacenar_tramas", label: "Almacenar y reenviar tramas según la MAC" },
+                    { value: "enrutar_ip", label: "Enrutar paquetes según dirección IP" },
+                    { value: "regenerar_bit", label: "Regenerar el bit y transmitirlo a todas las interfaces" },
+                    { value: "csma_cd", label: "Aplicar CSMA/CD para evitar colisiones" }
+                ],
+                correct_answer: "regenerar_bit",
+                hint: "Es un dispositivo muy simple, casi como un repetidor multi-puerto.",
+                explanation: "El Hub trabaja en Capa 1, solo regenera y replica las señales a todos los puertos.",
+                correct_msg: "¡Exacto! Un Hub simplemente regenera la señal y la copia a todos los puertos.",
+                incorrect_msg: "Incorrecto. El Hub no toma decisiones con direcciones MAC o IP."
+            },
+            {
+                id: 10,
+                type: "tf",
+                text: "Verdadero o Falso: Un repetidor es un dispositivo de la Capa Física que recibe una señal, la regenera y permite extender la longitud del enlace.",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+                correct_answer: "verdadero",
+                hint: "Su función es combatir la atenuación en enlaces largos.",
+                explanation: "Al regenerar la señal, el repetidor permite que la misma información viaje distancias mayores.",
+                correct_msg: "¡Correcto! Esa es la función típica de un repetidor de Capa Física.",
+                incorrect_msg: "Incorrecto. Justamente el objetivo del repetidor es regenerar la señal para ampliar el alcance."
+            },
+            {
+                id: 11,
+                type: "mc",
+                text: "Relacionando modos de transmisión: ¿cuál de estas combinaciones es correcta?",
+                options: [
+                    { value: "simplex_tv", label: "Simplex: un solo sentido permanente (ej. TV tradicional)" },
+                    { value: "half_duplex_llamada", label: "Half-Duplex: ambos pueden hablar a la vez (ej. llamada telefónica)" },
+                    { value: "full_duplex_walkie", label: "Full-Duplex: solo uno habla a la vez (ej. walkie-talkie)" }
+                ],
+                correct_answer: "simplex_tv",
+                hint: "Pensá: en la TV tradicional el canal baja hacia vos, pero vos no enviás nada de vuelta.",
+                explanation: "Simplex es un solo sentido; Half-Duplex alterna envío/recepción; Full-Duplex permite ambos a la vez.",
+                correct_msg: "¡Bien! Simplex es un solo sentido, como la televisión tradicional.",
+                incorrect_msg: "No es correcto. Revisá qué ejemplo encaja con comunicación en un solo sentido."
+            },
+            {
+                id: 12,
+                type: "tf",
+                text: "Verdadero o Falso: La unidad básica de información que maneja la Capa Física es el bit.",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+                correct_answer: "verdadero",
+                hint: "Las capas superiores hablan de tramas, datagramas, etc. La física trabaja más abajo.",
+                explanation: "La Capa Física transmite bits (1 y 0), que luego las capas superiores agrupan en unidades mayores.",
+                correct_msg: "¡Correcto! En la Capa Física todo se reduce a bits.",
+                incorrect_msg: "Incorrecto. Tramas y paquetes aparecen en capas superiores."
+            },
+            {
+                id: 13,
+                type: "mc",
+                text: "Para conectar directamente dos PCs entre sí (PC–PC) en equipos antiguos sin auto-MDIX, ¿qué tipo de cable UTP se utiliza?",
+                options: [
+                    { value: "directo", label: "Cable directo (Straight-through)" },
+                    { value: "consola", label: "Cable de consola (Rollover)" },
+                    { value: "cruzado", label: "Cable cruzado (Crossover)" }
+                ],
+                correct_answer: "cruzado",
+                hint: "Cuando conectás dispositivos del mismo tipo, suele requerirse cruzar las líneas TX/RX.",
+                explanation: "Sin auto-MDIX, los dispositivos iguales necesitan un cable cruzado para alinear transmisión y recepción.",
+                correct_msg: "¡Exacto! PC–PC y Switch–Switch antiguos usan cable cruzado.",
+                incorrect_msg: "Incorrecto. El cable cruzado es el que intercambia los pares de transmisión y recepción."
+            },
+            {
+    id: 14,
+    type: "sequence",
+    text: "Ordená los colores de los primeros 3 pines de la norma T568A (del pin 1 al 3).",
+    sequence_items: [
+        { key: "blanco_verde", label: "Blanco/Verde", css_class: "pin pin-bv" },
+        { key: "verde",         label: "Verde",        css_class: "pin pin-v" },
+        { key: "blanco_naranja",label: "Blanco/Naranja", css_class: "pin pin-bn" }
+    ],
+    correct_answer: ["blanco_verde", "verde", "blanco_naranja"],
+    hint: "La norma A comienza con la familia del verde, y los pines impares suelen usar Blanco/Color.",
+    explanation: "En T568A el orden inicial es: 1) Blanco/Verde, 2) Verde, 3) Blanco/Naranja.",
+    correct_msg: "¡Correcto! Ese es el orden de los primeros tres pines en T568A.",
+    incorrect_msg: "El orden no coincide con la norma T568A. Repasá el patrón de colores."
+},
+            {
+                id: 15,
+                type: "mc",
+                situacion_hipotetica: true,
+                text: "Si conectás todos los nodos de una oficina mediante cables a un dispositivo central (Hub o Switch), ¿qué topología física estás usando?",
+                options: [
+                    { value: "bus", label: "Bus" },
+                    { value: "anillo", label: "Anillo" },
+                    { value: "estrella", label: "Estrella" },
+                    { value: "malla", label: "Malla" }
+                ],
+                correct_answer: "estrella",
+                hint: "Imaginá los cables como rayos que salen de un punto central.",
+                explanation: "La forma 'en estrella' se da cuando todos los enlaces salen de un nodo central hacia cada dispositivo.",
+                correct_msg: "¡Bien! Eso describe una topología física en estrella.",
+                incorrect_msg: "Incorrecto. Visualizá un nodo central y cables hacia cada equipo."
+            },
+            {
+                id: 16,
+                type: "mc",
+                text: "Sobre multiplexación: ¿cuál de estas descripciones corresponde a FDM (Frecuency Division Multiplexing)?",
+                options: [
+                    { value: "fdm", label: "Cada conexión tiene una banda de frecuencia dedicada dentro del espectro." },
+                    { value: "tdm", label: "Cada conexión usa todo el canal, pero solo durante breves intervalos de tiempo." }
+                ],
+                correct_answer: "fdm",
+                hint: "Pensá en varias emisoras de radio transmitiendo a la vez en frecuencias distintas.",
+                explanation: "FDM reparte el espectro en bandas; cada usuario ocupa una frecuencia fija. TDM reparte el tiempo.",
+                correct_msg: "¡Correcto! Esa descripción corresponde a FDM.",
+                incorrect_msg: "Incorrecto. Lo que describís suena más a TDM (reparto en el tiempo)."
+            },
+            {
+                id: 17,
+                type: "mc",
+                text: "¿Cómo se llama el fenómeno por el cual la intensidad de la señal disminuye al propagarse por un medio (cable o aire)?",
+                options: [
+                    { value: "interferencia", label: "Interferencia" },
+                    { value: "atenuacion", label: "Atenuación" },
+                    { value: "latencia", label: "Latencia" },
+                    { value: "colision", label: "Colisión" }
+                ],
+                correct_answer: "atenuacion",
+                hint: "No se trata de ruido externo ni de tiempo de espera, sino de pérdida de fuerza de la señal.",
+                explanation: "La atenuación es la pérdida de potencia de una señal al viajar a través de un medio.",
+                correct_msg: "¡Correcto! Esa disminución de intensidad se llama atenuación.",
+                incorrect_msg: "Incorrecto. No hablamos de ruido agregado ni de retardo, sino de pérdida de potencia de la señal original."
+            }
         ];
-      </script>
-      <script src="{% static 'aplicacion/estudiante/juego_capa_5.js' %}"></script>
+    </script>
+    <script src="{% static 'aplicacion/estudiante/juego_capa_5.js' %}"></script>
     {% else %}
         <h1>Acceso Denegado</h1>
         <p>Necesitas iniciar sesión para ver esta página.</p>
