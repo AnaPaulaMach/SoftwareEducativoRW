@@ -55,31 +55,48 @@ function generateHint(q) {
   }
 }
 
-// --- chequeo de respuesta según tipo ---
+// --- chequeo de respuesta según tipo --- //ESTE CAMBIE PARA QUE DE CORRECTO
 function checkCurrentAnswer(q) {
+  // --- PARA PREGUNTAS DRAG & DROP ---
   if (q.type === "drag_drop") {
-    const totalCorrectItems = Object.entries(q.correct_map).reduce(
-      (count, [zoneFunc, protocol]) => {
-        const given = q.answer && q.answer[zoneFunc];
-        return count + (normalizeVal(given) === normalizeVal(protocol) ? 1 : 0);
-      },
-      0
-    );
-    return totalCorrectItems === (q.drag_items || []).length;
-  } else if (q.type === "fill") {
-    return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
-  } else if (q.type === "sequence") {
-    if (!Array.isArray(q.answer)) return false;
-    if (q.answer.length !== q.correct_sequence.length) return false;
-    for (let i = 0; i < q.correct_sequence.length; i++) {
-      if (q.answer[i] !== q.correct_sequence[i]) return false;
+    // q.answer debería ser un objeto del tipo { campo2: 'puerto_dest', campo3: 'longitud' }
+    const userMap = q.answer || {};
+    const correctMap = q.correct_map || {};
+
+    // Recorremos todas las claves del mapa correcto
+    for (const zone in correctMap) {
+      if (userMap[zone] !== correctMap[zone]) {
+        return false; // Si un solo campo está mal → incorrecto
+      }
     }
-    return true;
-  } else {
-    // mc / tf
-    return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
+
+    return true; // Todo coincide → respuesta correcta
   }
+
+  // --- PARA MC, TF, FILL, SEQUENCE ---
+  if (q.type === "fill") {
+// MULTIPLE CHOICE con múltiples respuestas
+if (q.type === "mc" && Array.isArray(q.correct_answer)) {
+    if (!Array.isArray(q.answer)) return false;
+
+    const a = q.answer.sort();
+    const b = q.correct_answer.sort();
+
+    return JSON.stringify(a) === JSON.stringify(b);
 }
+
+// MC simple / true-false
+return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
+  }
+
+  if (q.type === "sequence") {
+    return JSON.stringify(q.answer) === JSON.stringify(q.correct_answer);
+  }
+
+  // MC / TF
+  return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
+}
+
 
 function updateNavControls() {
   const q = questions[currentQuestionIndex];
@@ -121,15 +138,20 @@ function renderQuestion(index) {
   let html = `<div class="question-module active" data-qid="${q.id}">`;
   html += `<h4 style="font-size: 1.3em;">${q.text}</h4>`;
 
-  if (q.type === "drag_drop") {
-    html += renderDragDrop(q);
-  } else if (q.type === "fill") {
+if (q.type === "drag_drop") {
+    if (q.id === 7) {
+        html += renderDragDrop7(q);
+    } else {
+        html += renderDragDrop(q);
+    }
+} else if (q.type === "fill") {
     html += renderFill(q);
-  } else if (q.type === "sequence") {
+} else if (q.type === "sequence") {
     html += renderSequence(q);
-  } else {
+} else {
     html += renderOptions(q);
-  }
+}
+
 
   html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none;"></div>`;
   html += `</div>`;
@@ -164,20 +186,69 @@ function renderQuestion(index) {
   updateNavControls();
 }
 
-// ---- renderizadores por tipo ----
 function renderDragDrop(q) {
-  let dragItemsHtml = "";
-  q.drag_items.forEach(item => {
-    dragItemsHtml += `<div class="draggable" draggable="true" data-protocol="${item.value}">${item.label}</div>`;
-  });
-  let ddHtml = `<div class="drag-container" id="drag-1">${dragItemsHtml}</div>`;
-  ddHtml += `<div class="drop-container" id="drop-1">`;
-  q.drop_zones.forEach(zone => {
-    ddHtml += `<div class="dropzone" data-function="${zone.function}">${zone.label}</div>`;
-  });
-  ddHtml += `</div>`;
-  return ddHtml;
+ 
+
+    let dragItemsHtml = q.drag_items.map(item => 
+        `<div class="draggable" draggable="true" data-protocol="${item.value}">${item.label}</div>`
+    ).join("");
+
+    let ddHtml = `<div class="drag-container">${dragItemsHtml}</div>`;
+    ddHtml += `<div class="drop-container">`;
+
+    for (let i = 0; i < q.drop_zones.length; i += 2) {
+        ddHtml += `<div class="drop-row">`;
+
+        for (let j = 0; j < 2; j++) {
+            const dz = q.drop_zones[i + j];
+            if (!dz) continue;
+
+            if (dz.active) {
+                ddHtml += `<div class="dropzone drop-transporte drop-active" data-function="${dz.function}">${dz.label}</div>`;
+            } else {
+                ddHtml += `<div class="dropzone drop-transporte no-drop">${dz.label}</div>`;
+            }
+        }
+
+        ddHtml += `</div>`;
+    }
+
+    ddHtml += `</div>`;
+    return ddHtml;
 }
+
+function renderDragDrop7(q) {
+    // Contenedor de items arrastrables
+    let dragItemsHtml = q.drag_items.map(item => 
+        `<div class="draggable" draggable="true" data-protocol="${item.value}">${item.label}</div>`
+    ).join("");
+
+    let ddHtml = `<div class="drag-drop7-wrapper">`;
+
+    // Contenedor de imágenes y dropzones
+    ddHtml += `<div class="images-drop-container">`;
+    q.drop_zones.forEach(dz => {
+        ddHtml += `
+            <div class="drop-column7">
+                <div class="drop-image7">
+                    <img src="${dz.image}" alt="${dz.label} ">
+                </div>
+                <div class="dropzone drop-transporte ${dz.active ? "drop-active" : "no-drop"}"
+                     data-function="${dz.function}"></div>
+            </div>
+        `;
+    });
+    ddHtml += `</div>`; // cierre images-drop-container
+
+    // Contenedor de opciones arrastrables
+    ddHtml += `<div class="drag-container7">${dragItemsHtml}</div>`;
+
+    ddHtml += `</div>`; // cierre drag-drop7-wrapper
+    return ddHtml;
+}
+
+
+
 
 function renderFill(q) {
   const val = q.answer || "";
@@ -210,18 +281,41 @@ function renderSequence(q) {
 
 function renderOptions(q) {
   const options = q.options;
-  let optHtml = `<div class="options-group" data-qtype="${q.type}" data-correct="${q.correct_answer}">`;
+
+  let optHtml = `<div class="options-group" data-qtype="${q.type}">`;
+
+  // Si la pregunta tiene imagen, mostrarla arriba de las opciones
+  if (q.image) {
+    optHtml += `
+      <div class="question-image" style="text-align:center; margin-bottom:10px;">
+        <img src="${q.image}" alt="Imagen de la pregunta" style="max-width:300px; height:auto;">
+      </div>
+    `;
+  }
+
   options.forEach(opt => {
-    const isSelected =
-      normalizeVal(q.answer) === normalizeVal(opt) ? "selected" : "";
-    optHtml += `<div class="option-btn ${isSelected}" data-value="${opt}"
-                    onclick="selectOption(this, ${q.id})">${opt}</div>`;
+    // si es multiple-choice con múltiples respuestas correctas
+    const selected = Array.isArray(q.answer) && q.answer.includes(opt.value);
+
+    optHtml += `
+      <div class="option-btn ${selected ? "selected" : ""}"
+           data-value="${opt.value}"
+           onclick="selectOption(this, ${q.id})">
+           ${opt.label}
+      </div>`;
   });
-  optHtml += `<div class="explanation" style="display:none; color:#0077B6; font-weight:500; font-size:0.9em; margin-top:10px;">${q.explanation ||
-    ""}</div>`;
+
+  optHtml += `
+    <div class="explanation" style="display:none; color:#0077B6; font-weight:500; 
+            font-size:0.9em; margin-top:10px;">
+      ${q.explanation || ""}
+    </div>
+  `;
   optHtml += `</div>`;
+
   return optHtml;
 }
+
 
 // ---- aplica estado visual al renderizar ----
 function applyQuestionState(q) {
@@ -267,7 +361,7 @@ function applyQuestionState(q) {
             const labelText = correctLabel ? correctLabel.label : correctProtocol;
             const correctEl = document.createElement("div");
             correctEl.className = "correct-answer";
-            correctEl.textContent = "Correcto: " + labelText;
+            //correctEl.textContent = "Correcto: " + labelText;
             zone.appendChild(correctEl);
           }
         }
@@ -315,9 +409,8 @@ function applyQuestionState(q) {
     });
   }
 
-  if (isChecked) {
+if (isChecked) {
     const isCorrect = checkCurrentAnswer(q);
-    let explanation = q.explanation || "";
     if (q.type === "drag_drop") {
       explanation = isCorrect
         ? "¡Excelente! Todos los elementos están en su lugar."
@@ -327,9 +420,13 @@ function applyQuestionState(q) {
     feedbackBox.className =
       "feedback-message " + (isCorrect ? "correct" : "incorrect");
     feedbackBox.innerHTML =
-      (isCorrect ? "✅ ¡Respuesta correcta!" : "❌ Incorrecto.") +
-      (explanation ? "<br><em>Explicación: " + explanation + "</em>" : "");
-  }
+      (isCorrect 
+          ? (q.correct_msg || "✅ ¡Respuesta correcta!") 
+          : (q.incorrect_msg || "❌ Incorrecto.")
+      );
+}
+
+
 }
 
 // ---- DRAG & DROP (mapas) ----
@@ -345,7 +442,7 @@ function setupDragDropListeners() {
     item.addEventListener("dragend", e => (e.target.style.opacity = 1));
   });
 
-  document.querySelectorAll(".dropzone").forEach(zone => {
+ document.querySelectorAll(".dropzone.drop-active").forEach(zone => {
     zone.addEventListener("dragover", e => {
       e.preventDefault();
       zone.classList.add("hover");
@@ -472,45 +569,54 @@ function restoreSequenceState(q) {
 
 // ---- selección para MC / TF ----
 window.selectOption = function(btn, qid) {
-  const q = questions.find(qq => qq.id === qid);
+  const q = questions.find(x => x.id === qid);
   if (!q || q.checked) return;
-  const container = btn.closest(".options-group");
-  container
-    .querySelectorAll(".option-btn")
-    .forEach(b => b.classList.remove("selected"));
-  btn.classList.add("selected");
-  q.answer = btn.dataset.value ? btn.dataset.value.trim() : btn.dataset.value;
-  checkBtn.disabled = false;
+
+  if (!Array.isArray(q.answer)) q.answer = [];
+
+  const val = btn.dataset.value;
+
+  if (q.answer.includes(val)) {
+    // si ya estaba → la desmarca
+    q.answer = q.answer.filter(v => v !== val);
+    btn.classList.remove("selected");
+  } else {
+    // si no estaba → la agrega
+    q.answer.push(val);
+    btn.classList.add("selected");
+  }
+
+  // habilitar botón verificar si hay algo marcado
+  checkBtn.disabled = q.answer.length === 0;
 };
+
 
 // ---- botón Verificar ----
 checkBtn.addEventListener("click", () => {
   const q = questions[currentQuestionIndex];
 
+  // Drag & Drop: verificamos directamente lo que haya colocado el usuario
   if (q.type === "drag_drop") {
-    if (
-      !q.answer ||
-      Object.keys(q.answer).length < (q.drag_items || []).length
-    ) {
-      if (
-        !confirm(
-          "No has colocado todos los ítems. ¿Deseas verificar con el estado actual?"
-        )
-      ) {
-        return;
-      }
+    if (!q.answer) {
+      q.answer = {}; // inicializa si no hay nada
     }
-  } else if (q.type === "fill") {
+  } 
+  // Fill
+  else if (q.type === "fill") {
     if (!q.answer || !q.answer.trim()) {
       alert("Completa el campo antes de verificar.");
       return;
     }
-  } else if (q.type === "sequence") {
+  } 
+  // Sequence
+  else if (q.type === "sequence") {
     if (!Array.isArray(q.answer) || !q.answer.length) {
       alert("Ordena al menos un elemento antes de verificar.");
       return;
     }
-  } else if (!q.answer) {
+  } 
+  // MC / TF
+  else if (!q.answer) {
     alert("Selecciona una opción para verificar.");
     return;
   }
@@ -519,8 +625,10 @@ checkBtn.addEventListener("click", () => {
     if (checkCurrentAnswer(q)) finalScore++;
     q.checked = true;
   }
+
   renderQuestion(currentQuestionIndex);
 });
+
 
 // ---- navegación ----
 nextBtn.addEventListener("click", () => {

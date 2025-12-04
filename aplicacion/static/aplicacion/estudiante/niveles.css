@@ -387,6 +387,7 @@
     font-size: 0.9em;
     color: #555;
 }
+
 /* ---- HINT CARD ---- */
 .hint-card {
     position: fixed;
@@ -553,3 +554,4 @@
 .btn-show-hint:active {
     transform: translateY(0);
 }
+
