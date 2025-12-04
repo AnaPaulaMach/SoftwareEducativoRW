@@ -1,227 +1,58 @@
 // juego_capa_1.js
-// Nivel 1 – Capa de Aplicación. 10 preguntas fijas sobre principios de aplicaciones de red.
+// Nivel 1 – Capa de Aplicación. Lógica del quiz interactivo.
 
-// ---- Config global que viene del template ----
+// ---- Configuración global (leída del HTML) ----
 const CFG = window.QUIZ_CONFIG || {};
 const IMG_FIBRA = CFG.imgFibra || "";
 const IMG_CAT6 = CFG.imgCat6 || "";
 const IMG_CAT35 = CFG.imgCat35 || "";
 const SAVE_RESULT_URL = CFG.saveResultUrl || "#";
 
-// --------- Las preguntas ahora vienen del HTML (window.QUIZ_QUESTIONS) ---------
-// Se eliminó questionPool - las preguntas están en juego_capa_1.html
-const questionPool = [ // DEPRECATED - usar window.QUIZ_QUESTIONS
-    // P1 – Dónde corre realmente una aplicación de red
-    {
-        id: 1,
-        type: 'mc',
-        text: "P1. Estás desarrollando una nueva aplicación de chat tipo WhatsApp. ¿Cuál de estas afirmaciones describe mejor, según la teoría de \"Principios de las aplicaciones de red\", dónde vive la lógica de la aplicación?",
-        options: [
-            "Debe instalarse parte del código de la aplicación dentro de los routers del núcleo de la red.",
-            "Los procesos de la aplicación se ejecutan en sistemas terminales y se comunican a través de la red.",
-            "La aplicación se implementa solo en la capa de enlace de datos.",
-            "Es obligatorio programar los switches para que entiendan los mensajes de la aplicación."
-        ],
-        correct_answer: "Los procesos de la aplicación se ejecutan en sistemas terminales y se comunican a través de la red.",
-        explanation: "La comunicación de una aplicación de red ocurre entre procesos que se ejecutan en sistemas terminales. No es necesario modificar routers ni switches: ellos solo reenvían paquetes.",
-        hint_if_wrong: "Pista: pensá qué dice la teoría sobre si hace falta o no escribir software en el núcleo de la red (routers / switches) para una app de red.",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
+// --------------------------------------------------------------------------------
+// INICIALIZACIÓN DE PREGUNTAS: USAMOS DIRECTAMENTE LA VARIABLE DEL HTML
+// Eliminamos el bloque 'questionPool' obsoleto para evitar conflictos.
+// --------------------------------------------------------------------------------
 
-    // P2 – Drag & Drop arquitecturas (cliente-servidor / P2P / híbrida)
-    {
-        id: 2,
-        type: 'drag_drop',
-        text: "P2. Arrastrá cada situación a la arquitectura de aplicación que mejor la describe.",
-        drag_items: [
-            { value: 'streaming_datacenter', label: 'Plataforma de streaming con granja de servidores en un centro de datos.' },
-            { value: 'p2p_files', label: 'Aplicación para compartir archivos entre miles de nodos que entran y salen dinámicamente.' },
-            { value: 'chat_hibrido', label: 'App de mensajería que usa un servidor para login pero luego conecta pares directamente.' }
-        ],
-        drop_zones: [
-            { function: 'cs', label: 'Arquitectura Cliente-Servidor clásica' },
-            { function: 'p2p', label: 'Arquitectura P2P pura' },
-            { function: 'hybrid', label: 'Arquitectura Híbrida (cliente-servidor + P2P)' }
-        ],
-        correct_map: {
-            cs: 'streaming_datacenter',
-            p2p: 'p2p_files',
-            hybrid: 'chat_hibrido'
-        },
-        explanation: "Streaming típico usa un servidor (o cluster) bien ubicado → cliente-servidor. Compartición masiva entre pares → P2P. Sistemas que combinan servidor para coordinación y P2P para el intercambio de datos se consideran híbridos.",
-        hint_if_wrong: "Pista: fijate si hay un \"punto fijo\" (servidor conocido siempre activo) o si los nodos se conectan entre sí de forma más simétrica.",
-        answer: {},
-        checked: false,
-        score_value: 1
-    },
-
-    // P3 – Agente de usuario
-    {
-        id: 3,
-        type: 'mc',
-        text: "P3. En el contexto de la capa de aplicación, ¿qué es un agente de usuario?",
-        options: [
-            "Un router especial que filtra paquetes de capa de aplicación.",
-            "El proceso de la capa de transporte que abre y cierra sockets.",
-            "El software que se sitúa entre el usuario y la red, manejando la interfaz con el usuario y la comunicación con la red.",
-            "Un protocolo que traduce nombres de host a direcciones IP."
-        ],
-        correct_answer: "El software que se sitúa entre el usuario y la red, manejando la interfaz con el usuario y la comunicación con la red.",
-        explanation: "El agente de usuario es el software que ofrece la interfaz con el usuario \"arriba\" y con la red \"abajo\" (por ejemplo, un cliente de correo o un navegador).",
-        hint_if_wrong: "Pista: pensá en ejemplos concretos: navegador, cliente de correo… ¿son protocolos o programas con los que el usuario interactúa?",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
-
-    // P4 – Direccionamiento de procesos
-    {
-        id: 4,
-        type: 'mc',
-        text: "P4. Para identificar de forma única a un proceso de aplicación en Internet (por ejemplo, un servidor web específico), ¿qué par de valores se utiliza?",
-        options: [
-            "Dirección MAC y número de puerto.",
-            "Dirección IP y número de puerto.",
-            "Dirección IP y número de secuencia TCP.",
-            "Dirección de correo electrónico y nombre de host."
-        ],
-        correct_answer: "Dirección IP y número de puerto.",
-        explanation: "El direccionamiento de procesos en la capa de aplicación se hace típicamente con el par (dirección IP, número de puerto) asociado al socket.",
-        hint_if_wrong: "Pista: pensá qué datos necesita la capa de transporte para entregar datos a un proceso y no solo a un host.",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
-
-    // P5 – Elección de servicio de transporte (UDP vs TCP) desde la mirada de la app
-    {
-        id: 5,
-        type: 'mc',
-        text: "P5. Desde el punto de vista de la aplicación, ¿en qué caso tiene más sentido elegir UDP en lugar de TCP como servicio de transporte?",
-        options: [
-            "En la descarga de un archivo ISO de 4 GB que no puede tener errores.",
-            "En una aplicación de voz en tiempo real que tolera algunas pérdidas pero necesita baja latencia.",
-            "En un sistema bancario que registra transacciones críticas.",
-            "En la transmisión de un acta digital firmada que debe llegar exactamente igual al destino."
-        ],
-        correct_answer: "En una aplicación de voz en tiempo real que tolera algunas pérdidas pero necesita baja latencia.",
-        explanation: "Aplicaciones de tiempo real (como voz) suelen preferir UDP porque toleran pérdidas pero necesitan rapidez y baja sobrecarga; las otras situaciones requieren confiabilidad fuerte.",
-        hint_if_wrong: "Pista: relacioná la elección TCP/UDP con si la aplicación tolera o no la pérdida de datos y qué tan estricta es la confiabilidad.",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
-
-    // P6 – Diferencia aplicación de red vs protocolo de aplicación
-    {
-        id: 6,
-        type: 'mc',
-        text: "P6. ¿Cuál de estas opciones diferencia correctamente entre \"aplicación de red\" y \"protocolo de la capa de aplicación\"?",
-        options: [
-            "Son exactamente lo mismo: ambos términos se usan como sinónimos.",
-            "La aplicación de red es todo el sistema (interfaces, lógica, datos); el protocolo de aplicación es solo la parte que define formato, orden y significado de los mensajes intercambiados.",
-            "El protocolo de aplicación es más amplio que la aplicación de red, porque incluye también a los routers.",
-            "La aplicación de red solo existe en el servidor, mientras que el protocolo solo existe en el cliente."
-        ],
-        correct_answer: "La aplicación de red es todo el sistema (interfaces, lógica, datos); el protocolo de aplicación es solo la parte que define formato, orden y significado de los mensajes intercambiados.",
-        explanation: "El protocolo de la capa de aplicación es un componente dentro de una aplicación de red: define mensajes, sintaxis, semántica y reglas de envío/recepción. La aplicación incluye además interfaces, lógica, almacenamiento, etc.",
-        hint_if_wrong: "Pista: pensá en la Web: HTML, navegador, servidor web, HTTP… ¿cuál parte es el protocolo y cuál es la aplicación completa?",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
-
-    // P7 – Verdadero/Falso sobre dónde se ejecutan los protocolos de aplicación
-    {
-        id: 7,
-        type: 'tf',
-        text: "P7. V/F: Los protocolos de la capa de aplicación se ejecutan en los sistemas terminales y utilizan los servicios de transporte (TCP/UDP); no se implementan dentro de los routers.",
-        options: ['Verdadero', 'Falso'],
-        correct_answer: 'Verdadero',
-        explanation: "Los protocolos de aplicación viven en los extremos (hosts) y se apoyan en los servicios de transporte (TCP/UDP). Los routers no ejecutan protocolos de aplicación.",
-        hint_if_wrong: "Pista: repasá la diferencia entre el núcleo de la red (routers) y la lógica de las aplicaciones de usuario.",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
-
-    // P8 – Drag & Drop aplicaciones ↔ protocolos de aplicación
-    {
-        id: 8,
-        type: 'drag_drop',
-        text: "P8. Arrastrá cada servicio de red a su protocolo de la capa de aplicación típico.",
-        drag_items: [
-            { value: 'web', label: 'Navegar por la Web (obtener páginas y recursos)' },
-            { value: 'mail', label: 'Enviar correo electrónico entre servidores' },
-            { value: 'file_transfer', label: 'Subir y bajar archivos entre cliente y servidor' },
-            { value: 'name_resolution', label: 'Traducir www.unse.edu.ar a una dirección IP' }
-        ],
-        drop_zones: [
-            { function: 'http', label: 'HTTP' },
-            { function: 'smtp', label: 'SMTP' },
-            { function: 'ftp', label: 'FTP' },
-            { function: 'dns', label: 'DNS' }
-        ],
-        correct_map: {
-            http: 'web',
-            smtp: 'mail',
-            ftp: 'file_transfer',
-            dns: 'name_resolution'
-        },
-        explanation: "HTTP ↔ Web, SMTP ↔ envío de correo entre servidores, FTP ↔ transferencia de archivos, DNS ↔ traducción de nombres de host a direcciones IP.",
-        hint_if_wrong: "Pista: asociá cada protocolo con la aplicación típica que viste en teoría (Web, correo, archivos, directorio de nombres).",
-        answer: {},
-        checked: false,
-        score_value: 1
-    },
-
-    // P9 – Rol de DNS
-    {
-        id: 9,
-        type: 'mc',
-        text: "P9. ¿Cuál de las siguientes descripciones se ajusta mejor al rol de DNS en la capa de aplicación?",
-        options: [
-            "Es un protocolo de transporte que asegura entrega confiable de datos.",
-            "Es un sistema de nombres centralizado que vive en un único servidor.",
-            "Es una base de datos distribuida jerárquica + un protocolo de aplicación que permite consultar esa base para traducir nombres de host en direcciones IP.",
-            "Es un protocolo que cifra el contenido de las páginas web."
-        ],
-        correct_answer: "Es una base de datos distribuida jerárquica + un protocolo de aplicación que permite consultar esa base para traducir nombres de host en direcciones IP.",
-        explanation: "DNS funciona como servicio de directorio: una base de datos distribuida jerárquica y un protocolo de aplicación (sobre UDP, puerto 53) para traducir nombres a direcciones IP.",
-        hint_if_wrong: "Pista: si en el enunciado aparece \"traducción nombre ↔ IP\" y \"base de datos distribuida\", estás muy cerca.",
-        answer: null,
-        checked: false,
-        score_value: 1
-    },
-
-    // P10 – Sockets como interfaz
-    {
-        id: 10,
-        type: 'mc',
-        text: "P10. En el contexto de la programación de aplicaciones de red, ¿qué representa la interfaz de sockets?",
-        options: [
-            "Un tipo especial de router que abre conexiones.",
-            "La interfaz entre el proceso de aplicación y el protocolo de transporte (TCP/UDP) en el host.",
-            "Un protocolo de la capa de enlace que multiplexa tramas.",
-            "Un archivo de configuración donde se guardan las direcciones IP de los servidores."
-        ],
-        correct_answer: "La interfaz entre el proceso de aplicación y el protocolo de transporte (TCP/UDP) en el host.",
-        explanation: "El socket es el punto donde la aplicación se “conecta” al servicio de transporte del sistema operativo para enviar y recibir mensajes.",
-        hint_if_wrong: "Pista: pensá en el socket como la \"puerta\" por donde la aplicación envía y recibe datos hacia la red.",
-        answer: null,
-        checked: false,
-        score_value: 1
-    }
-];
-
-
-// --------- Las preguntas vienen del HTML (window.QUIZ_QUESTIONS) ---------
-if (!window.QUIZ_QUESTIONS || window.QUIZ_QUESTIONS.length === 0) {
-  console.error('Error: No se encontraron preguntas en window.QUIZ_QUESTIONS');
+// Inicializamos el array de preguntas. Usamos `window.QUIZ_QUESTIONS` si existe,
+// y si no está definido intentamos usar `window.FULL_QUIZ_BANK` como fallback
+// (esto ayuda si por algún motivo la asignación previa falló en el HTML).
+let questions = [];
+if (Array.isArray(window.QUIZ_QUESTIONS) && window.QUIZ_QUESTIONS.length > 0) {
+  questions = window.QUIZ_QUESTIONS;
+} else if (Array.isArray(window.FULL_QUIZ_BANK) && window.FULL_QUIZ_BANK.length > 0) {
+  // Tomamos los primeros 10 (o menos) y normalizamos las propiedades necesarias
+  questions = window.FULL_QUIZ_BANK.slice(0, 10).map((q, i) => ({ ...q, id: i + 1, checked: false, answer: null }));
+} else {
+  console.error('Error: No se encontraron preguntas para renderizar. Verifique FULL_QUIZ_BANK o QUIZ_QUESTIONS.');
 }
-const questions = window.QUIZ_QUESTIONS || [];
+
+// Si por alguna razón aún no hay preguntas (p. ej. la asignación inline falló),
+// intentamos recuperar el bloque `window.FULL_QUIZ_BANK` buscando el script inline
+// y evaluando su contenido como último recurso. Esto es solo un fallback de recuperación
+// para mejorar la resiliencia en entornos donde la inclusión inline se rompió.
+if ((!questions || questions.length === 0) && typeof document !== 'undefined') {
+  try {
+    const scripts = Array.from(document.getElementsByTagName('script'));
+    for (const s of scripts) {
+      const t = s.textContent || '';
+      if (t.includes('window.FULL_QUIZ_BANK')) {
+        const m = t.match(/window\.FULL_QUIZ_BANK\s*=\s*(\[[\s\S]*?\]);/);
+        if (m && m[1]) {
+          // Evaluar en contexto seguro (intento) — solo cuando no hay preguntas
+          // eslint-disable-next-line no-eval
+          const bank = eval(m[1]);
+          if (Array.isArray(bank) && bank.length > 0) {
+            questions = bank.slice(0, 10).map((q, i) => ({ ...q, id: i + 1, checked: false, answer: null }));
+            console.info('Fallback: recuperado FULL_QUIZ_BANK desde script inline.');
+            break;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Fallback de FULL_QUIZ_BANK falló:', err);
+  }
+}
 
 // --------- LÓGICA GENERAL DEL QUIZ ---------
 let currentQuestionIndex = 0;
@@ -233,10 +64,56 @@ const nextBtn = document.getElementById("next-btn");
 const checkBtn = document.getElementById("check-btn");
 const finishBtn = document.getElementById("finish-btn");
 const scoreResults = document.getElementById("score-results");
-const currentQNumber = document.getElementById("current-q-number"); // está oculto en el HTML
+const currentQNumber = document.getElementById("current-q-number");
 const progressBar = document.getElementById("progress-bar");
 const reviewList = document.getElementById("review-list");
+// ---- botón Verificar ----
+// ---- botón Verificar ----
+checkBtn.addEventListener("click", () => {
+    const q = questions[currentQuestionIndex];
+    
+    // -------------------------------------------------------------
+    // 1. VALIDACIÓN ESTRICTA DE DRAG AND DROP (sin bypass de confirm)
+    // -------------------------------------------------------------
+    if (q.type === "drag_drop" || q.type === "drag_drop_image") {
+        const totalItemsNeeded = (q.drag_items || []).length;
+        const currentAnswers = q.answer ? Object.keys(q.answer).length : 0;
+        
+        if (currentAnswers < totalItemsNeeded) {
+            // Detenemos la ejecución y mostramos la alerta estricta
+            alert("¡Debes colocar todos los ítems en sus respectivas zonas antes de verificar!");
+            return; 
+        }
+    } 
+    
+    // -------------------------------------------------------------
+    // 2. VALIDACIÓN PARA OTROS TIPOS
+    // -------------------------------------------------------------
+    else if (q.type === "fill") {
+        if (!q.answer || !q.answer.trim()) {
+            alert("Completa el campo antes de verificar.");
+            return;
+        }
+    } else if (q.type === "sequence") {
+        if (!Array.isArray(q.answer) || !q.answer.length) {
+            alert("Ordena al menos un elemento antes de verificar.");
+            return;
+        }
+    } else if (!q.answer) {
+        alert("Selecciona una opción para verificar.");
+        return;
+    }
 
+    // -------------------------------------------------------------
+    // 3. PROCESAMIENTO DE RESPUESTA (Solo si pasó las validaciones)
+    // -------------------------------------------------------------
+    if (!q.checked) {
+        if (checkCurrentAnswer(q)) finalScore++;
+        q.checked = true;
+    }
+    
+    renderQuestion(currentQuestionIndex);
+});
 function normalizeVal(v) {
   if (v === null || v === undefined) return "";
   try {
@@ -248,24 +125,25 @@ function normalizeVal(v) {
 
 // --- chequeo de respuesta según tipo ---
 function checkCurrentAnswer(q) {
-  if (q.type === "drag_drop") {
+  if (q.type === "drag_drop" || q.type === "drag_drop_image") {
     const totalCorrectItems = Object.entries(q.correct_map).reduce(
       (count, [zoneFunc, protocol]) => {
         const given = q.answer && q.answer[zoneFunc];
-        return count + (normalizeVal(given) === normalizeVal(protocol) ? 1 : 0);
+        const isMatch = normalizeVal(given) === normalizeVal(protocol);
+        // Aquí se asegura que la comparación use valores normalizados
+        return count + (isMatch ? 1 : 0);
       },
       0
     );
-    return totalCorrectItems === (q.drag_items || []).length;
+    const isCorrect = totalCorrectItems === (q.drag_items || []).length;
+    return isCorrect;
   } else if (q.type === "fill") {
     return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
   } else if (q.type === "sequence") {
     if (!Array.isArray(q.answer)) return false;
-    if (q.answer.length !== q.correct_sequence.length) return false;
-    for (let i = 0; i < q.correct_sequence.length; i++) {
-      if (q.answer[i] !== q.correct_sequence[i]) return false;
-    }
-    return true;
+    // Nota: Necesitas definir q.correct_sequence en tu banco si usas este tipo.
+    // Asumimos que no usas este tipo por ahora, pero lo dejamos por si acaso.
+    return false;
   } else {
     // mc / tf
     return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
@@ -273,6 +151,8 @@ function checkCurrentAnswer(q) {
 }
 
 function updateNavControls() {
+  if (questions.length === 0) return;
+
   const q = questions[currentQuestionIndex];
   prevBtn.disabled = currentQuestionIndex === 0;
 
@@ -292,7 +172,8 @@ function updateNavControls() {
     nextBtn.disabled = true;
 
     let isAnswered = false;
-    if (q.type === "drag_drop") {
+    if (q.type === "drag_drop" || q.type === "drag_drop_image") {
+      // Para drag_drop_image, solo permitir verificar si TODOS están colocados
       isAnswered =
         q.answer && Object.keys(q.answer).length === q.drag_items.length;
     } else if (q.type === "fill") {
@@ -305,54 +186,180 @@ function updateNavControls() {
     checkBtn.disabled = !isAnswered;
   }
 }
-
 function renderQuestion(index) {
+  if (questions.length === 0) {
+    questionsContainer.innerHTML = `<p style="color:red; text-align:center;">Error: No se encontraron preguntas para renderizar. Verifique la variable QUIZ_QUESTIONS en el HTML.</p>`;
+    return;
+  }
+
   questionsContainer.innerHTML = "";
   const q = questions[index];
   let html = `<div class="question-module active" data-qid="${q.id}">`;
-  html += `<h4 style="font-size: 1.3em;">${q.text}</h4>`;
 
-  if (q.type === "drag_drop") {
-    html += renderDragDrop(q);
-  } else if (q.type === "fill") {
-    html += renderFill(q);
-  } else if (q.type === "sequence") {
-    html += renderSequence(q);
-  } else {
-    html += renderOptions(q);
+  let imageHtml = '';
+  let questionText = q.text;
+
+  // -------------------------------------------------------------------------
+  // --> LÓGICA DE DETECCIÓN DE IMAGENES Y CONFIGURACIÓN DE URL
+  // -------------------------------------------------------------------------
+
+  const SMTP_TAG_REGEX = /\[IMG_SMTP_DIAGRAM\]/i;
+  const DNS_TAG_REGEX = /\[IMG_DNS_DIAGRAM\]/i;
+  const HTTP_TAG_REGEX = /\[IMG_HTTP_MESSAGE\]/i;
+
+  let imageToRender = null;
+  let imageMatch = null;
+
+  // Priorizamos la detección de SMTP/Correp (asumo que es Q22)
+  if (questionText.match(SMTP_TAG_REGEX)) {
+    imageMatch = questionText.match(SMTP_TAG_REGEX);
+    imageToRender = { url: CFG.imgCorreoDiagram, tag: SMTP_TAG_REGEX, alt: 'Diagrama de Flujo de Correo' };
+  } else if (questionText.match(DNS_TAG_REGEX)) {
+    imageMatch = questionText.match(DNS_TAG_REGEX);
+    imageToRender = { url: CFG.imgDnsDiagram, tag: DNS_TAG_REGEX, alt: 'Diagrama de Resolución DNS' };
+  } else if (questionText.match(HTTP_TAG_REGEX) || q.id === 28) {
+    // Soporte para mostrar un mensaje HTTP en la pregunta 28
+    imageMatch = questionText.match(HTTP_TAG_REGEX) || null;
+    imageToRender = { url: CFG.imgHttpMensaje, tag: HTTP_TAG_REGEX, alt: 'Mensaje HTTP' };
   }
 
-  html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none;"></div>`;
-  html += `</div>`;
+  const hasImageLogic = !!imageToRender;
+
+  const isDnsSideBySide = !!imageToRender && imageToRender.tag === DNS_TAG_REGEX && q.type !== 'drag_drop_image';
+  const isHttpImage = !!imageToRender && imageToRender.tag === HTTP_TAG_REGEX;
+
+  if (hasImageLogic) {
+    // Si la pregunta es DNS y queremos layout lado-a-lado, evitamos añadirla arriba.
+    // Si la pregunta es HTTP (P28), la mostraremos después del título (se añade luego).
+    if (q.type !== 'drag_drop_image' && !isDnsSideBySide && !isHttpImage) {
+      imageHtml = `<div class="question-image-container" style="text-align: center; margin-bottom: 15px;">
+                 <img src="${imageToRender.url}" alt="${imageToRender.alt}" 
+                 style="max-width: 90%; height: auto; border: 1px solid #ccc; border-radius: 8px;">
+               </div>`;
+    }
+
+    // 2. Eliminar la etiqueta de texto del cuerpo de la pregunta
+    questionText = questionText.replace(imageMatch[0], '').trim();
+  }
+  // -------------------------------------------------------------------------
+  // --> FIN LÓGICA DE IMAGENES
+  // -------------------------------------------------------------------------
+
+
+  // --- 1. Contenedor principal (siempre una columna) ---
+  html += `<div class="question-body" style="width: 100%;">`;
+
+
+  // --- 2. Añadir la imagen (si existe) ANTES del título/opciones
+  html += imageHtml;
+
+
+  // --- 3. Columna de Contenido (siempre 100% de ancho) ---
+  html += `<div class="question-content-column" style="width: 100%; padding-right: 10px; box-sizing: border-box;">`;
+
+  // Título de la pregunta (h4)
+  html += `<h4 style="font-size: 1.3em; margin-top: 0;">${questionText}</h4>`;
+
+  // Si es imagen HTTP,
+  if (isHttpImage) {
+    html += `<div class="question-image-container" style="text-align: center; margin-bottom: 15px;">
+           <img src="${imageToRender.url}" alt="${imageToRender.alt}" 
+           style="max-width: 90%; height: auto; border: 1px solid #ccc; border-radius: 8px;">
+         </div>`;
+  }
+
+  if (imageToRender && imageToRender.tag === DNS_TAG_REGEX && q.type !== 'drag_drop_image') {
+    const isDnsSideBySide = true;
+    // Imagen a la izquierda, opciones a la derecha
+    html += `<div style="display:flex; gap:20px; align-items:flex-start;">`;
+    html += `<div style="flex:0 0 420px; max-width:420px;">`;
+    html += `<img src="${imageToRender.url}" alt="${imageToRender.alt}" style="width:100%; height:auto; border:2px solid #0077B6; border-radius:10px; box-shadow: 0 4px 12px rgba(0,119,182,0.15);">`;
+    html += `</div>`;
+    html += `<div style="flex:1;">`;
+    // Renderizamos las opciones (por ejemplo MC) al lado
+    if (q.type === "drag_drop") {
+      html += renderDragDrop(q);
+    } else if (q.type === "fill") {
+      html += renderFill(q);
+    } else if (q.type === "sequence") {
+      html += renderSequence(q);
+    } else {
+      html += renderOptions(q);
+    }
+    html += `</div>`; // cierra col de opciones
+    html += `</div>`; // cierra fila lado-a-lado
+  } else {
+    // Comportamiento estándar
+    if (q.type === "drag_drop_image") {
+      html += renderDragDropOnImage(q); // D&D para SMTP/POP3 sobre imagen
+    } else if (q.type === "drag_drop") {
+      html += renderDragDrop(q); // D&D estándar (listas)
+    } else if (q.type === "fill") {
+      html += renderFill(q);
+    } else if (q.type === "sequence") {
+      html += renderSequence(q);
+    } else {
+      html += renderOptions(q);
+    }
+  }
+
+  // Feedback y Pista
+  html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none; margin-top: 15px;"></div>`;
+  if (q.hint_if_wrong) {
+    html += `<div style="display:flex; gap:16px; align-items:flex-start; margin-top:16px;">`;
+    html += `<button type="button" class="btn-show-hint" onclick="showHint(${q.id})">💡 Mostrar pista</button>`;
+    html += `<div id="hint-box-${q.id}" class="hint-box" style="display:none; flex:1;"></div>`;
+    html += `</div>`;
+  }
+  html += `</div>`; // Cierra question-content-column
+
+  html += `</div>`; // Cierra question-body
+
+  html += `</div>`; // Cierra question-module
+
   questionsContainer.innerHTML = html;
 
-  if (q.type === "drag_drop") {
+  // --- Inicialización de Listeners y Estado ---
+  if (q.type === "drag_drop_image" || q.type === "drag_drop") {
     setupDragDropListeners();
     restoreDragDropState(q);
-  } else if (q.type === "fill") {
-    const inp = document.getElementById(`fill-input-${q.id}`);
-    if (inp) {
-      inp.value = q.answer || "";
-      inp.addEventListener("input", () => {
-        q.answer = inp.value;
-        updateNavControls();
-      });
-    }
-  } else if (q.type === "sequence") {
-    setupSequenceListeners(q);
-    restoreSequenceState(q);
   }
 
   applyQuestionState(q);
 
   if (currentQNumber) {
-    currentQNumber.textContent = index + 1; // el span está oculto, el alumno no lo ve
+    currentQNumber.textContent = index + 1;
   }
   const progress = ((index + 1) / questions.length) * 100;
   progressBar.style.width = `${progress}%`;
   progressBar.textContent = `${Math.round(progress)}%`;
 
   updateNavControls();
+}
+
+
+// Función para mostrar/ocultar pista (toggle)
+window.showHint = function (qid) {
+  const hintBox = document.getElementById(`hint-box-${qid}`);
+  if (!hintBox) return;
+
+  if (hintBox.style.display === "block") {
+    // Si está visible, ocultarla
+    hintBox.style.display = "none";
+  } else {
+    // Si está oculta, mostrarla
+    const q = questions.find(qq => qq.id === qid);
+    if (!q || !q.hint_if_wrong) return;
+
+    let hintText = String(q.hint_if_wrong || "").trim();
+    hintText = hintText.replace(/^\s*Pista\s*[:\-–—]?\s*/i, "");
+
+    hintBox.innerHTML = `
+      <div class="hint-inner">
+        <div class="hint-content">${hintText}</div>
+      </div>`;
+    hintBox.style.display = "block";
+  }
 }
 
 // ---- renderizadores por tipo ----
@@ -368,6 +375,38 @@ function renderDragDrop(q) {
   });
   ddHtml += `</div>`;
   return ddHtml;
+}
+
+// En juego_capa_1.js
+function renderDragDropOnImage(q) {
+  let ddHtml = '';
+
+  // Contenedor principal para la imagen posicionada
+  ddHtml += `<div class="drag-image-container" style="position: relative; max-width: 95%; margin: 20px auto;">`;
+
+  // Imagen de fondo (la imagen sin etiquetas)
+  // Usar imagen DNS para P29, SMTP para P22
+  const imageUrl = q.id === 29 ? CFG.imgDnsDiagram : CFG.imgCorreoDiagram;
+  ddHtml += `<img src="${imageUrl}" style="width: 100%; height: auto; display: block;" alt="Diagrama sin etiquetas">`;  // Drop Zones posicionadas absolutamente sobre la imagen
+  q.drop_zones.forEach(zone => {
+    // Las zonas estarán invisibles por defecto (sin borde ni etiqueta)
+    // y se resaltarán cuando el usuario arrastre sobre ellas.
+    ddHtml += `<div class="dropzone dropzone-image" data-function="${zone.function}"
+            title="Soltar aquí"
+            style="position: absolute; left: ${zone.x}; top: ${zone.y}; width: 12%; height: 10%; display: flex; align-items: center; justify-content: center;">
+           </div>`;
+  });
+
+  ddHtml += `</div>`; // Cierra drag-image-container
+
+  // Items arrastrables (los ponemos debajo para que el drag-drop estándar funcione)
+  ddHtml += `<div class="drag-container" id="drag-1" style="margin-top: 20px; display: flex; justify-content: center; flex-wrap: wrap;">`;
+  q.drag_items.forEach(item => {
+    // Las etiquetas ya están definidas en el HTML, solo mostrarlas
+    ddHtml += `<div class="draggable draggable-image" draggable="true" data-protocol="${item.value}"
+                        style="margin: 5px; padding: 10px; border: 1px solid #0077B6; background-color: #E0F2F7; cursor: grab;">${item.label}</div>`;
+  });
+  ddHtml += `</div>`; return ddHtml;
 }
 
 function renderFill(q) {
@@ -389,6 +428,7 @@ function renderSequence(q) {
   let html = `<div class="options-group" data-qtype="sequence">`;
   html += `<p class="sequence-help">Arrastra los pasos hasta dejarlos en el orden correcto (de arriba hacia abajo).</p>`;
   html += `<div id="seq-list-${q.id}" class="seq-list">`;
+  // NOTA: Si usas preguntas de secuencia, debes definir q.sequence_items en el banco.
   (q.sequence_items || []).forEach(item => {
     html += `<div class="sequence-item" draggable="true" data-key="${item.key}">${item.label}</div>`;
   });
@@ -422,49 +462,64 @@ function applyQuestionState(q) {
 
   if (!qElement) return;
 
-  if (q.type === "drag_drop") {
+  // --- Lógica para Drag and Drop (Estándar o sobre Imagen) ---
+  if (q.type === "drag_drop" || q.type === "drag_drop_image") { // <-- Unificamos los tipos D&D
     if (isChecked) {
-      qElement
-        .querySelectorAll(".draggable")
-        .forEach(item => item.setAttribute("draggable", "false"));
-      qElement
-        .querySelectorAll(".dropzone")
-        .forEach(zone => (zone.style.pointerEvents = "none"));
+      // Selector de zona: usa .dropzone-image para D&D sobre Imagen, y .dropzone para D&D estándar
+      const dropzoneSelector = q.type === "drag_drop_image" ? ".dropzone-image" : ".dropzone";
+
+      // Deshabilitar arrastre y punteros
+      qElement.querySelectorAll(".draggable").forEach(item => item.setAttribute("draggable", "false"));
+      qElement.querySelectorAll(dropzoneSelector).forEach(zone => (zone.style.pointerEvents = "none"));
 
       const ddMap = q.correct_map;
-      qElement.querySelectorAll(".dropzone").forEach(zone => {
+      qElement.querySelectorAll(dropzoneSelector).forEach(zone => {
         const droppedItem = zone.querySelector(".draggable");
         const prevCorrect = zone.querySelector(".correct-answer");
-        if (prevCorrect) prevCorrect.remove();
+        if (prevCorrect) prevCorrect.remove(); // Limpiar explicación anterior
+
         if (droppedItem) {
           const oldBadge = droppedItem.querySelector(".dd-badge");
-          if (oldBadge) oldBadge.remove();
+          if (oldBadge) oldBadge.remove(); // Limpiar badge anterior
 
+          // 1. Determinar si el elemento es correcto
           const isCorrect =
             droppedItem.dataset.protocol === ddMap[zone.dataset.function];
-          droppedItem.classList.add(isCorrect ? "correct" : "incorrect");
+          droppedItem.classList.add(isCorrect ? "correct" : "incorrect"); // Colorear ítem
 
+          // 2. Añadir el badge (✓ o ✖)
           const badge = document.createElement("span");
           badge.className =
             "dd-badge " + (isCorrect ? "dd-correct" : "dd-incorrect");
           badge.textContent = isCorrect ? "✓" : "✖";
           droppedItem.appendChild(badge);
 
+          // 3. Mostrar la respuesta correcta debajo del dropzone si el usuario se equivocó
           if (!isCorrect) {
             const correctProtocol = ddMap[zone.dataset.function];
             const correctLabel = (q.drag_items || []).find(
               it => it.value === correctProtocol
             );
             const labelText = correctLabel ? correctLabel.label : correctProtocol;
+
+            // Se crea un div para mostrar la respuesta correcta
             const correctEl = document.createElement("div");
             correctEl.className = "correct-answer";
             correctEl.textContent = "Correcto: " + labelText;
-            zone.appendChild(correctEl);
+
+            // Para D&D sobre Imagen, la explicación se añade al elemento arrastrado, no a la zona.
+            if (q.type === "drag_drop") {
+              zone.appendChild(correctEl);
+            } else {
+              // Para el modo imagen, podemos añadir un tooltip o dejarlo solo con el badge. 
+              // Por simplicidad visual en el diagrama, confiamos en el badge y el feedback general.
+            }
           }
         }
       });
     }
   } else if (q.type === "fill") {
+    // ... (resto del código sigue igual) ...
     const inp = qElement.querySelector(".fill-input");
     if (inp) {
       inp.value = q.answer || "";
@@ -513,20 +568,31 @@ function applyQuestionState(q) {
       explanation = isCorrect
         ? "¡Excelente! Todos los elementos están en su lugar."
         : "Los ítems en rojo están incorrectos. Revisa la correspondencia.";
+    } else if (q.type === "drag_drop_image") {
+      explanation = isCorrect
+        ? "¡Excelente! Todos los protocolos están en su lugar correcto."
+        : "Algunos protocolos no están en la posición correcta. Revisa cada uno.";
     }
-    feedbackBox.style.display = "block";
-    feedbackBox.className =
-      "feedback-message " + (isCorrect ? "correct" : "incorrect");
-    feedbackBox.innerHTML =
-      (isCorrect ? "✅ ¡Respuesta correcta!" : "❌ Incorrecto.") +
-      (explanation ? "<br><em>Explicación: " + explanation + "</em>" : "");
+    if (feedbackBox) {
+      feedbackBox.style.display = "block";
+      feedbackBox.className =
+        "feedback-message " + (isCorrect ? "correct" : "incorrect");
+      feedbackBox.innerHTML =
+        (isCorrect ? "✅ ¡Respuesta correcta!" : "❌ Incorrecto.") +
+        (explanation ? "<br><em>Explicación: " + explanation + "</em>" : "");
+    }
   }
 }
 
 // ---- DRAG & DROP (mapas) ----
 let draggedItem = null;
 
+// En juego_capa_1.js, reemplaza la función setupDragDropListeners:
+
 function setupDragDropListeners() {
+  let currentQ = questions[currentQuestionIndex];
+  let isImageMode = currentQ.type === 'drag_drop_image';
+
   document.querySelectorAll(".draggable").forEach(item => {
     item.addEventListener("dragstart", e => {
       draggedItem = e.target;
@@ -536,38 +602,96 @@ function setupDragDropListeners() {
     item.addEventListener("dragend", e => (e.target.style.opacity = 1));
   });
 
-  document.querySelectorAll(".dropzone").forEach(zone => {
+  // Modificamos para buscar la clase correcta de dropzone
+  const dropzoneSelector = isImageMode ? ".dropzone-image" : ".dropzone";
+
+  document.querySelectorAll(dropzoneSelector).forEach(zone => {
     zone.addEventListener("dragover", e => {
       e.preventDefault();
       zone.classList.add("hover");
     });
     zone.addEventListener("dragleave", () => zone.classList.remove("hover"));
+
     zone.addEventListener("drop", e => {
       e.preventDefault();
       zone.classList.remove("hover");
-      const existingDraggable = zone.querySelector(".draggable");
-      if (existingDraggable) {
-        document.getElementById("drag-1").appendChild(existingDraggable);
+
+      // 1. Manejo del Drag and Drop estándar (LISTA VERTICAL)
+      if (!isImageMode) {
+        const existingDraggable = zone.querySelector(".draggable");
+        if (existingDraggable) {
+          document.getElementById("drag-1").appendChild(existingDraggable);
+        }
+        if (draggedItem) {
+          zone.appendChild(draggedItem);
+        }
       }
-      if (draggedItem) {
-        zone.appendChild(draggedItem);
+
+      // 2. Manejo del Drag and Drop sobre Imagen (COORDINADAS ABSOLUTAS)
+      if (isImageMode) {
+        // Si ya hay un elemento, lo devuelve a la lista original
+        if (zone.querySelector(".draggable")) {
+          document.getElementById("drag-1").appendChild(zone.querySelector(".draggable"));
+        }
+
+        // Mueve el item arrastrado dentro del div de la zona de soltado
+        if (draggedItem) {
+          zone.appendChild(draggedItem);
+        }
       }
+
       saveDragDropState();
-      checkBtn.disabled = false;
+      //checkBtn.disabled = false;
+    });
+  });
+
+  // Permitir soltar de vuelta en el contenedor de arrastre (drag area)
+  const dragContainers = document.querySelectorAll('.drag-container');
+  dragContainers.forEach(dc => {
+    dc.addEventListener('dragover', e => {
+      e.preventDefault();
+      dc.classList.add('hover');
+    });
+    dc.addEventListener('dragleave', () => dc.classList.remove('hover'));
+    dc.addEventListener('drop', e => {
+      e.preventDefault();
+      dc.classList.remove('hover');
+      if (draggedItem) {
+        dc.appendChild(draggedItem);
+        saveDragDropState();
+      }
     });
   });
 }
 
+// En juego_capa_1.js, reemplaza la función saveDragDropState:
+
 function saveDragDropState() {
-  const ddAnswer = {};
-  document.querySelectorAll(".dropzone").forEach(zone => {
-    const droppedItem = zone.querySelector(".draggable");
-    if (droppedItem) {
-      ddAnswer[zone.dataset.function] = droppedItem.dataset.protocol;
-    }
-  });
-  questions[currentQuestionIndex].answer = ddAnswer;
-  updateNavControls();
+    const ddAnswer = {};
+    const currentQ = questions[currentQuestionIndex];
+    
+    // Determina qué selector de zona usar. Esto es clave para distinguir entre
+    // las zonas de lista (.dropzone) y las zonas sobre la imagen (.dropzone-image).
+    const dropzoneSelector = currentQ.type === 'drag_drop_image' ? ".dropzone-image" : ".dropzone"; 
+
+    // Recorre todas las zonas de soltado visibles en la pantalla
+    document.querySelectorAll(dropzoneSelector).forEach(zone => {
+        const droppedItem = zone.querySelector(".draggable");
+        if (droppedItem) {
+            // CRÍTICO: Si la zona NO está vacía, guarda el mapeo: 
+            // { function_key: item_value }
+            ddAnswer[zone.dataset.function] = droppedItem.dataset.protocol;
+        }
+        // Si la zona está vacía, no se añade nada a ddAnswer, lo cual reduce el conteo.
+    });
+    
+    // 1. Reemplaza completamente q.answer con el nuevo mapa. 
+    // Esto es lo que actualiza la longitud de la respuesta.
+    questions[currentQuestionIndex].answer = ddAnswer; 
+    
+    // 2. Llama a updateNavControls para recalcular el botón "Verificar".
+    // Si Object.keys(ddAnswer).length es menor que el total, el botón se deshabilita.
+    updateNavControls(); 
 }
 
 function restoreDragDropState(q) {
@@ -662,7 +786,7 @@ function restoreSequenceState(q) {
 }
 
 // ---- selección para MC / TF ----
-window.selectOption = function(btn, qid) {
+window.selectOption = function (btn, qid) {
   const q = questions.find(qq => qq.id === qid);
   if (!q || q.checked) return;
   const container = btn.closest(".options-group");
@@ -678,7 +802,7 @@ window.selectOption = function(btn, qid) {
 checkBtn.addEventListener("click", () => {
   const q = questions[currentQuestionIndex];
 
-  if (q.type === "drag_drop") {
+  if (q.type === "drag_drop" || q.type === "drag_drop_image") {
     if (
       !q.answer ||
       Object.keys(q.answer).length < (q.drag_items || []).length
@@ -746,9 +870,8 @@ finishBtn.addEventListener("click", e => {
     const isCorrect = checkCurrentAnswer(q);
     let userAnswerDisplay;
     if (q.type === "drag_drop") {
-      userAnswerDisplay = `(Arrastradas: ${
-        q.answer ? Object.keys(q.answer).length : 0
-      }/${(q.drag_items || []).length})`;
+      userAnswerDisplay = `(Arrastradas: ${q.answer ? Object.keys(q.answer).length : 0
+        }/${(q.drag_items || []).length})`;
     } else if (q.type === "sequence") {
       userAnswerDisplay =
         q.answer && q.answer.length ? q.answer.join(" → ") : "Sin ordenar";
@@ -758,9 +881,8 @@ finishBtn.addEventListener("click", e => {
       userAnswerDisplay = q.answer || "No respondida";
     }
 
-    let reviewHtml = `<div class="review-item ${
-      isCorrect ? "correct-review" : "incorrect-review"
-    }">`;
+    let reviewHtml = `<div class="review-item ${isCorrect ? "correct-review" : "incorrect-review"
+      }">`;
     reviewHtml += `<strong>P${q.id}. ${q.text.replace(/<[^>]+>/g, "")}</strong>`;
     reviewHtml += `<p class="user-answer">Tu respuesta: ${userAnswerDisplay}</p>`;
 
@@ -820,11 +942,10 @@ finishBtn.addEventListener("click", e => {
           </div>
         </div>
         <div class="rubric-suggestion">
-          Sugerencia: ${
-            score >= 7
-              ? "Podés pasar al siguiente nivel y revisar los ítems donde fallaste."
-              : "Repasá el capítulo de Capa de Aplicación en Kurose y vuelve a intentar."
-          }
+          Sugerencia: ${score >= 7
+      ? "Podés pasar al siguiente nivel y revisar los ítems donde fallaste."
+      : "Repasá el capítulo de Capa de Aplicación en Kurose y vuelve a intentar."
+    }
         </div>
         <div class="rubric-cta">
           <button type="button" class="btn-retry" onclick="location.reload();">🔁 Reintentar</button>
@@ -838,7 +959,7 @@ finishBtn.addEventListener("click", e => {
   if (shouldUnlock) {
     try {
       localStorage.setItem("unlocked_level_2", "true");
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // envío al servidor
@@ -864,8 +985,8 @@ finishBtn.addEventListener("click", e => {
           "X-CSRFToken": csrftoken || ""
         },
         body: JSON.stringify({ score: score, level: 1, answers: answersPayload })
-      }).catch(() => {});
-    } catch (e) {}
+      }).catch(() => { });
+    } catch (e) { }
   })();
 
   if (shouldUnlock) {
