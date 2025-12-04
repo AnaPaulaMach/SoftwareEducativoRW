@@ -1,0 +1,66 @@
+/* ============================================
+   CAPA 5: Capa Física - Estilos Específicos
+   ============================================
+   
+   Este archivo contiene estilos únicos para el Nivel 5.
+   Los estilos base compartidos están en niveles.css
+   
+   Agregar aquí solo estilos específicos del Nivel 5.
+   ============================================ */
+
+/* Ejemplo: Si el Nivel 5 necesita un color de tema diferente */
+/* .game-area { background-color: #fff8e1; } */
+
+/* Agregar estilos específicos del Nivel 5 aquí */
+
+/* Contenedor de la secuencia de pines */
+.seq-list-pins {
+   border: 2px dashed #00b4d8;
+   border-radius: 10px;
+   padding: 12px;
+   background: #f8fcff;
+}
+
+/* Cada ítem de pin */
+.sequence-item.pin {
+   position: relative;
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   padding: 10px 16px 10px 64px;
+   border-radius: 999px;
+   background: #ffffff;
+   box-shadow: 0 0 0 1px #d0e3f0;
+   cursor: grab;
+}
+
+/* “Pastillita” de color que simula el pin */
+.sequence-item.pin::before {
+   content: "";
+   position: absolute;
+   left: 16px;
+   width: 36px;
+   height: 18px;
+   border-radius: 4px;
+   border: 1px solid #333;
+}
+
+/* Blanco/Verde */
+.sequence-item.pin-bv::before {
+   background: linear-gradient(90deg, #ffffff 0 50%, #2d6a4f 50% 100%);
+}
+
+/* Verde sólido */
+.sequence-item.pin-v::before {
+   background: #2d6a4f;
+}
+
+/* Blanco/Naranja */
+.sequence-item.pin-bn::before {
+   background: linear-gradient(90deg, #ffffff 0 50%, #f77f00 50% 100%);
+}
+
+.pin-label {
+   font-weight: 500;
+   color: #023e8a;
+}
