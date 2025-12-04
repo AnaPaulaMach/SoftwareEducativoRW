@@ -1,5 +1,4 @@
-
-      
+/* Estilos generales para el área del juego */
         .game-area {
             max-width: 1000px; 
             margin: 30px auto;
@@ -443,9 +442,7 @@
     background: #005B8F;
 }
 
-/* Estilos específicos para zonas de soltado sobre imagen
-   - Por defecto son invisibles y no muestran etiqueta (la imagen queda limpia).
-   - Al arrastrar o al hacer hover se resaltan indicando al usuario dónde soltar. */
+
 .dropzone-image {
     border: none !important;
     background: transparent !important;
