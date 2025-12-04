@@ -88,29 +88,27 @@
         answer: {}, checked: false, score_value: 1, topic: 'Protocolos'
     },
   
-    // P4: VERDADERO/FALSO (Modelo) -- CORREGIDA LA SINTAXIS
-    //{ id: 4, type: 'tf', text: "V/F: El modelo TCP/IP de la IETF define cuatro capas, pero se usa la pila de cinco capas por razones pedagógicas, separando Enlace y Física.", options: ['Verdadero', 'Falso'], correct_answer: 'Verdadero', explanation: "Verdadero. La división de Capa Física y Enlace se usa para facilitar la comprensión de la correspondencia con OSI.", answer: null, checked: false, score_value: 1, topic: 'Modelo' },
-    // P7 Original: OPCIÓN MÚLTIPLE (PDU)
-    { id: 7, type: 'mc', text: "¿Cuál es la PDU principal (Unidad de Datos) que maneja la Capa de Aplicación?", 
+ 
+    { id: 2, type: 'mc', text: "¿Cuál es la PDU principal (Unidad de Datos) que maneja la Capa de Aplicación?", 
     options: ['Segmentos', 'Tramas', 'Mensajes', 'Paquetes'], 
     correct_answer: 'Mensajes', 
     explanation: "La Capa de Aplicación trabaja con 'Mensajes', datos a nivel de usuario.", 
-    hint_if_wrong: "Recuerda que capa trabaja con datos a nivel de usuario.", answer: null, checked: false, score_value: 1, topic: 'Concepto' },
+    hint_if_wrong: "Recuerda que esta capa trabaja con datos a nivel de usuario.", answer: null, checked: false, score_value: 1, topic: 'Concepto' },
    
     // P9 Original: OPCIÓN MÚLTIPLE (Puerto simple)
-    { id: 9, type: 'mc', 
+    { id: 3, type: 'mc', 
     text: " El protocolo utilizado para la navegación web segura (HTTPS) usa el puerto:", 
     options: ['21', '80', '443', '110'], correct_answer: '443', 
     explanation: "HTTPS utiliza el puerto 443 por defecto para la comunicación cifrada (TLS/SSL).", 
     hint_if_wrong: "El puerto 80 es para HTTP sin cifrado. HTTPS añade cifrado TLS/SSL y usa otro puerto.", answer: null, checked: false, score_value: 1, topic: 'HTTP' },
     // P10 Original: OPCIÓN MÚLTIPLE (Protocolo Correo)
-    { id: 10, type: 'mc', text: " Si un protocolo de correo mantiene copias en el servidor (IMAP), ¿cuál utiliza la descarga y eliminación simple?", options: ['SMTP', 'IMAP', 'POP3', 'FTP'], correct_answer: 'POP3', 
+    { id: 14, type: 'mc', text: " Si un protocolo de correo mantiene copias en el servidor (IMAP), ¿cuál utiliza la descarga y eliminación simple?", options: ['SMTP', 'IMAP', 'POP3', 'FTP'], correct_answer: 'POP3', 
     explanation: "POP3 (Post Office Protocol 3) típicamente descarga y elimina el correo del servidor.",
      hint_if_wrong: "POP3 descarga tu correo y lo elimina del servidor. IMAP lo deja en el servidor. SMTP es para enviar.", answer: null, checked: false, score_value: 1, topic: 'Correo' },
 
     
     // Q11: DNS - Tipo de registro A
-    { id: 11, type: 'mc', text: "¿Qué tipo de registro DNS (RR) se utiliza para asociar un nombre de dominio con la dirección IPv4 de un host?", 
+    { id: 5, type: 'mc', text: "¿Qué tipo de registro DNS (RR) se utiliza para asociar un nombre de dominio con la dirección IPv4 de un host?", 
         options: ['A (Address)', 'NS (Name Server)', 'CNAME (Canonical Name)', 'MX (Mail Exchange)'], 
         correct_answer: 'A (Address)', 
         explanation: "El registro de tipo A es el registro fundamental que mapea un nombre de host a su correspondiente dirección IPv4 de 32 bits.", 
@@ -118,7 +116,7 @@
         answer: null, checked: false, score_value: 1, topic: 'DNS'
     },
     { 
-    id: 14, 
+    id: 6, 
     type: 'mc', 
     text: "Q14. ¿Para qué sirve el mecanismo de GET condicional en HTTP?",
     options: [
@@ -134,7 +132,7 @@
     answer: null, checked: false, score_value: 1, topic: 'HTTP'
 },
     // Q15: HTTP - Conexiones Persistentes
-    { id: 15, type: 'mc', text: "¿Cuál es la principal ventaja de utilizar conexiones HTTP persistentes en lugar de no persistentes?",
+    { id: 7, type: 'mc', text: "¿Cuál es la principal ventaja de utilizar conexiones HTTP persistentes en lugar de no persistentes?",
         options: [
             'Permite que el servidor almacene información sobre las solicitudes anteriores del cliente (estado de la sesión).',
             'Se garantiza la entrega de datos sin errores, lo cual no ocurre en las conexiones no persistentes.',
@@ -147,7 +145,7 @@
         answer: null, checked: false, score_value: 1, topic: 'HTTP'
     },
     // Q16: DNS - Tipo de registro MX
-    { id: 16, type: 'mc', text: "¿Qué tipo de registro de recurso (RR) DNS se utiliza para asociar un nombre de dominio con el servidor de correo responsable de recibir correos electrónicos para ese dominio?",
+    { id: 8, type: 'mc', text: "¿Qué tipo de registro de recurso (RR) DNS se utiliza para asociar un nombre de dominio con el servidor de correo responsable de recibir correos electrónicos para ese dominio?",
          options: ['A (Address)', 'NS (Name Server)', 'CNAME (Canonical Name)', 'MX (Mail Exchange)'], 
         correct_answer: 'MX (Mail Exchange)',
         explanation: "El registro MX (Mail Exchange) especifica los servidores de correo autorizados para recibir correos para un dominio específico.",
@@ -157,7 +155,7 @@
     // Q17: DNS - Primera consulta
  // MODIFICACIÓN NECESARIA EN EL HTML
 { 
-    id: 17, 
+    id: 9, 
     type: 'mc', 
     text: "[IMG_DNS_DIAGRAM] Observa la siguiente imagen de resolución DNS. En el Paso 1 (la consulta inicial del 'Host solicitante') ¿A qué entidad se dirige?", 
     options: [
@@ -175,7 +173,7 @@
     topic: 'DNS'
 },
     // Q18: HTTP - Cookies
-    { id: 18, type: 'mc', text: " ¿Cuál es la función principal de las 'cookies' en el protocolo HTTP?",
+    { id: 10, type: 'mc', text: " ¿Cuál es la función principal de las 'cookies' en el protocolo HTTP?",
         options: [
             'Cifrar la comunicación entre el cliente y el servidor para proteger la privacidad.',
             'Acelerar la carga de páginas web almacenando objetos en el cliente.',
@@ -189,7 +187,7 @@
     },
     // Q19: DNS - Sección Respuestas
 { 
-    id: 19, 
+    id: 11, 
     type: 'tf', 
     text: "V/F: La sección 'Respuestas' (Answers) de un mensaje DNS contiene los Registros de Recursos (RR) que responden directamente a la consulta, como el mapeo entre nombre y dirección IP.",
     options: ['Verdadero', 'Falso'],
@@ -203,7 +201,7 @@
 // Q22: DRAG & DROP - Flujo de Correo SOBRE IMAGEN
 // En tu HTML, dentro de window.FULL_QUIZ_BANK:
 { 
-    id: 22, 
+    id: 12, 
     type: 'drag_drop_image',
 
     text: "[IMG_SMTP_DIAGRAM] Arrastra los protocolos a las flechas correctas en el flujo de envío de correo entre Alicia y Benito.",
@@ -251,7 +249,7 @@
 // Q23: DRAG & DROP - Jerarquía DNS
 
 { 
-    id: 24, 
+    id: 14, 
     type: 'mc', // Usamos MC para la clasificación binaria
     text: "Observa la cabecera del siguiente mensaje HTTP. ¿Qué tipo de mensaje se está enviando? [IMG_HTTP_MESSAGE]",
     
