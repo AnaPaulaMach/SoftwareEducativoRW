@@ -552,3 +552,58 @@
     transform: translateY(0);
 }
 
+/* ===== ESTILOS FORZADOS PARA BOTONES DE NAVEGACIÓN (Aplicar a TODOS los niveles) ===== */
+/* Estos estilos tienen máxima especificidad para asegurar consistencia en todos los niveles */
+.game-area .nav-controls button,
+body .nav-controls button,
+.nav-controls button[type="button"] {
+    padding: 12px 25px !important; 
+    border-radius: 25px !important; 
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    border: none !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+    transition: background-color 0.2s, box-shadow 0.2s !important;
+    text-transform: uppercase !important;
+    font-size: 1em !important;
+}
+
+.game-area #prev-btn,
+body #prev-btn,
+#prev-btn[type="button"] {
+    background-color: #f7f7f7 !important; 
+    color: #555 !important; 
+    border: 1px solid #ddd !important; 
+}
+
+.game-area #next-btn,
+body #next-btn,
+#next-btn[type="button"] {
+    background-color: #0077B6 !important; 
+    color: white !important; 
+}
+
+.game-area #check-btn,
+body #check-btn,
+#check-btn[type="button"] {
+    background-color: #4CAF50 !important; 
+    color: white !important; 
+}
+
+.game-area #finish-btn,
+body #finish-btn,
+#finish-btn[type="button"] {
+    background-color: #FF9800 !important; 
+    color: white !important; 
+}
+
+.game-area .nav-controls button:disabled,
+body .nav-controls button:disabled,
+.nav-controls button[type="button"]:disabled {
+    background-color: #ccc !important;
+    color: #888 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+

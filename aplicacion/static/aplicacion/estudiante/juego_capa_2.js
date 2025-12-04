@@ -436,7 +436,7 @@ function setupDragDropListeners() {
         zone.appendChild(draggedItem);
       }
       saveDragDropState();
-      checkBtn.disabled = false;
+      updateNavControls();
     });
   });
 }
@@ -544,6 +544,42 @@ function restoreSequenceState(q) {
   });
 }
 
+// ---- función para actualizar controles de navegación ----
+function updateNavControls() {
+  if (questions.length === 0) return;
+
+  const q = questions[currentQuestionIndex];
+  prevBtn.disabled = currentQuestionIndex === 0;
+
+  if (currentQuestionIndex === questions.length - 1) {
+    nextBtn.style.display = "none";
+    finishBtn.style.display = q.checked ? "inline-block" : "none";
+  } else {
+    nextBtn.style.display = q.checked ? "inline-block" : "none";
+    finishBtn.style.display = "none";
+  }
+
+  if (q.checked) {
+    checkBtn.style.display = "none";
+    nextBtn.disabled = false;
+  } else {
+    checkBtn.style.display = "inline-block";
+    nextBtn.disabled = true;
+
+    let isAnswered = false;
+    if (q.type === "drag_drop") {
+      isAnswered = q.answer && Object.keys(q.answer).length > 0;
+    } else if (q.type === "fill") {
+      isAnswered = !!(q.answer && q.answer.trim());
+    } else if (q.type === "sequence") {
+      isAnswered = Array.isArray(q.answer) && q.answer.length > 0;
+    } else {
+      isAnswered = !!q.answer;
+    }
+    checkBtn.disabled = !isAnswered;
+  }
+}
+
 // ---- selección para MC / TF ----
 window.selectOption = function(btn, qid) {
   const q = questions.find(x => x.id === qid);
@@ -563,8 +599,8 @@ window.selectOption = function(btn, qid) {
     btn.classList.add("selected");
   }
 
-  // habilitar botón verificar si hay algo marcado
-  checkBtn.disabled = q.answer.length === 0;
+  // Actualizar controles de navegación
+  updateNavControls();
 };
 
 
@@ -604,6 +640,7 @@ checkBtn.addEventListener("click", () => {
   }
 
   renderQuestion(currentQuestionIndex);
+  updateNavControls();
 });
 
 
@@ -616,6 +653,7 @@ nextBtn.addEventListener("click", () => {
   if (currentQuestionIndex < questions.length - 1) {
     currentQuestionIndex++;
     renderQuestion(currentQuestionIndex);
+    updateNavControls();
   }
 });
 
@@ -623,6 +661,7 @@ prevBtn.addEventListener("click", () => {
   if (currentQuestionIndex > 0) {
     currentQuestionIndex--;
     renderQuestion(currentQuestionIndex);
+    updateNavControls();
   }
 });
 
@@ -780,4 +819,5 @@ finishBtn.addEventListener("click", e => {
 
 // ---- inicialización ----
 renderQuestion(currentQuestionIndex);
+updateNavControls();
 
