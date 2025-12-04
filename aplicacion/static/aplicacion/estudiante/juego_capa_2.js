@@ -57,80 +57,39 @@ function generateHint(q) {
 
 // --- chequeo de respuesta según tipo --- //ESTE CAMBIE PARA QUE DE CORRECTO
 function checkCurrentAnswer(q) {
-  // --- PARA PREGUNTAS DRAG & DROP ---
-  if (q.type === "drag_drop") {
-    // q.answer debería ser un objeto del tipo { campo2: 'puerto_dest', campo3: 'longitud' }
-    const userMap = q.answer || {};
-    const correctMap = q.correct_map || {};
 
-    // Recorremos todas las claves del mapa correcto
-    for (const zone in correctMap) {
-      if (userMap[zone] !== correctMap[zone]) {
-        return false; // Si un solo campo está mal → incorrecto
-      }
-    }
-
-    return true; // Todo coincide → respuesta correcta
-  }
-
-  // --- PARA MC, TF, FILL, SEQUENCE ---
-  if (q.type === "fill") {
-// MULTIPLE CHOICE con múltiples respuestas
-if (q.type === "mc" && Array.isArray(q.correct_answer)) {
+  // ✅ MULTIPLE CHOICE CON VARIAS RESPUESTAS
+  if (q.type === "mc" && Array.isArray(q.correct_answer)) {
     if (!Array.isArray(q.answer)) return false;
 
-    const a = q.answer.sort();
-    const b = q.correct_answer.sort();
+    // Copias ordenadas para comparar sin importar el orden
+    const userAnswers = [...q.answer].sort();
+    const correctAnswers = [...q.correct_answer].sort();
 
-    return JSON.stringify(a) === JSON.stringify(b);
-}
+    // Mismo tamaño
+    if (userAnswers.length !== correctAnswers.length) return false;
 
-// MC simple / true-false
-return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
+    // Comparación real de arrays
+    return userAnswers.every((val, i) => val === correctAnswers[i]);
   }
 
+  // ✅ DRAG & DROP
+  if (q.type === "drag_drop") {
+    for (let zone in q.correct_map) {
+      if (q.answer[zone] !== q.correct_map[zone]) return false;
+    }
+    return true;
+  }
+
+  // ✅ SEQUENCE
   if (q.type === "sequence") {
     return JSON.stringify(q.answer) === JSON.stringify(q.correct_answer);
   }
 
-  // MC / TF
+  // ✅ FILL / TF / MC SIMPLE
   return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
 }
 
-
-function updateNavControls() {
-  const q = questions[currentQuestionIndex];
-  prevBtn.disabled = currentQuestionIndex === 0;
-
-  if (currentQuestionIndex === questions.length - 1) {
-    nextBtn.style.display = "none";
-    finishBtn.style.display = q.checked ? "inline-block" : "none";
-  } else {
-    nextBtn.style.display = q.checked ? "inline-block" : "none";
-    finishBtn.style.display = "none";
-  }
-
-  if (q.checked) {
-    checkBtn.style.display = "none";
-    nextBtn.disabled = false;
-  } else {
-    checkBtn.style.display = "inline-block";
-    nextBtn.disabled = true;
-
-    let isAnswered = false;
-    if (q.type === "drag_drop") {
-      isAnswered =
-        q.answer && Object.keys(q.answer).length === q.drag_items.length;
-    } else if (q.type === "fill") {
-      isAnswered = !!(q.answer && q.answer.trim());
-    } else if (q.type === "sequence") {
-      isAnswered = Array.isArray(q.answer) && q.answer.length > 0;
-    } else {
-      isAnswered = !!q.answer;
-    }
-    checkBtn.disabled = !isAnswered;
-  }
-}
 
 function renderQuestion(index) {
   questionsContainer.innerHTML = "";
@@ -361,25 +320,22 @@ function applyQuestionState(q) {
             const labelText = correctLabel ? correctLabel.label : correctProtocol;
             const correctEl = document.createElement("div");
             correctEl.className = "correct-answer";
-            //correctEl.textContent = "Correcto: " + labelText;
             zone.appendChild(correctEl);
           }
         }
       });
     }
+
   } else if (q.type === "fill") {
     const inp = qElement.querySelector(".fill-input");
     if (inp) {
       inp.value = q.answer || "";
       if (isChecked) {
         inp.disabled = true;
-        if (checkCurrentAnswer(q)) {
-          inp.style.borderColor = "#4CAF50";
-        } else {
-          inp.style.borderColor = "#dc3545";
-        }
+        inp.style.borderColor = checkCurrentAnswer(q) ? "#4CAF50" : "#dc3545";
       }
     }
+
   } else if (q.type === "sequence") {
     const list = qElement.querySelector(".seq-list");
     if (isChecked && list) {
@@ -388,46 +344,67 @@ function applyQuestionState(q) {
         .forEach(item => item.setAttribute("draggable", "false"));
       list.style.borderColor = checkCurrentAnswer(q) ? "#4CAF50" : "#dc3545";
     }
+
   } else {
-    // mc / tf
+    // ✅ MC / TF (SOPORTA MULTIPLE RESPUESTA)
     const optionsGroup = qElement.querySelector(".options-group");
     if (!optionsGroup) return;
+
     optionsGroup.querySelectorAll(".option-btn").forEach(btn => {
-      if (normalizeVal(q.answer) === normalizeVal(btn.dataset.value)) {
+      const val = btn.dataset.value;
+
+      // 🔹 Marcar seleccionadas (soporta array)
+      if (Array.isArray(q.answer) && q.answer.includes(val)) {
         btn.classList.add("selected");
       }
+      if (!Array.isArray(q.answer) && normalizeVal(q.answer) === normalizeVal(val)) {
+        btn.classList.add("selected");
+      }
+
       if (isChecked) {
         btn.style.pointerEvents = "none";
-        if (normalizeVal(btn.dataset.value) === normalizeVal(q.correct_answer)) {
-          btn.classList.add("correct");
-        } else if (
-          normalizeVal(btn.dataset.value) === normalizeVal(q.answer)
-        ) {
-          btn.classList.add("incorrect");
+
+        // 🔹 MC múltiple
+        if (q.type === "mc" && Array.isArray(q.correct_answer)) {
+          const isUserSelected = Array.isArray(q.answer) && q.answer.includes(val);
+          const isCorrect = q.correct_answer.includes(val);
+
+          if (isCorrect) btn.classList.add("correct");
+          if (isUserSelected && !isCorrect) btn.classList.add("incorrect");
+
+        } else {
+          // 🔹 MC simple / TF
+          if (normalizeVal(val) === normalizeVal(q.correct_answer)) {
+            btn.classList.add("correct");
+          } else if (normalizeVal(val) === normalizeVal(q.answer)) {
+            btn.classList.add("incorrect");
+          }
         }
       }
     });
   }
 
-if (isChecked) {
+  // ✅ FEEDBACK FINAL
+  if (isChecked) {
     const isCorrect = checkCurrentAnswer(q);
+
     if (q.type === "drag_drop") {
       explanation = isCorrect
         ? "¡Excelente! Todos los elementos están en su lugar."
         : "Los ítems en rojo están incorrectos. Revisa la correspondencia.";
     }
+
     feedbackBox.style.display = "block";
     feedbackBox.className =
       "feedback-message " + (isCorrect ? "correct" : "incorrect");
+
     feedbackBox.innerHTML =
-      (isCorrect 
-          ? (q.correct_msg || "✅ ¡Respuesta correcta!") 
-          : (q.incorrect_msg || "❌ Incorrecto.")
-      );
+      isCorrect
+        ? (q.correct_msg || "✅ ¡Respuesta correcta!")
+        : (q.incorrect_msg || "❌ Incorrecto.");
+  }
 }
 
-
-}
 
 // ---- DRAG & DROP (mapas) ----
 let draggedItem = null;

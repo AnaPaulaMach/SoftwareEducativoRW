@@ -12,6 +12,7 @@
         padding: 30px;
         box-shadow: 0 6px 20px rgba(15, 76, 129, 0.1);
     }
+
     .config-header {
         display: flex;
         justify-content: space-between;
@@ -19,22 +20,26 @@
         gap: 10px;
         align-items: center;
     }
+
     .config-header h2 {
         margin: 0;
         color: #124372;
     }
+
     .clase-select-form select {
         padding: 8px 12px;
         border-radius: 8px;
         border: 1px solid #b6c8e3;
         font-size: 1em;
     }
+
     .niveles-form {
         margin-top: 25px;
         display: flex;
         flex-direction: column;
         gap: 12px;
     }
+
     .nivel-toggle {
         display: flex;
         align-items: center;
@@ -43,20 +48,23 @@
         border: 1px solid #cfe4ff;
         border-radius: 10px;
         padding: 12px 18px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
+
     .nivel-toggle input {
         width: 22px;
         height: 22px;
     }
+
     .nivel-toggle span {
         font-weight: 600;
         color: #094067;
     }
+
     .btn-guardar {
         margin-top: 25px;
         align-self: flex-start;
-        background: linear-gradient(90deg,#0077B6,#0096c7);
+        background: linear-gradient(90deg, #0077B6, #0096c7);
         color: white;
         border: none;
         padding: 10px 24px;
@@ -64,9 +72,11 @@
         font-weight: 700;
         cursor: pointer;
     }
+
     .btn-guardar:hover {
         opacity: 0.9;
     }
+
     .sin-clases {
         text-align: center;
         padding: 30px;
@@ -80,7 +90,16 @@
     <div class="config-header">
         <div>
             <h2>Configurar Niveles</h2>
-            <p style="margin:0;color:#4f5d75;">Activa o bloquea cada nivel para tus clases.</p>
+            <p style="margin:0;color:#4f5d75;">
+                <br>
+                🔹 Elegí una materia.
+                <br>
+                🔹 Activá o bloqueá los niveles que estarán disponibles para los estudiantes que la cursen.
+                <br>
+                ⚠️ Si un nivel está desmarcado, no podrá jugarse hasta que vuelvas a habilitarlo desde esta configuración.
+                <br><br>
+
+            </p>
         </div>
         {% if clases %}
         {# Combo para elegir clase antes de mostrar los toggles #}
@@ -92,35 +111,38 @@
     </div>
 
     {% if not clases %}
-        <div class="sin-clases">
-            <p>No tienes clases creadas aún. Genera un código de clase para comenzar.</p>
-            <a href="{% url 'generar_codigo_clase' %}" class="btn-guardar">Crear clase</a>
-        </div>
+    <div class="sin-clases">
+        <p>No tienes clases creadas aún. Genera un código de clase para comenzar.</p>
+        <a href="{% url 'generar_codigo_clase' %}" class="btn-guardar">Crear clase</a>
+    </div>
     {% elif clase_seleccionada %}
-        <div style="margin-top:15px;">
-            <strong>Clase seleccionada:</strong> {{ clase_seleccionada.materia }} — {{ clase_seleccionada.carrera }} ({{ clase_seleccionada.codigo_acceso }})
-        </div>
+    <div style="margin-top:15px;">
+        <strong>Clase seleccionada:</strong> {{ clase_seleccionada.materia }} — {{ clase_seleccionada.carrera }} 
+    </div>
 
-        {# Un checkbox por nivel que se persiste vía POST #}
-        <form method="post" class="niveles-form">
-            {% csrf_token %}
-            <input type="hidden" name="clase" value="{{ clase_seleccionada.id }}">
-            <input type="hidden" name="accion" value="guardar_niveles">
+    {# Un checkbox por nivel que se persiste vía POST #}
+    <form method="post" class="niveles-form">
+        {% csrf_token %}
+        <input type="hidden" name="clase" value="{{ clase_seleccionada.id }}">
+        <input type="hidden" name="accion" value="guardar_niveles">
 
-            {% for field in niveles_form %}
-                <label class="nivel-toggle">
-                    {{ field }}
-                    <span>{{ field.label }}</span>
-                    {% if field.name == 'level_1' %}
-                        <small style="color:#6b7280;">(nivel base siempre habilitado)</small>
-                    {% endif %}
-                </label>
-            {% endfor %}
+        {% for field in niveles_form %}
+        <label class="nivel-toggle">
+            {{ field }}
+            <span>{{ field.label }}</span>
+            {% if field.name == 'level_1' %}
+            <small style="color:#6b7280;">(nivel base siempre habilitado)</small>
+            {% endif %}
+        </label>
+        {% endfor %}
 
-            <button type="submit" class="btn-guardar">Guardar configuración</button>
-        </form>
+        <button type="submit" class="btn-guardar">Guardar configuración</button>
+    </form>
     {% else %}
-        <p class="sin-clases">Selecciona una clase para comenzar.</p>
+    <p class="sin-clases">Selecciona una clase para comenzar.</p>
     {% endif %}
 </div>
+
+    <a href="{% url 'perfil_profesor' %}">Volver al Panel</a>
+    
 {% endblock %}

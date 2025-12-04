@@ -102,7 +102,11 @@ class Clase(models.Model):
     creado_en = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Clase {self.codigo_acceso} por {self.profesor.username}"
+        return f"Materia: {self.materia} ({self.codigo_acceso})"
+
+
+"""     def __str__(self):
+        return f"Clase {self.codigo_acceso} por {self.profesor.username}" """
 
 class PerfilEstudiante(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

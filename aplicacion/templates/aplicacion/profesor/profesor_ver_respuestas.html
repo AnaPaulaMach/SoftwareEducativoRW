@@ -91,7 +91,13 @@
     <div class="resultados-header">
         <div>
             <h2>Resultados de Estudiantes</h2>
-            <p style="margin:0;color:#4f5d75;">Visualiza los intentos registrados por clase.</p>
+            <p style="margin:0;color:#4f5d75;">
+                <br>
+                🔹 Elegí una materia.
+                <br>
+                🔹  Visualiza los intentos de juego de los estudiantes que cursan esa materia.
+                <br><br>
+            </p>
         </div>
         {% if clases %}
         <form method="get" class="class-selector">
@@ -148,4 +154,7 @@
         </table>
     {% endif %}
 </div>
+
+    <a href="{% url 'perfil_profesor' %}">Volver al Panel</a>
+    
 {% endblock %}
