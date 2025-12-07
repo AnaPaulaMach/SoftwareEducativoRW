@@ -12,7 +12,17 @@ const SAVE_RESULT_URL = CFG.saveResultUrl || "#";
 if (!window.QUIZ_QUESTIONS || window.QUIZ_QUESTIONS.length === 0) {
   console.error('Error: No se encontraron preguntas en window.QUIZ_QUESTIONS');
 }
-const questions = window.QUIZ_QUESTIONS || [];
+
+/* elijo 10 preguntas randoms */
+/* const questions = window.QUIZ_QUESTIONS || [];
+ */
+function getRandomQuestions(bank, amount) {
+  const shuffled = [...bank].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, amount);
+}
+
+const questions = getRandomQuestions(window.QUIZ_QUESTIONS || [], 10);
+
 
 // --------- LÓGICA GENERAL DEL QUIZ ---------
 let currentQuestionIndex = 0;
@@ -58,7 +68,7 @@ function generateHint(q) {
 // --- chequeo de respuesta según tipo --- //ESTE CAMBIE PARA QUE DE CORRECTO
 function checkCurrentAnswer(q) {
 
-  // ✅ MULTIPLE CHOICE CON VARIAS RESPUESTAS
+  // MULTIPLE CHOICE CON VARIAS RESPUESTAS
   if (q.type === "mc" && Array.isArray(q.correct_answer)) {
     if (!Array.isArray(q.answer)) return false;
 
@@ -73,7 +83,7 @@ function checkCurrentAnswer(q) {
     return userAnswers.every((val, i) => val === correctAnswers[i]);
   }
 
-  // ✅ DRAG & DROP
+  //  DRAG & DROP
   if (q.type === "drag_drop") {
     for (let zone in q.correct_map) {
       if (q.answer[zone] !== q.correct_map[zone]) return false;
@@ -81,12 +91,12 @@ function checkCurrentAnswer(q) {
     return true;
   }
 
-  // ✅ SEQUENCE
+  // SEQUENCE
   if (q.type === "sequence") {
     return JSON.stringify(q.answer) === JSON.stringify(q.correct_answer);
   }
 
-  // ✅ FILL / TF / MC SIMPLE
+  //  FILL / TF / MC SIMPLE
   return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
 }
 
@@ -100,6 +110,8 @@ function renderQuestion(index) {
 if (q.type === "drag_drop") {
     if (q.id === 7) {
         html += renderDragDrop7(q);
+    } else if (q.id === 11){
+        html += renderDragDrop11(q); 
     } else {
         html += renderDragDrop(q);
     }
@@ -113,6 +125,27 @@ if (q.type === "drag_drop") {
 
 
   html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none;"></div>`;
+// BOTÓN DE PISTA SI EXISTE q.pista
+if (q.pista && q.pista.trim() !== "") {
+html += `
+  <div class="hint-wrapper" style="margin-top:15px;">
+    <button 
+      type="button" 
+      class="btn-show-hint" 
+      onclick="toggleHint(${q.id})"
+    >
+      💡 Mostrar pista
+    </button>
+
+    <div id="hint-box-${q.id}" class="hint-box">
+      ${q.pista}
+    </div>
+  </div>
+`;
+
+}
+
+
   html += `</div>`;
   questionsContainer.innerHTML = html;
 
@@ -207,6 +240,46 @@ function renderDragDrop7(q) {
 }
 
 
+function renderDragDrop11(q) {
+
+  // Ítems arrastrables
+  let dragItemsHtml = q.drag_items.map(item => 
+    `<div class="draggable" draggable="true" data-protocol="${item.value}">
+      ${item.label}
+    </div>`
+  ).join("");
+
+  let ddHtml = `
+    <div class="drag-drop11-wrapper">
+
+      <!-- TÍTULOS -->
+      <div class="drop-row drop-header">
+        <div class="drop-title">GBN</div>
+        <div class="drop-title">SR</div>
+      </div>
+
+      <!-- FILA 1 -->
+      <div class="drop-row">
+        <div class="dropzone drop-transporte drop-active" data-function="gbn_1"></div>
+        <div class="dropzone drop-transporte drop-active" data-function="sr_1"></div>
+      </div>
+
+      <!-- FILA 2 -->
+      <div class="drop-row">
+        <div class="dropzone drop-transporte drop-active" data-function="gbn_2"></div>
+        <div class="dropzone drop-transporte drop-active" data-function="sr_2"></div>
+      </div>
+
+      <!-- OPCIONES -->
+      <div class="drag-container11">
+        ${dragItemsHtml}
+      </div>
+
+    </div>
+  `;
+
+  return ddHtml;
+}
 
 
 function renderFill(q) {
@@ -244,13 +317,15 @@ function renderOptions(q) {
   let optHtml = `<div class="options-group" data-qtype="${q.type}">`;
 
   // Si la pregunta tiene imagen, mostrarla arriba de las opciones
-  if (q.image) {
-    optHtml += `
-      <div class="question-image" style="text-align:center; margin-bottom:10px;">
-        <img src="${q.image}" alt="Imagen de la pregunta" style="max-width:300px; height:auto;">
-      </div>
-    `;
-  }
+ // Si la pregunta tiene imagen, mostrarla arriba de las opciones
+if (q.image) {
+  optHtml += `
+    <div class="question-image" style="text-align:center; margin-bottom:10px;">
+      <img src="${q.image}" alt="Imagen de la pregunta">
+    </div>
+  `;
+}
+
 
   options.forEach(opt => {
     // si es multiple-choice con múltiples respuestas correctas
@@ -346,7 +421,7 @@ function applyQuestionState(q) {
     }
 
   } else {
-    // ✅ MC / TF (SOPORTA MULTIPLE RESPUESTA)
+    //  MC / TF (SOPORTA MULTIPLE RESPUESTA)
     const optionsGroup = qElement.querySelector(".options-group");
     if (!optionsGroup) return;
 
@@ -384,7 +459,7 @@ function applyQuestionState(q) {
     });
   }
 
-  // ✅ FEEDBACK FINAL
+  //  FEEDBACK FINAL
   if (isChecked) {
     const isCorrect = checkCurrentAnswer(q);
 
@@ -425,19 +500,30 @@ function setupDragDropListeners() {
       zone.classList.add("hover");
     });
     zone.addEventListener("dragleave", () => zone.classList.remove("hover"));
+
+
     zone.addEventListener("drop", e => {
-      e.preventDefault();
-      zone.classList.remove("hover");
-      const existingDraggable = zone.querySelector(".draggable");
-      if (existingDraggable) {
-        document.getElementById("drag-1").appendChild(existingDraggable);
-      }
-      if (draggedItem) {
-        zone.appendChild(draggedItem);
-      }
-      saveDragDropState();
-      updateNavControls();
-    });
+  e.preventDefault();
+  zone.classList.remove("hover");
+
+  const currentQ = questions[currentQuestionIndex];
+  if (currentQ.id === 1) {
+    zone.textContent = "";  
+  }
+
+  const existingDraggable = zone.querySelector(".draggable");
+  if (existingDraggable) {
+    document.getElementById("drag-1").appendChild(existingDraggable);
+  }
+
+  if (draggedItem) {
+    zone.appendChild(draggedItem);
+  }
+
+  saveDragDropState();
+  updateNavControls();
+});
+
   });
 }
 
@@ -585,21 +671,34 @@ window.selectOption = function(btn, qid) {
   const q = questions.find(x => x.id === qid);
   if (!q || q.checked) return;
 
-  if (!Array.isArray(q.answer)) q.answer = [];
-
   const val = btn.dataset.value;
 
-  if (q.answer.includes(val)) {
-    // si ya estaba → la desmarca
-    q.answer = q.answer.filter(v => v !== val);
-    btn.classList.remove("selected");
-  } else {
-    // si no estaba → la agrega
-    q.answer.push(val);
+  // VERDADERO / FALSO → SOLO UNA OPCIÓN
+  if (q.type === "tf") {
+    q.answer = val;
+
+    // quitar selección previa
+    document
+      .querySelectorAll(`[data-qid="${qid}"] .option-btn`)
+      .forEach(b => b.classList.remove("selected"));
+
     btn.classList.add("selected");
   }
 
-  // Actualizar controles de navegación
+  // MULTIPLE CHOICE (PUEDE SER SIMPLE O MÚLTIPLE)
+  else {
+    if (!Array.isArray(q.answer)) q.answer = [];
+
+    if (q.answer.includes(val)) {
+      // si ya estaba → la desmarca
+      q.answer = q.answer.filter(v => v !== val);
+      btn.classList.remove("selected");
+    } else {
+      // si no estaba → la agrega
+      q.answer.push(val);
+      btn.classList.add("selected");
+    }
+  }
   updateNavControls();
 };
 
@@ -677,32 +776,90 @@ finishBtn.addEventListener("click", e => {
   reviewList.innerHTML = "";
   questions.forEach(q => {
     const isCorrect = checkCurrentAnswer(q);
-    let userAnswerDisplay;
-    if (q.type === "drag_drop") {
-      userAnswerDisplay = `(Arrastradas: ${
-        q.answer ? Object.keys(q.answer).length : 0
-      }/${(q.drag_items || []).length})`;
-    } else if (q.type === "sequence") {
-      userAnswerDisplay =
-        q.answer && q.answer.length ? q.answer.join(" → ") : "Sin ordenar";
-    } else if (q.type === "fill") {
-      userAnswerDisplay = q.answer || "No respondida";
-    } else {
-      userAnswerDisplay = q.answer || "No respondida";
-    }
 
-    let reviewHtml = `<div class="review-item ${
-      isCorrect ? "correct-review" : "incorrect-review"
-    }">`;
-    reviewHtml += `<strong>P${q.id}. ${q.text.replace(/<[^>]+>/g, "")}</strong>`;
-    reviewHtml += `<p class="user-answer">Tu respuesta: ${userAnswerDisplay}</p>`;
+// ------- REEMPLAZAR AQUI: construcción de userAnswerDisplay más descriptiva -------
+let userAnswerDisplay = "";
 
-    if (!isCorrect) {
-      reviewHtml += `<p class="hint-text">💡 Pista: ${generateHint(q)}</p>`;
-      if (q.explanation) {
-        reviewHtml += `<p class="explanation-text">Explicación: ${q.explanation}</p>`;
-      }
-    }
+// helper: busca label en q.options o q.drag_items según value
+function findLabel(q, val) {
+  if (!val && val !== 0) return val;
+  // buscar en opciones (MC/TF)
+  if (Array.isArray(q.options)) {
+    const opt = q.options.find(o => String(o.value) === String(val));
+    if (opt) return opt.label;
+  }
+  // buscar en drag_items
+  if (Array.isArray(q.drag_items)) {
+    const it = q.drag_items.find(i => String(i.value) === String(val));
+    if (it) return it.label;
+  }
+  // buscar en sequence_items
+  if (Array.isArray(q.sequence_items)) {
+    const s = q.sequence_items.find(si => String(si.key) === String(val));
+    if (s) return s.label;
+  }
+  // fallback: devolver el valor crudo
+  return String(val || "");
+}
+
+if (q.type === "drag_drop") {
+  const totalItems = (q.drag_items || []).length;
+  const placedCount = q.answer ? Object.keys(q.answer).length : 0;
+  // listar por zona la etiqueta colocada
+  const parts = (q.drop_zones || []).map(dz => {
+    const placed = q.answer && q.answer[dz.function];
+    const label = placed ? findLabel(q, placed) : "—";
+    // para mostrar el nombre legible de la zona intento usar dz.label si existe
+    const zoneLabel = dz.label ? dz.label : dz.function;
+    return `<strong>${zoneLabel}:</strong> ${label}`;
+  });
+  userAnswerDisplay = `${parts.join(" / ")} <br><small>(${placedCount}/${totalItems} colocados)</small>`;
+}
+else if (q.type === "mc") {
+  if (!q.answer || (Array.isArray(q.correct_answer) && q.answer.length === 0)) {
+    userAnswerDisplay = "No respondida";
+  } else if (Array.isArray(q.answer)) {
+    userAnswerDisplay = q.answer.map(v => findLabel(q, v)).join(" — ");
+  } else {
+    userAnswerDisplay = findLabel(q, q.answer);
+  }
+}
+else if (q.type === "tf") {
+  // tf puede estar como "verdadero"/"falso" o como opciones con values
+  if (!q.answer) {
+    userAnswerDisplay = "No respondida";
+  } else {
+    userAnswerDisplay = findLabel(q, q.answer) || String(q.answer);
+  }
+}
+else if (q.type === "sequence") {
+  if (!q.answer || !Array.isArray(q.answer) || q.answer.length === 0) {
+    userAnswerDisplay = "Sin ordenar";
+  } else {
+    userAnswerDisplay = q.answer.map(k => findLabel(q, k)).join(" → ");
+  }
+}
+else if (q.type === "fill") {
+  userAnswerDisplay = q.answer ? String(q.answer) : "No respondida";
+}
+else {
+  // default
+  userAnswerDisplay = q.answer ? JSON.stringify(q.answer) : "No respondida";
+}
+// ---------------- FIN del reemplazo ----------------
+
+// ahora construimos reviewHtml (igual que antes)
+let reviewHtml = `<div class="review-item ${isCorrect ? "correct-review" : "incorrect-review"}">`;
+reviewHtml += `<strong>P${q.id}. ${q.text.replace(/<[^>]+>/g, "")}</strong>`;
+reviewHtml += `<p class="user-answer">Tu respuesta: ${userAnswerDisplay}</p>`;
+
+if (!isCorrect) {
+  if (q.pista && q.pista.trim() !== "") {
+    reviewHtml += `<p class="hint-text">💡 Pista: ${q.pista}</p>`;
+  }
+}
+
+
     reviewHtml += `</div>`;
     reviewList.innerHTML += reviewHtml;
   });
@@ -722,13 +879,13 @@ finishBtn.addEventListener("click", e => {
     bgColor = "#0f9d58";
   } else if (score >= 7) {
     rubric =
-      "UTP Cat 6 (Bueno): Comprende la mayoría de los conceptos. Puede pulir algunos detalles.";
+      "UTP Categoria 6 (Bueno): Comprende la mayoría de los conceptos. Puede pulir algunos detalles.";
     title = "Muy buen desempeño";
     icon = "🎉";
     bgColor = "#029ad6";
   } else {
     rubric =
-      "UTP Cat 3/5 (Necesita mejorar): Conviene repasar teoría y reintentar el nivel.";
+      "UTP Categoria 3/5 (Necesita mejorar): Conviene repasar teoría y reintentar el nivel.";
     title = "Hay margen para mejorar";
     icon = "🔧";
     bgColor = "#ff6b6b";
@@ -821,3 +978,9 @@ finishBtn.addEventListener("click", e => {
 renderQuestion(currentQuestionIndex);
 updateNavControls();
 
+window.toggleHint = function(qid) {
+  const box = document.getElementById(`hint-box-${qid}`);
+  if (!box) return;
+
+  box.style.display = box.style.display === "none" ? "block" : "none";
+};

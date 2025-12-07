@@ -60,7 +60,7 @@
             Menú de Niveles</a>
     </div>
 
-    <script>
+<script>
         window.QUIZ_CONFIG = {
             saveResultUrl: "{% url 'save_quiz_result' %}",
             imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
@@ -83,8 +83,8 @@
 
                 drop_zones: [
                     { function: 'campo1', label: 'N° puerto origen', active: false },
-                    { function: 'campo2', label: '___________', active: true },
-                    { function: 'campo3', label: '___________', active: true },
+                    { function: 'campo2', label: '_____', active: true },
+                    { function: 'campo3', label: '_____', active: true },
                     { function: 'campo4', label: 'Checksum', active: false },
                     { function: 'campo5', label: 'Datos de Aplicación (MENSAJE)', active: false },
                 ],
@@ -98,8 +98,9 @@
                 checked: false,
                 score_value: 1,
                 //explanation: "Campos correctos: N° puerto destino y Longitud.",
+                pista: "Uno de los campos indica a dónde va el segmento y el otro está relacionado con su tamaño.",
                 correct_msg: "¡Excelente! Completaste correctamente los campos del segmento UDP.",
-                incorrect_msg: "Incorrecto. 🔎 Pista: revisá si los campos que elegiste pertenecen a UDP y si están en el orden correcto. Uno indica a dónde va el segmento y el otro está relacionado con su tamaño."
+                incorrect_msg: "Incorrecto. Revisá si los campos que elegiste pertenecen a UDP y si están en el orden correcto."
 
             },
 
@@ -129,16 +130,16 @@
                 answer: [],       // El jugador marcará aquí
                 checked: false,
                 score_value: 1,
-
+                pista:"TCP requiere establecer una conexión y controlar el flujo, por eso incluye más campos que UDP.",
                 correct_msg: "¡Bien hecho! Todas las opciones seleccionadas corresponden a TCP.",
-                incorrect_msg: "Hay elecciones incorrectas. 🔎 Pista: 4 Recordá que TCP requiere establecer una conexión y controlar el flujo, por eso incluye más campos que UDP."
+                incorrect_msg: "Hay elecciones incorrectas."
             },
 
             {
                 id: 3,
                 type: "tf",
                 text: `Indique si es verdadero o falso el proceso de Establecimiento de Conexión mencionado en el video.<br><br>
-         <video width="350" controls>
+         <video width="600" heigth: "auto" controls>
            <source src="/static/aplicacion/videos/establecimientoTCP.mp4" type="video/mp4">
          </video>`,
                 correct_answer: "verdadero",
@@ -146,9 +147,9 @@
                     { value: "verdadero", label: "VERDADERO" },
                     { value: "falso", label: "FALSO" }
                 ],
-
+                pista: "TCP establece la conexión mediante tres fases antes de transmitir datos, asegurando una comunicación confiable.",
                 correct_msg: "¡Muy bien! El video muestra correctamente el establecimiento de tres fases en TCP.",
-                incorrect_msg: "Incorrecto. TCP establece la conexión mediante tres fases antes de transmitir datos, asegurando una comunicación confiable."
+                incorrect_msg: "Incorrecto."
             },
 
             {
@@ -163,9 +164,9 @@
                     { value: "falso", label: "FALSO" }
                 ],
 
-
+                pista: "UDP es un protocolo de capa de tranporte que se utiliza para transmisión de datos sin conexión, como en streaming",
                 correct_msg: "¡Muy bien! Además de TCP, en Internet existe el protocolo UDP.",
-                incorrect_msg: "Incorrecto. TCP no es el único protocolo; UDP también se utiliza para transmisión de datos sin conexión, como en streaming."
+                incorrect_msg: "Incorrecto. TCP y UDP son los protocolos de capa de tranporte en internet."
 
             },
 
@@ -182,8 +183,9 @@
                 correct_answer: "multiplexacion",
                 checked: false,
                 score_value: 1,
+                pista:"Observá cómo la capa de Transporte distingue entre distintos procesos en el mismo host, ¿qué mecanismo podría usar?",
                 correct_msg: "¡Correcto! La capa de Transporte usa multiplexación y desmultiplexación para entregar los datos al proceso adecuado según el número de puerto.",
-                incorrect_msg: "Incorrecto. 🔎 Pista: Observá cómo la capa de Transporte distingue entre distintos procesos en el mismo host, ¿qué mecanismo podría usar?"
+                incorrect_msg: "Incorrecto. Para entregar los datos que recibe de capa de red usa multiplexación y desmultiplexación "
             },
 
             {
@@ -208,17 +210,18 @@
 
                 checked: false,
                 score_value: 1,
+                pista:"El campo de tamaño más chico corresponde a la longitud de cabecera. El número de secuencia, expresado en bytes, ocupa 4.",
                 correct_msg: "¡Excelente! Cada campo está en el tamaño correcto.",
-                incorrect_msg: "Revisa bien los tamaños de los campos de la cabecera TCP."
+                incorrect_msg: "Incorrecto. Revisa bien los tamaños de los campos de la cabecera TCP."
             },
             // Pregunta id 7 – Capa de Transporte con imágenes
             {
                 id: 7,
                 type: "drag_drop",
-                text: "Arrastrá el nombre correcto a la imagen correspondiente. Recordá: TCP es confiable y orientado a conexión, UDP es no confiable y sin conexión.",
+                text: "Arrastrá el nombre del segmento a la imagen correspondiente.",
                 drag_items: [
-                    { value: "TCP", label: "TCP" },
-                    { value: "UDP", label: "UDP" }
+                    { value: "TCP", label: "Segmento TCP" },
+                    { value: "UDP", label: "Segmento UDP" }
                 ],
                 drop_zones: [
                     {
@@ -240,8 +243,9 @@
                 },
                 checked: false,
                 score_value: 1,
+                pista:"TCP es confiable y orientado a conexión, UDP es no confiable y sin conexión.",
                 correct_msg: "¡Correcto! Identificaste correctamente los segmentos TCP y UDP.",
-                incorrect_msg: "Revisá los conceptos: TCP es confiable y orientado a conexión, UDP es no confiable y sin conexión."
+                incorrect_msg: "Incorrecto. Revisá las estructuras de los segmentos."
             },
             //
             {
@@ -259,8 +263,9 @@
                 correct_answer: ["guaranteed_delay", "guaranteed_bandwidth"], // las que no se ofrecen
                 checked: false,
                 score_value: 1,
+                pista:"Reflexioná sobre lo siguiente: ¿Internet puede asegurar tiempos de entrega o que los datos viajen a una velocidad constante?",
                 correct_msg: "¡Correcto! La capa de transporte no garantiza retardo ni ancho de banda.",
-                incorrect_msg: "Revisá los conceptos: TCP y UDP no pueden garantizar retardo ni ancho de banda."
+                incorrect_msg: "Incorrecto. La capa de transporte lo que no garantiza es retardo ni ancho de banda."
             }, {
                 id: 9,
                 type: "mc", // multiple-choice simple
@@ -274,8 +279,9 @@
                 correct_answer: "connection_close",
                 checked: false,
                 score_value: 1,
+                pista:"El flag FIN, significa que el dispositivo terminó de enviar datos y desea finalizar la conexión.",
                 correct_msg: "¡Correcto! La imagen representa el cierre de una conexión TCP.",
-                incorrect_msg: "Incorrecto. 🔎 Pista: ambos extremos hacen un acuerdo para terminar su sesión. "
+                incorrect_msg: "Incorrecto. Revisa para que se usa cada Flag."
             },
 
             {
@@ -311,13 +317,49 @@
                 },
                 checked: false,
                 score_value: 1,
+                pista:"El número de secuencia ordena los datos, una de las otras opciones confirma la recepción y la otra detecta errores",
                 correct_msg: "¡Correcto! Identificaste correctamente los tres conceptos.",
-                incorrect_msg: "Revisá los conceptos de TCP: cada uno tiene un rol distinto en la transmisión de datos."
-            }
+                incorrect_msg: "Incorrecto. Revisá los conceptos de TCP: cada uno tiene un rol distinto en la transmisión de datos."
+            },
+
+{
+  id: 11,
+  type: "drag_drop",
+  text: "Clasificá las siguientes características según el protocolo confiable al que pertenecen (GBN o SR).",
+
+  drag_items: [
+    { value: "A", label: "Descarta paquetes recibidos fuera de orden." },
+    { value: "B", label: "Almacena en buffer paquetes fuera de orden." },
+    { value: "C", label: "Utiliza ACK acumulativos." },
+    { value: "D", label: "Reduce la cantidad de retransmisiones." }
+  ],
+
+  drop_zones: [
+    { function: "gbn_1", label: "", active: true },
+    { function: "sr_1",  label: "", active: true },
+
+    { function: "gbn_2", label: "", active: true },
+    { function: "sr_2",  label: "", active: true }
+  ],
+
+  correct_map: {
+    gbn_1: "A",
+    gbn_2: "C",
+    sr_1: "B",
+    sr_2: "D"
+  },
+
+  checked: false,
+  score_value: 1,
+
+  pista: "Uno de los protocolos guarda paquetes fuera de orden para evitar retransmisiones innecesarias. El otro solo reconoce lo recibido en secuencia.",
+  correct_msg: "¡Excelente! Clasificaste correctamente las características de GBN y SR.",
+  incorrect_msg: "Incorrecto. Revisá qué protocolo usa buffer y cuál utiliza ACK acumulativos."
+}
+
 
         ];
     </script>
-
 
     <script src="{% static 'aplicacion/estudiante/juego_capa_2.js' %}"></script>
     {% else %}

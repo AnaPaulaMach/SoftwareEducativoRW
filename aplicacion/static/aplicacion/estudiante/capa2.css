@@ -42,7 +42,7 @@
 
 /* Imagen */
 .drop-image7 img {
-    width: 150px;
+    width: 350px;
     height: auto;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -52,15 +52,16 @@
 .drop-column7 .dropzone {
     width: 150px;
     height: 50px;
-    border: 2px dashed #0077B6;
+/*     border: 2px dashed #0077B6;
+ */    
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     color: #333;
-    background-color: #f5f5f5;
-}
+/*     background-color: #f5f5f5;
+ */}
 
 /* Contenedor de ítems arrastrables */
 .drag-container7 {
@@ -71,7 +72,7 @@
 }
 
 /* Estilo de los ítems arrastrables */
-.drag-container7 .draggable {
+/* .drag-container7 .draggable {
     padding: 8px 12px;
     border: 2px solid #0077B6;
     border-radius: 6px;
@@ -79,8 +80,85 @@
     cursor: grab;
     user-select: none;
     font-weight: bold;
-}
+} */
 .drag-container7 .draggable:active {
     cursor: grabbing;
+}
+
+
+/* ver pista */
+.hint-wrapper {
+    margin-top: 15px;
+}
+
+.hint-box {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #e7f1fa;
+    border-left: 4px solid #0077B6;
+    border-radius: 8px;
+    font-size: 0.95em;
+}
+
+/* agrando la imagen de id 9 */
+.question-module[data-qid="9"] .question-image img {
+    width: 600px;
+    max-width: 600px;
+    height: auto;
+}
+
+
+/* id 11 */
+
+/* ✅ Solo para la pregunta 11 */
+.question-module[data-qid="11"] .dropzone {
+  width: 180px;
+  height: 55px;
+  border: 2px dashed #0077B6;
+  border-radius: 10px;
+  background-color: #f8fbff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Hover solo en la 11 */
+.question-module[data-qid="11"] .dropzone.hover {
+  background-color: #e3f2fd;
+  border-color: #005fa3;
+}
+
+/* ✅ Drag centrado solo en la 11 */
+.question-module[data-qid="11"] .drag-container11 {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.question-module[data-qid="11"] .drop-titles {
+  display: flex;
+  justify-content: center;
+  gap: 120px;
+  margin-bottom: 10px;
+}
+
+.question-module[data-qid="11"] .drop-title {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1em;
+  color: #0077B6;
+    justify-content: center;
+
+}
+
+.question-module[data-qid="11"] .drop-columns11 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 420px;
+  margin: 0 auto;
+  gap: 20px;
 }
 
