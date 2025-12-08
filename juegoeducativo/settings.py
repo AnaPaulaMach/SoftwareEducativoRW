@@ -132,3 +132,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración para usar el modelo de usuario personalizado
 AUTH_USER_MODEL = 'aplicacion.Usuario'
+
+# Configuración para usar el directorio staticfiles para hostear
+STATIC_URL = "static/"          
+STATIC_ROOT = BASE_DIR / "staticfiles"
