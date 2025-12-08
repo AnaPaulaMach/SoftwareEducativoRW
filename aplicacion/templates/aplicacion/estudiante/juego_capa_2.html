@@ -65,7 +65,11 @@
             saveResultUrl: "{% url 'save_quiz_result' %}",
             imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
             imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
-            imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
+            imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}",
+            videoTCP: "{% static 'aplicacion/videos/establecimientoTCP.mp4' %}",
+            imgSegmentoTCP: "{% static 'aplicacion/Imagenes/segmentoTCP.png' %}",
+            imgSegmentoUDP: "{% static 'aplicacion/Imagenes/segmentoUDP.png' %}",
+            imgCierreConexion: "{% static 'aplicacion/Imagenes/cierredeconexion.png' %}"
         };
 
         // BANCO DE PREGUNTAS
@@ -140,7 +144,7 @@
                 type: "tf",
                 text: `Indique si es verdadero o falso el proceso de Establecimiento de Conexión mencionado en el video.<br><br>
          <video width="600" heigth: "auto" controls>
-           <source src="/static/aplicacion/videos/establecimientoTCP.mp4" type="video/mp4">
+           <source src="${window.QUIZ_CONFIG.videoTCP}" type="video/mp4">
          </video>`,
                 correct_answer: "verdadero",
                 options: [
@@ -227,13 +231,13 @@
                     {
                         function: "tcp_zone",
                         //label: "Segmento TCP", 
-                        image: "/static/aplicacion/Imagenes/segmentoTCP.png",
+                        image: window.QUIZ_CONFIG.imgSegmentoTCP,
                         active: true
                     },
                     {
                         function: "udp_zone",
                         // label: "Segmento UDP", 
-                        image: "/static/aplicacion/Imagenes/segmentoUDP.png",
+                        image: window.QUIZ_CONFIG.imgSegmentoUDP,
                         active: true
                     }
                 ],
@@ -270,7 +274,7 @@
                 id: 9,
                 type: "mc", // multiple-choice simple
                 text: "¿Qué representa esta imagen?",
-                image: "/static/aplicacion/Imagenes/cierredeconexion.png", // ruta de la imagen
+                image: window.QUIZ_CONFIG.imgCierreConexion, // ruta de la imagen
                 options: [
                     { value: "connection_close", label: "Cierre de una conexión" },
                     { value: "connection_setup", label: "Establecimiento de conexión" },
