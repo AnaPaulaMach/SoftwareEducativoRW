@@ -31,6 +31,11 @@ ALLOWED_HOSTS = [
     'localhost'
 ]
 
+CSRF_TRUSTED_ORIGINS = [ # <-- ¡AGREGADO!
+    "https://softwareeducativorw-production.up.railway.app",
+]
+
+
 # Application definition
 
 INSTALLED_APPS = [
