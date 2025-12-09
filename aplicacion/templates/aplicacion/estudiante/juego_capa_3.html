@@ -11,6 +11,7 @@
     
     <link rel="stylesheet" href="{% static 'aplicacion/estudiante/niveles.css' %}">
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
+    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/capa3.css' %}">
 </head>
 <body>
     {% if user.is_authenticated %}
@@ -24,18 +25,19 @@
         </div>
         
         <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel 3: Capa de Red</h2>
-        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span
+                id="current-q-number">1</span> de <span id="total-questions">20</span>. ¡Cada acierto te acerca a la Fibra Óptica!</p>
         
         <div class="progress-bar-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
 
-        <form id="quiz-form" onsubmit="return false;"> 
+        <form id="quiz-form" onsubmit="return false;">
             <div id="questions-container">
-                </div>
-            
+            </div>
+
             <div id="score-results" style="display: none;">
-                <div class="score-display">Puntuación Final: <span id="final-score"></span>/10</div>
+                <div class="score-display">Puntuación Final: <span id="final-score"></span>/<span id="final-total">20</span></div>
                 <div id="feedback-final" class="feedback"></div>
                 
                 <div id="review-container">
@@ -52,168 +54,391 @@
             </div>
         </form>
 
-        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al Menú de Niveles</a>
+        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al
+            Menú de Niveles</a>
     </div>
 
     <script>
-        window.QUIZ_CONFIG = {
-          saveResultUrl: "{% url 'save_quiz_result' %}",
-          imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
-          imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
-          imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
-        };
-
-        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Capa de Red) ---------
-        window.QUIZ_QUESTIONS = [
-  {
-    id: 1,
-    type: "mc",
-    text: "¿Cuál de las siguientes opciones describe mejor la función principal de la Capa de Red?",
-    options: [
-      "Encapsular bits en la tarjeta de red y acceder al medio físico",
-      "Determinar la ruta y direccionar datagramas entre redes de origen y destino",
-      "Mantener sesiones estables entre aplicaciones de extremo a extremo",
-      "Cifrar y autenticar los datos antes de enviarlos"
-    ],
-    correct_answer: "Determinar la ruta y direccionar datagramas entre redes de origen y destino",
-    explanation:
-      "En el modelo de cinco capas, la Capa de Red se encarga del direccionamiento lógico y el enrutamiento de datagramas entre redes, utilizando protocolos como IP."
-  },
-  {
-    id: 2,
-    type: "mc",
-    text: "Al atravesar varios routers desde el origen hasta el destino, ¿qué elemento del encabezado cambia en cada salto?",
-    options: [
-      "La dirección IP de destino",
-      "La dirección IP de origen",
-      "Las direcciones MAC de origen y destino",
-      "El número de puerto de transporte"
-    ],
-    correct_answer: "Las direcciones MAC de origen y destino",
-    explanation:
-      "La Capa de Red mantiene las direcciones IP de origen y destino, mientras que en cada enlace cambian las direcciones MAC utilizadas por la Capa de Enlace."
-  },
-  {
-    id: 3,
-    type: "tf",
-    text: "En la Capa de Red, la unidad de datos que se transporta suele denominarse <strong>datagrama IP</strong>.",
-    options: ["Verdadero", "Falso"],
-    correct_answer: "Verdadero",
-    explanation:
-      "En la Capa de Red, el protocolo IP trabaja con datagramas: unidades de datos que contienen las direcciones IP de origen y destino y otros campos como TTL."
-  },
-  {
-    id: 4,
-    type: "fill",
-    text: "El campo del encabezado IP que evita que un datagrama quede circulando indefinidamente en la red se llama:",
-    placeholder: "Escribe el nombre del campo (tres letras)",
-    correct_answer: "ttl",
-    explanation:
-      "El campo <strong>Time To Live (TTL)</strong> se decrementa en cada salto. Cuando llega a cero, el datagrama se descarta para evitar bucles de enrutamiento."
-  },
-  {
-    id: 5,
-    type: "drag_drop",
-    text: "Relaciona cada elemento de la Capa de Red con su descripción correspondiente.",
-    drag_items: [
-      { value: "datagrama", label: "Datagrama IP" },
-      { value: "router", label: "Router" },
-      { value: "ip", label: "Dirección IP" },
-      { value: "tabla", label: "Tabla de enrutamiento" }
-    ],
-    drop_zones: [
-      { function: "unidad", label: "Unidad de datos que viaja en la Capa de Red" },
-      { function: "dispositivo", label: "Dispositivo que reenvía datagramas entre redes" },
-      { function: "identificador", label: "Identificador lógico de un host o interfaz" },
-      { function: "estructura", label: "Estructura que almacena rutas hacia redes de destino" }
-    ],
-    correct_map: {
-      unidad: "datagrama",
-      dispositivo: "router",
-      identificador: "ip",
-      estructura: "tabla"
+      window.QUIZ_CONFIG = {
+        saveResultUrl: "{% url 'save_quiz_result' %}",
+        imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
+        imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
+        imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
+      };
+    
+      // --------- BANCO DE PREGUNTAS (20 preguntas fijas de Capa de Red) ---------
+  window.QUIZ_QUESTIONS = [
+    // 1
+    {
+      id: 1,
+      type: "mc",
+      text: "En la arquitectura de Internet, ¿cómo se denomina a la unidad de información (paquete) procesada específicamente en la capa de red?",
+      options: [
+        "Mensaje",
+        "Segmento",
+        "Datagrama",
+        "Trama"
+      ],
+      correct_answer: "Datagrama",
+      pista:
+        "Pensá en el nombre que recibe el paquete cuando ya está en la Capa de Red, después de que la Capa de Transporte le entrega un segmento.",
+      explanation:
+        "En el contexto de la Capa de Red, la unidad de datos se denomina datagrama IP."
     },
-    explanation:
-      "En la Capa de Red, el datagrama IP es la unidad de datos, el router reenvía datagramas, la dirección IP identifica lógicamente a cada host o interfaz y la tabla de enrutamiento guía las decisiones de reenvío."
-  },
-  {
-    id: 6,
-    type: "sequence",
-    text: "Ordena de forma simplificada el recorrido de un datagrama IP desde un host de origen hasta un servidor remoto.",
-    sequence_items: [
-      { key: "origen", label: "Host de origen envía el datagrama a su router de borde" },
-      { key: "router_local", label: "Router local consulta su tabla de enrutamiento" },
-      { key: "routers_intermedios", label: "Routers intermedios reenvían el datagrama hacia la red destino" },
-      { key: "router_destino", label: "Router de la red destino entrega el datagrama a la red local" },
-      { key: "host_destino", label: "Host de destino recibe el datagrama y lo pasa a la capa superior" }
-    ],
-    correct_sequence: [
-      "origen",
-      "router_local",
-      "routers_intermedios",
-      "router_destino",
-      "host_destino"
-    ],
-    explanation:
-      "Primero el host de origen envía al router de borde, luego los routers consultan tablas de enrutamiento y reenvían el datagrama hasta llegar al router de la red destino, que finalmente lo entrega al host de destino."
-  },
-  {
-    id: 7,
-    type: "mc",
-    text: "¿Cuál de los siguientes protocolos pertenece a la Capa de Red en el modelo de cinco capas?",
-    options: ["TCP", "IP", "HTTP", "FTP"],
-    correct_answer: "IP",
-    explanation:
-      "El protocolo IP (Internet Protocol) opera en la Capa de Red. TCP y UDP pertenecen a la Capa de Transporte, mientras que HTTP y FTP trabajan en la Capa de Aplicación."
-  },
-  {
-    id: 8,
-    type: "tf",
-    text: "La Capa de Red se encarga de entregar datos entre procesos de aplicación que se ejecutan en un mismo host.",
-    options: ["Verdadero", "Falso"],
-    correct_answer: "Falso",
-    explanation:
-      "La entrega entre procesos (por número de puerto) es responsabilidad de la Capa de Transporte. La Capa de Red se centra en el encaminamiento entre hosts y redes."
-  },
-  {
-    id: 9,
-    type: "mc",
-    text: "¿Qué podría ocurrir si el campo TTL de los datagramas IP no se decrementara en cada router?",
-    options: [
-      "Los datagramas podrían quedar atrapados en bucles de enrutamiento de forma indefinida",
-      "Se reduciría el tamaño del encabezado IP y mejoraría el rendimiento",
-      "Los routers dejarían de fragmentar datagramas grandes",
-      "No habría ningún impacto en el recorrido de los datagramas"
-    ],
-    correct_answer:
-      "Los datagramas podrían quedar atrapados en bucles de enrutamiento de forma indefinida",
-    explanation:
-      "El TTL existe precisamente para evitar que un datagrama viva para siempre en la red en caso de configuraciones erróneas o bucles de enrutamiento."
-  },
-  {
-    id: 10,
-    type: "mc",
-    text: "En el contexto de la Capa de Red, ¿qué entendemos por <strong>enrutamiento</strong>?",
-    options: [
-      "Asignar direcciones MAC a cada interfaz de red",
-      "Seleccionar el camino que seguirán los datagramas para llegar a la red destino",
-      "Controlar la velocidad de transmisión entre emisor y receptor",
-      "Aumentar la confiabilidad mediante retransmisiones y confirmaciones"
-    ],
-    correct_answer:
-      "Seleccionar el camino que seguirán los datagramas para llegar a la red destino",
-    explanation:
-      "El enrutamiento consiste en decidir, a partir de la tabla de enrutamiento, por qué salida (next hop) debe reenviarse cada datagrama para alcanzar su red de destino."
-  }
-];
+    // 2
+    {
+      id: 2,
+      type: "tf",
+      text: "La función de reenvío (forwarding) se refiere a la lógica global de la red que determina la ruta que siguen los datagramas, mientras que el enrutamiento (routing) es la acción local de mover un paquete de una interfaz de entrada a una de salida.",
+      options: ["Verdadero", "Falso"],
+      correct_answer: "Falso",
+      pista:
+        "Recordá que una de estas funciones es local, en cada router, y la otra es global, a nivel de toda la red.",
+      explanation:
+        "Forwarding es la acción local en cada router (mover de entrada a salida). Routing es el cálculo de rutas globales (algoritmos y protocolos de enrutamiento)."
+    },
+    // 3
+    {
+      id: 3,
+      type: "sequence",
+      text:
+        "Un router recibe un datagrama IPv4 de 4000 bytes y debe enviarlo por un enlace con MTU de 1500 bytes. Ordene cronológicamente lo que sucede con los fragmentos.",
+      sequence_items: [
+        {
+          key: "viajan",
+          label: "Los fragmentos viajan de forma independiente por la red."
+        },
+        {
+          key: "reensambla",
+          label:
+            "El host de destino reensambla los fragmentos para recuperar el datagrama original."
+        },
+        {
+          key: "divide",
+          label:
+            "El router divide la carga útil y crea fragmentos más pequeños ajustando el campo de desplazamiento."
+        },
+        {
+          key: "recibe",
+          label: "El host de destino recibe los fragmentos."
+        }
+      ],
+      correct_sequence: ["divide", "viajan", "recibe", "reensambla"],
+      pista:
+        "Pensá qué sucede primero en el router, qué pasa en el camino y qué acciones realiza recién el host de destino.",
+      explanation:
+        "Para mantener la red simple, los routers fragmentan los datagramas grandes, mientras que el reensamblado ocurre únicamente en el host de destino."
+    },
+    // 4
+    {
+      id: 4,
+      type: "mc",
+      text:
+        "Un datagrama queda atrapado en un bucle de enrutamiento entre tres routers. ¿Qué mecanismo del encabezado IPv4 evita que circule para siempre?",
+      options: [
+        "El campo de Suma de Comprobación (Checksum).",
+        "El campo Tiempo de Vida (TTL).",
+        "El protocolo de enrutamiento OSPF.",
+        "El campo de Desplazamiento de fragmentación."
+      ],
+      correct_answer: "El campo Tiempo de Vida (TTL).",
+      pista:
+        "Hay un campo que se va reduciendo en cada salto hasta que el paquete “expira”.",
+      explanation:
+        "El campo Time To Live (TTL) se reduce en cada salto; si llega a cero, el router descarta el datagrama para evitar bucles infinitos."
+    },
+    // 5
+    {
+      id: 5,
+      type: "drag_drop",
+      text:
+        "Empareja cada concepto con su definición según el modelo de servicio de Internet.",
+      drag_items: [
+        { value: "A", label: "Dirección IP" },
+        { value: "B", label: "Interfaz" },
+        { value: "C", label: "Subred" }
+      ],
+      drop_zones: [
+        {
+          function: "def1",
+          label: "Límite entre el host/router y el enlace físico."
+        },
+        {
+          function: "def2",
+          label: "Identificador de 32 bits asociado a una interfaz."
+        },
+        {
+          function: "def3",
+          label:
+            "Red aislada creada desconectando las interfaces de sus hosts/routers, donde las interfaces pueden comunicarse sin pasar por un router."
+        }
+      ],
+      correct_map: {
+        def1: "B",
+        def2: "A",
+        def3: "C"
+      },
+      pista:
+        "Recordá que la dirección IP no identifica al equipo completo sino a cada interfaz. Y la subred es el conjunto de interfaces que se pueden comunicar sin pasar por un router.",
+      explanation:
+        "A-2: Dirección IP → identificador de 32 bits. B-1: Interfaz → límite entre host/router y enlace físico. C-3: Subred → conjunto de interfaces que pueden comunicarse sin pasar por un router."
+    },
+    // 6
+    {
+      id: 6,
+      type: "mc",
+      text:
+        "Un router recibe un paquete con destino 11001000 00010111 00011000 10101010. En su tabla de reenvío hay dos entradas que coinciden: una para el prefijo 11001000 00010111 (16 bits) y otra para 11001000 00010111 00011 (21 bits). ¿Qué regla aplica para elegir la interfaz de salida?",
+      options: [
+        "First Match (Primera coincidencia en la lista).",
+        "Random Selection (Selección aleatoria).",
+        "Longest Prefix Match (Coincidencia con el prefijo más largo)."
+      ],
+      correct_answer: "Longest Prefix Match (Coincidencia con el prefijo más largo).",
+      pista:
+        "Cuando hay varias coincidencias, el router elige la entrada más específica, no la primera que encuentra.",
+      explanation:
+        "En el reenvío IP se usa la regla de Longest Prefix Match para seleccionar la entrada más específica en la tabla de reenvío."
+    },
+    // 7
+    {
+      id: 7,
+      type: "tf",
+      text:
+        "A diferencia de IPv4, el protocolo IPv6 permite que los routers intermedios fragmenten datagramas demasiado grandes para el enlace de salida.",
+      options: ["Verdadero", "Falso"],
+      correct_answer: "Falso",
+      pista:
+        "¿Quién tiene la responsabilidad de adaptar el tamaño del paquete en IPv6: los routers intermedios o los hosts extremos?",
+      explanation:
+        "IPv6 eliminó la fragmentación en routers intermedios. Sólo los extremos (hosts) pueden fragmentar, lo que simplifica el procesamiento en la red."
+    },
+    // 8
+    {
+      id: 8,
+      type: "mc",
+      text:
+        "Un host recién conectado a una red necesita obtener una dirección IP. ¿Cuál es el orden correcto de los mensajes DHCP?",
+      options: [
+        "Request -> Offer -> Discover -> Ack",
+        "Discover -> Offer -> Request -> Ack",
+        "Discover -> Request -> Offer -> Ack"
+      ],
+      correct_answer: "Discover -> Offer -> Request -> Ack",
+      pista:
+        "El cliente primero “anuncia” que busca servidor, luego recibe una propuesta, más tarde solicita formalmente y al final llega la confirmación.",
+      explanation:
+        "El flujo DHCP estándar es DORA: el cliente descubre (Discover), el servidor ofrece (Offer), el cliente pide (Request) y el servidor confirma (Ack)."
+    },
+    // 9
+    {
+      id: 9,
+      type: "mc",
+      text:
+        "En una red doméstica 10.0.0.0/24 un host envía un datagrama a Google. ¿Qué cambia el router NAT en el datagrama antes de enviarlo a la WAN?",
+      options: [
+        "Solo la dirección IP de origen.",
+        "La dirección IP de origen y el número de puerto de origen.",
+        "La dirección IP de destino y el puerto de destino."
+      ],
+      correct_answer: "La dirección IP de origen y el número de puerto de origen.",
+      pista:
+        "Pensá en cómo el NAT logra que muchos equipos internos compartan una sola dirección pública.",
+      explanation:
+        "El router NAT traduce la IP y el puerto de origen para mapear la conexión interna (privada) a una conexión externa (pública) en su tabla de traducción."
+    },
+    // 10
+    {
+      id: 10,
+      type: "tf",
+      text:
+        "El modelo de servicio de la capa de red de Internet se describe como 'Best-effort', lo que garantiza un ancho de banda mínimo y entrega en orden, aunque no garantiza retardos.",
+      options: ["Verdadero", "Falso"],
+      correct_answer: "Falso",
+      pista:
+        "¿Best-effort garantiza algo o simplemente hace “lo mejor que puede” sin comprometerse a nada?",
+      explanation:
+        "El servicio Best-effort de la Capa de Red de Internet no ofrece garantías de entrega, orden, ancho de banda ni tiempos de retardo."
+    },
+    // 11
+    {
+      id: 11,
+      type: "drag_drop",
+      text:
+        "Empareja el algoritmo de enrutamiento con su característica principal.",
+      drag_items: [
+        { value: "A", label: "Estado de Enlace (Link-State)" },
+        { value: "B", label: "Vector de Distancias (Distance-Vector)" }
+      ],
+      drop_zones: [
+        {
+          function: "car1",
+          label:
+            "Es descentralizado; los nodos solo conocen los costes a sus vecinos directos e intercambian vectores de estimaciones."
+        },
+        {
+          function: "car2",
+          label:
+            "Es centralizado; cada nodo necesita un mapa completo de la red y los costes de todos los enlaces."
+        }
+      ],
+      correct_map: {
+        car1: "B",
+        car2: "A"
+      },
+      pista:
+        "Uno se basa en información global de toda la topología, el otro se apoya en intercambiar información únicamente con los vecinos.",
+      explanation:
+        "Link-State suele implementarse con Dijkstra y requiere información global. Distance-Vector se basa en Bellman-Ford y sólo intercambia vectores con vecinos."
+    },
+    // 12
+    {
+      id: 12,
+      type: "mc",
+      text:
+        "¿Cuál de los siguientes protocolos se utiliza para el enrutamiento entre sistemas autónomos (Inter-AS) y se considera el 'pegamento' de Internet?",
+      options: ["OSPF", "RIP", "BGP", "ICMP"],
+      correct_answer: "BGP",
+      pista:
+        "Pensá en el protocolo que usan los grandes proveedores de Internet para intercambiar rutas entre redes distintas a nivel global.",
+      explanation:
+        "BGP (Border Gateway Protocol) es el protocolo de enrutamiento utilizado entre sistemas autónomos en Internet."
+    },
+    // 13
+    {
+      id: 13,
+      type: "mc",
+      text:
+        "Ejecutas el comando Traceroute para ver la ruta hacia un servidor. ¿Qué protocolo se utiliza para recibir los mensajes de error 'TTL excedido' que revelan los routers intermedios?",
+      options: ["TCP", "DHCP", "ICMP", "ARP"],
+      correct_answer: "ICMP",
+      pista:
+        "Traceroute se apoya en mensajes de error de red cuando el TTL llega a cero, no en el mismo protocolo que se usa para transferir la página web.",
+      explanation:
+        "Traceroute usa datagramas con TTL crecientes. Cuando el TTL llega a 0, los routers generan mensajes ICMP 'Time Exceeded' que permiten descubrir el camino."
+    },
+    // 14
+    {
+      id: 14,
+      type: "tf",
+      text:
+        "En una Red Definida por Software (SDN), el plano de control se separa físicamente del router y se ejecuta en un controlador remoto centralizado.",
+      options: ["Verdadero", "Falso"],
+      correct_answer: "Verdadero",
+      pista:
+        "En este enfoque, los dispositivos de red se vuelven más simples y la “inteligencia” se mueve a un componente central.",
+      explanation:
+        "SDN desacopla el plano de control del de datos. El controlador centralizado programa las tablas de reenvío de los dispositivos."
+    },
+    // 15
+    {
+      id: 15,
+      type: "sequence",
+      text:
+        "Ordena el recorrido de un paquete dentro de la arquitectura de un router genérico.",
+      sequence_items: [
+        { key: "out", label: "Puerto de salida (Output Port)." },
+        {
+          key: "proc_out",
+          label: "Procesamiento de salida (encapsulado capa de enlace)."
+        },
+        { key: "in", label: "Puerto de entrada (Input Port)." },
+        { key: "fabric", label: "Entramado de conmutación (Switching Fabric)." }
+      ],
+      correct_sequence: ["in", "fabric", "out", "proc_out"],
+      pista:
+        "Imaginá el camino: primero el paquete entra al router, luego atraviesa la parte interna que decide por dónde salir, después llega al puerto de salida y recién ahí se prepara para el medio físico.",
+      explanation:
+        "El flujo típico es: Input Port → Switching Fabric → Output Port → procesamiento de salida (cola, encapsulado y transmisión)."
+    },
+    // 16
+    {
+      id: 16,
+      type: "mc",
+      text:
+        "En el contexto de SDN y OpenFlow, la tabla de reenvío tradicional se sustituye por una tabla de flujo que opera bajo el concepto de:",
+      options: [
+        "Store and Forward (Almacenamiento y reenvío).",
+        "Match plus Action (Correspondencia más Acción).",
+        "Best Effort (Mejor esfuerzo)."
+      ],
+      correct_answer: "Match plus Action (Correspondencia más Acción).",
+      pista:
+        "Cada entrada de la tabla indica con qué campos del paquete debe coincidir y qué hacer si se cumple esa condición.",
+      explanation:
+        "En OpenFlow, cada entrada de la tabla de flujo define condiciones de coincidencia (match) y acciones (action) a aplicar a los paquetes."
+    },
+    // 17
+    {
+      id: 17,
+      type: "tf",
+      text:
+        "En el protocolo OSPF, un router difunde la información del estado de sus enlaces a todos los routers del sistema autónomo, no solo a sus vecinos directos.",
+      options: ["Verdadero", "Falso"],
+      correct_answer: "Verdadero",
+      pista:
+        "Este protocolo busca que todos los routers tengan el mismo mapa de la red, por eso la información se 'inunda' en el sistema autónomo.",
+      explanation:
+        "OSPF distribuye información de estado de enlace mediante inundación para que cada router tenga una base de datos de topología idéntica."
+    },
+    // 18
+    {
+      id: 18,
+      type: "mc",
+      text:
+        "¿Cómo se llama el problema en algoritmos de Vector de Distancia donde una 'mala noticia' (como la caída de un enlace) tarda mucho en propagarse, generando bucles temporales?",
+      options: [
+        "Cuenta hasta el infinito.",
+        "Bloqueo de cabeza de línea (HOL).",
+        "Inundación SYN."
+      ],
+      correct_answer: "Cuenta hasta el infinito.",
+      pista:
+        "Es el problema clásico que aparece en muchos ejemplos de Distance-Vector y motiva técnicas como 'split horizon'.",
+      explanation:
+        "En 'count to infinity', los routers aumentan progresivamente el costo hacia un destino inalcanzable antes de detectar que está caído."
+    },
+    // 19
+    {
+      id: 19,
+      type: "mc",
+      text:
+        "En un router llegan paquetes de VoIP y de descarga de archivos (FTP). El router siempre envía primero VoIP y solo atiende FTP si no hay VoIP en cola. ¿Qué política de planificación está usando?",
+      options: [
+        "FIFO (First-In-First-Out).",
+        "Round Robin.",
+        "Colas con Prioridad.",
+        "WFQ (Weighted Fair Queuing)."
+      ],
+      correct_answer: "Colas con Prioridad.",
+      pista:
+        "Una de estas políticas siempre atiende primero una clase de tráfico antes que las demás.",
+      explanation:
+        "En colas con prioridad, los paquetes de la clase más alta (VoIP) se transmiten antes que los de baja prioridad (FTP)."
+    },
+    // 20
+    {
+      id: 20,
+      type: "tf",
+      text:
+        "El campo Protocolo en el encabezado IPv4 indica el protocolo de la capa de enlace (como Ethernet o Wi-Fi) que transportará el datagrama.",
+      options: ["Verdadero", "Falso"],
+      correct_answer: "Falso",
+      pista:
+        "Este campo sirve para 'decidir a qué protocolo de la capa superior se le entregan los datos' (por ejemplo TCP o UDP).",
+      explanation:
+        "El campo Protocolo del encabezado IPv4 indica el protocolo de la Capa de Transporte al que se debe entregar el contenido (por ejemplo, TCP=6, UDP=17)."
+    }
+  ];
+    </script>
+    
 
-      </script>
-      <script src="{% static 'aplicacion/estudiante/juego_capa_3.js' %}"></script>
+    <script src="{% static 'aplicacion/estudiante/juego_capa_3.js' %}"></script>
     {% else %}
         <h1>Acceso Denegado</h1>
         <p>Necesitas iniciar sesión para ver esta página.</p>
-    </div>
     {% endif %}
+
     
     <!-- Footer -->
     <footer class="footer">

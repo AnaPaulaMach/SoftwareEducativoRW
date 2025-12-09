@@ -17,7 +17,12 @@ if (!window.QUIZ_QUESTIONS || window.QUIZ_QUESTIONS.length === 0) {
 /* const questions = window.QUIZ_QUESTIONS || [];
  */
 function getRandomQuestions(bank, amount) {
-  const shuffled = [...bank].sort(() => 0.5 - Math.random());
+  // Mezclar usando algoritmo Fisher-Yates para mejor distribución aleatoria
+  const shuffled = [...bank];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   return shuffled.slice(0, amount);
 }
 
@@ -124,26 +129,14 @@ if (q.type === "drag_drop") {
 }
 
 
-  html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none;"></div>`;
-// BOTÓN DE PISTA SI EXISTE q.pista
-if (q.pista && q.pista.trim() !== "") {
-html += `
-  <div class="hint-wrapper" style="margin-top:15px;">
-    <button 
-      type="button" 
-      class="btn-show-hint" 
-      onclick="toggleHint(${q.id})"
-    >
-      💡 Mostrar pista
-    </button>
-
-    <div id="hint-box-${q.id}" class="hint-box">
-      ${q.pista}
-    </div>
-  </div>
-`;
-
-}
+  html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none; margin-top: 15px;"></div>`;
+  // Feedback y Pista (igual que nivel 1)
+  if (q.pista && q.pista.trim() !== "") {
+    html += `<div class="hint-container" style="display:flex; gap:16px; align-items:flex-start; margin-top:16px;">`;
+    html += `<button type="button" class="btn-show-hint" onclick="showHint(${q.id})">💡 Mostrar pista</button>`;
+    html += `<div id="hint-box-${q.id}" class="hint-box" style="display:none; flex:1;"></div>`;
+    html += `</div>`;
+  }
 
 
   html += `</div>`;
@@ -395,6 +388,7 @@ function applyQuestionState(q) {
             const labelText = correctLabel ? correctLabel.label : correctProtocol;
             const correctEl = document.createElement("div");
             correctEl.className = "correct-answer";
+            correctEl.textContent = "Correcto: " + labelText;
             zone.appendChild(correctEl);
           }
         }
@@ -978,9 +972,26 @@ if (!isCorrect) {
 renderQuestion(currentQuestionIndex);
 updateNavControls();
 
-window.toggleHint = function(qid) {
-  const box = document.getElementById(`hint-box-${qid}`);
-  if (!box) return;
+// Función para mostrar/ocultar pista (igual que nivel 1)
+window.showHint = function (qid) {
+  const hintBox = document.getElementById(`hint-box-${qid}`);
+  if (!hintBox) return;
 
-  box.style.display = box.style.display === "none" ? "block" : "none";
+  if (hintBox.style.display === "block") {
+    // Si está visible, ocultarla
+    hintBox.style.display = "none";
+  } else {
+    // Si está oculta, mostrarla
+    const q = questions.find(qq => qq.id === qid);
+    if (!q || !q.pista) return;
+
+    let hintText = String(q.pista || "").trim();
+    hintText = hintText.replace(/^\s*Pista\s*[:\-–—]?\s*/i, "");
+
+    hintBox.innerHTML = `
+      <div class="hint-inner">
+        <div class="hint-content">${hintText}</div>
+      </div>`;
+    hintBox.style.display = "block";
+  }
 };

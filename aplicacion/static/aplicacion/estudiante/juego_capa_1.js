@@ -306,7 +306,7 @@ function renderQuestion(index) {
   // Feedback y Pista
   html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none; margin-top: 15px;"></div>`;
   if (q.hint_if_wrong) {
-    html += `<div style="display:flex; gap:16px; align-items:flex-start; margin-top:16px;">`;
+    html += `<div class="hint-container" style="display:flex; gap:16px; align-items:flex-start; margin-top:16px;">`;
     html += `<button type="button" class="btn-show-hint" onclick="showHint(${q.id})">💡 Mostrar pista</button>`;
     html += `<div id="hint-box-${q.id}" class="hint-box" style="display:none; flex:1;"></div>`;
     html += `</div>`;

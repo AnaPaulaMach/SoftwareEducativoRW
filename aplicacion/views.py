@@ -172,27 +172,31 @@ def perfil_estudiante_view(request):
     }
 
     # Lógica de desbloqueo secuencial para el estudiante
+    # Umbral fijo: siempre 7 puntos para pasar (basado en 10 preguntas)
+    # Esto aplica independientemente de si el nivel tiene 10 o 20 preguntas
+    UMBRAL_PASO = 7
+    
     # El nivel 1 siempre está disponible si el profesor lo habilita
     puede_jugar_nivel_1 = niveles_habilitados.get(1, False)
 
     # Para el Nivel 2, necesita haber pasado el Nivel 1 Y que el profesor lo habilite
-    unlocked_level_1_by_student = QuizAttempt.objects.filter(user=request.user, level=1, score__gte=7).exists()
+    unlocked_level_1_by_student = QuizAttempt.objects.filter(user=request.user, level=1, score__gte=UMBRAL_PASO).exists()
     puede_jugar_nivel_2 = unlocked_level_1_by_student and niveles_habilitados.get(2, False)
 
     # Para el Nivel 3, necesita haber pasado el Nivel 2 Y que el profesor lo habilite
-    unlocked_level_2_by_student = QuizAttempt.objects.filter(user=request.user, level=2, score__gte=7).exists()
+    unlocked_level_2_by_student = QuizAttempt.objects.filter(user=request.user, level=2, score__gte=UMBRAL_PASO).exists()
     puede_jugar_nivel_3 = unlocked_level_2_by_student and niveles_habilitados.get(3, False)
 
     # Para el Nivel 4, necesita haber pasado el Nivel 3 Y que el profesor lo habilite
-    unlocked_level_3_by_student = QuizAttempt.objects.filter(user=request.user, level=3, score__gte=7).exists()
+    unlocked_level_3_by_student = QuizAttempt.objects.filter(user=request.user, level=3, score__gte=UMBRAL_PASO).exists()
     puede_jugar_nivel_4 = unlocked_level_3_by_student and niveles_habilitados.get(4, False)
 
     # Para el Nivel 5, necesita haber pasado el Nivel 4 Y que el profesor lo habilite
-    unlocked_level_4_by_student = QuizAttempt.objects.filter(user=request.user, level=4, score__gte=7).exists()
+    unlocked_level_4_by_student = QuizAttempt.objects.filter(user=request.user, level=4, score__gte=UMBRAL_PASO).exists()
     puede_jugar_nivel_5 = unlocked_level_4_by_student and niveles_habilitados.get(5, False)
 
     # Para el Nivel FINAL, necesita haber pasado el Nivel 5 Y que el profesor lo habilite
-    unlocked_level_5_by_student = QuizAttempt.objects.filter(user=request.user, level=5, score__gte=7).exists()
+    unlocked_level_5_by_student = QuizAttempt.objects.filter(user=request.user, level=5, score__gte=UMBRAL_PASO).exists()
     puede_jugar_nivel_final = unlocked_level_5_by_student and niveles_habilitados.get(6, False)
 
     return render(request, 'aplicacion/estudiante/perfil_estudiante.html', {

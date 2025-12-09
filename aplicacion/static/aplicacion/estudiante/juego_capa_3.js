@@ -1,5 +1,5 @@
 // juego_capa_3.js
-// Nivel 3 – Capa de Red. 10 preguntas fijas sobre principios de la capa de red.
+// Nivel 3 – Capa de Red. 
 
 // ---- Config global que viene del template ----
 const CFG = window.QUIZ_CONFIG || {};
@@ -10,9 +10,25 @@ const SAVE_RESULT_URL = CFG.saveResultUrl || "#";
 
 // --------- Las preguntas vienen del HTML (window.QUIZ_QUESTIONS) ---------
 if (!window.QUIZ_QUESTIONS || window.QUIZ_QUESTIONS.length === 0) {
-  console.error('Error: No se encontraron preguntas en window.QUIZ_QUESTIONS');
+  console.error("Error: No se encontraron preguntas en window.QUIZ_QUESTIONS");
 }
-const questions = window.QUIZ_QUESTIONS || [];
+
+// Función para seleccionar preguntas aleatorias (similar al nivel 2)
+function getRandomQuestions(bank, amount) {
+  // Mezclar usando algoritmo Fisher-Yates para mejor distribución aleatoria
+  const shuffled = [...bank];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, amount);
+}
+
+// Cambiar aquí el número de preguntas a mostrar: 10 o 20
+const NUM_QUESTIONS = 10; // Cambia a 10 si quieres mostrar solo 10 preguntas
+
+// Seleccionar preguntas aleatorias del banco
+const questions = getRandomQuestions(window.QUIZ_QUESTIONS || [], NUM_QUESTIONS);
 
 // --------- LÓGICA GENERAL DEL QUIZ ---------
 let currentQuestionIndex = 0;
@@ -25,8 +41,14 @@ const checkBtn = document.getElementById("check-btn");
 const finishBtn = document.getElementById("finish-btn");
 const scoreResults = document.getElementById("score-results");
 const currentQNumber = document.getElementById("current-q-number");
+const totalQuestionsSpan = document.getElementById("total-questions");
 const progressBar = document.getElementById("progress-bar");
 const reviewList = document.getElementById("review-list");
+
+// Actualizar el número total de preguntas en el HTML
+if (totalQuestionsSpan) {
+  totalQuestionsSpan.textContent = questions.length;
+}
 
 function normalizeVal(v) {
   if (v === null || v === undefined) return "";
@@ -37,21 +59,22 @@ function normalizeVal(v) {
   }
 }
 
+// Usa la pista específica si existe, si no genera una genérica
 function generateHint(q) {
-  if (q.hint) return q.hint;
+  if (q.pista && q.pista.trim() !== "") return q.pista;
 
   switch (q.type) {
     case "drag_drop":
-      return "Revisa qué protocolo se relaciona con cada función. Considera el propósito principal de cada protocolo de la Capa de Red.";
+      return "Revisa qué concepto se relaciona con cada descripción. Piensa en el rol que cumple en la capa de red.";
     case "fill":
-      return `Piensa en el término clave que completa la frase. La respuesta es una palabra corta.`;
+      return "Piensa en el término clave del encabezado IP o del concepto de capa de red.";
     case "sequence":
-      return "Analiza el flujo lógico de los eventos. ¿Cuál es el primer paso? ¿Cuál le sigue?";
+      return "Ordena los pasos de forma lógica, desde el origen hacia el destino o desde la entrada hacia la salida.";
     case "mc":
     case "tf":
-      return "Revisa los conceptos fundamentales relacionados con la pregunta. Intenta descartar las opciones claramente incorrectas.";
+      return "Descarta primero las opciones que claramente no pertenecen a la capa de red o confunden con otras capas.";
     default:
-      return "Revisa el material de estudio para esta pregunta.";
+      return "Repasa el capítulo de Capa de Red en la teoría.";
   }
 }
 
@@ -65,7 +88,7 @@ function checkCurrentAnswer(q) {
       },
       0
     );
-    return totalCorrectItems === (q.drag_items || []).length;
+    return totalCorrectItems === Object.keys(q.correct_map).length;
   } else if (q.type === "fill") {
     return normalizeVal(q.answer) === normalizeVal(q.correct_answer);
   } else if (q.type === "sequence") {
@@ -102,8 +125,7 @@ function updateNavControls() {
 
     let isAnswered = false;
     if (q.type === "drag_drop") {
-      isAnswered =
-        q.answer && Object.keys(q.answer).length === q.drag_items.length;
+      isAnswered = q.answer && Object.keys(q.answer).length > 0;
     } else if (q.type === "fill") {
       isAnswered = !!(q.answer && q.answer.trim());
     } else if (q.type === "sequence") {
@@ -115,9 +137,11 @@ function updateNavControls() {
   }
 }
 
+// ---- render de la pregunta actual ----
 function renderQuestion(index) {
   questionsContainer.innerHTML = "";
   const q = questions[index];
+
   let html = `<div class="question-module active" data-qid="${q.id}">`;
   html += `<h4 style="font-size: 1.3em;">${q.text}</h4>`;
 
@@ -131,7 +155,15 @@ function renderQuestion(index) {
     html += renderOptions(q);
   }
 
-  html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none;"></div>`;
+  html += `<div id="q-feedback-${q.id}" class="feedback-message" style="display:none; margin-top: 15px;"></div>`;
+  // Feedback y Pista (igual que nivel 1)
+  if (q.pista && q.pista.trim() !== "") {
+    html += `<div class="hint-container" style="display:flex; gap:16px; align-items:flex-start; margin-top:16px;">`;
+    html += `<button type="button" class="btn-show-hint" onclick="showHint(${q.id})">💡 Mostrar pista</button>`;
+    html += `<div id="hint-box-${q.id}" class="hint-box" style="display:none; flex:1;"></div>`;
+    html += `</div>`;
+  }
+
   html += `</div>`;
   questionsContainer.innerHTML = html;
 
@@ -166,15 +198,27 @@ function renderQuestion(index) {
 
 // ---- renderizadores por tipo ----
 function renderDragDrop(q) {
-  let dragItemsHtml = "";
-  q.drag_items.forEach(item => {
-    dragItemsHtml += `<div class="draggable" draggable="true" data-protocol="${item.value}">${item.label}</div>`;
-  });
+  let dragItemsHtml = q.drag_items.map(item => 
+    `<div class="draggable" draggable="true" data-protocol="${item.value}">${item.label}</div>`
+  ).join("");
+
   let ddHtml = `<div class="drag-container" id="drag-1">${dragItemsHtml}</div>`;
-  ddHtml += `<div class="drop-container" id="drop-1">`;
-  q.drop_zones.forEach(zone => {
-    ddHtml += `<div class="dropzone" data-function="${zone.function}">${zone.label}</div>`;
-  });
+  ddHtml += `<div class="drop-container">`;
+
+  // Organizar dropzones en filas de 2 (igual que nivel 2)
+  for (let i = 0; i < q.drop_zones.length; i += 2) {
+    ddHtml += `<div class="drop-row">`;
+
+    for (let j = 0; j < 2; j++) {
+      const dz = q.drop_zones[i + j];
+      if (!dz) continue;
+
+      ddHtml += `<div class="dropzone drop-transporte drop-active" data-function="${dz.function}">${dz.label}</div>`;
+    }
+
+    ddHtml += `</div>`;
+  }
+
   ddHtml += `</div>`;
   return ddHtml;
 }
@@ -202,14 +246,15 @@ function renderSequence(q) {
     html += `<div class="sequence-item" draggable="true" data-key="${item.key}">${item.label}</div>`;
   });
   html += `</div>`;
-  html += `<div class="explanation" style="display:none; color:#0077B6; font-weight:500; font-size:0.9em; margin-top:10px;">${q.explanation ||
-    ""}</div>`;
+  html += `<div class="explanation" style="display:none; color:#0077B6; font-weight:500; font-size:0.9em; margin-top:10px;">${
+    q.explanation || ""
+  }</div>`;
   html += `</div>`;
   return html;
 }
 
 function renderOptions(q) {
-  const options = q.options;
+  const options = q.options || [];
   let optHtml = `<div class="options-group" data-qtype="${q.type}" data-correct="${q.correct_answer}">`;
   options.forEach(opt => {
     const isSelected =
@@ -217,8 +262,9 @@ function renderOptions(q) {
     optHtml += `<div class="option-btn ${isSelected}" data-value="${opt}"
                     onclick="selectOption(this, ${q.id})">${opt}</div>`;
   });
-  optHtml += `<div class="explanation" style="display:none; color:#0077B6; font-weight:500; font-size:0.9em; margin-top:10px;">${q.explanation ||
-    ""}</div>`;
+  optHtml += `<div class="explanation" style="display:none; color:#0077B6; font-weight:500; font-size:0.9em; margin-top:10px;">${
+    q.explanation || ""
+  }</div>`;
   optHtml += `</div>`;
   return optHtml;
 }
@@ -237,11 +283,11 @@ function applyQuestionState(q) {
         .querySelectorAll(".draggable")
         .forEach(item => item.setAttribute("draggable", "false"));
       qElement
-        .querySelectorAll(".dropzone")
+        .querySelectorAll(".dropzone.drop-active")
         .forEach(zone => (zone.style.pointerEvents = "none"));
 
       const ddMap = q.correct_map;
-      qElement.querySelectorAll(".dropzone").forEach(zone => {
+      qElement.querySelectorAll(".dropzone.drop-active").forEach(zone => {
         const droppedItem = zone.querySelector(".draggable");
         const prevCorrect = zone.querySelector(".correct-answer");
         if (prevCorrect) prevCorrect.remove();
@@ -279,11 +325,7 @@ function applyQuestionState(q) {
       inp.value = q.answer || "";
       if (isChecked) {
         inp.disabled = true;
-        if (checkCurrentAnswer(q)) {
-          inp.style.borderColor = "#4CAF50";
-        } else {
-          inp.style.borderColor = "#dc3545";
-        }
+        inp.style.borderColor = checkCurrentAnswer(q) ? "#4CAF50" : "#dc3545";
       }
     }
   } else if (q.type === "sequence") {
@@ -345,7 +387,7 @@ function setupDragDropListeners() {
     item.addEventListener("dragend", e => (e.target.style.opacity = 1));
   });
 
-  document.querySelectorAll(".dropzone").forEach(zone => {
+  document.querySelectorAll(".dropzone.drop-active").forEach(zone => {
     zone.addEventListener("dragover", e => {
       e.preventDefault();
       zone.classList.add("hover");
@@ -362,14 +404,14 @@ function setupDragDropListeners() {
         zone.appendChild(draggedItem);
       }
       saveDragDropState();
-      checkBtn.disabled = false;
+      updateNavControls();
     });
   });
 }
 
 function saveDragDropState() {
   const ddAnswer = {};
-  document.querySelectorAll(".dropzone").forEach(zone => {
+  document.querySelectorAll(".dropzone.drop-active").forEach(zone => {
     const droppedItem = zone.querySelector(".draggable");
     if (droppedItem) {
       ddAnswer[zone.dataset.function] = droppedItem.dataset.protocol;
@@ -383,12 +425,12 @@ function restoreDragDropState(q) {
   const qElement = document.querySelector(`[data-qid="${q.id}"]`);
   if (!qElement) return;
   const dragContainer = qElement.querySelector(".drag-container");
-  qElement.querySelectorAll(".dropzone .draggable").forEach(item => {
+  qElement.querySelectorAll(".dropzone.drop-active .draggable").forEach(item => {
     dragContainer.appendChild(item);
   });
   for (const [zoneFunc, protocol] of Object.entries(q.answer || {})) {
     const zone = qElement.querySelector(
-      `.dropzone[data-function="${zoneFunc}"]`
+      `.dropzone.drop-active[data-function="${zoneFunc}"]`
     );
     const item = qElement.querySelector(
       `.draggable[data-protocol="${protocol}"]`
@@ -471,7 +513,7 @@ function restoreSequenceState(q) {
 }
 
 // ---- selección para MC / TF ----
-window.selectOption = function(btn, qid) {
+window.selectOption = function (btn, qid) {
   const q = questions.find(qq => qq.id === qid);
   if (!q || q.checked) return;
   const container = btn.closest(".options-group");
@@ -480,7 +522,7 @@ window.selectOption = function(btn, qid) {
     .forEach(b => b.classList.remove("selected"));
   btn.classList.add("selected");
   q.answer = btn.dataset.value ? btn.dataset.value.trim() : btn.dataset.value;
-  checkBtn.disabled = false;
+  updateNavControls();
 };
 
 // ---- botón Verificar ----
@@ -488,17 +530,9 @@ checkBtn.addEventListener("click", () => {
   const q = questions[currentQuestionIndex];
 
   if (q.type === "drag_drop") {
-    if (
-      !q.answer ||
-      Object.keys(q.answer).length < (q.drag_items || []).length
-    ) {
-      if (
-        !confirm(
-          "No has colocado todos los ítems. ¿Deseas verificar con el estado actual?"
-        )
-      ) {
-        return;
-      }
+    if (!q.answer || Object.keys(q.answer).length === 0) {
+      alert("Arrastrá al menos un ítem antes de verificar.");
+      return;
     }
   } else if (q.type === "fill") {
     if (!q.answer || !q.answer.trim()) {
@@ -554,13 +588,23 @@ finishBtn.addEventListener("click", e => {
   questions.forEach(q => {
     const isCorrect = checkCurrentAnswer(q);
     let userAnswerDisplay;
+
     if (q.type === "drag_drop") {
       userAnswerDisplay = `(Arrastradas: ${
         q.answer ? Object.keys(q.answer).length : 0
-      }/${(q.drag_items || []).length})`;
+      }/${Object.keys(q.correct_map || {}).length})`;
     } else if (q.type === "sequence") {
       userAnswerDisplay =
-        q.answer && q.answer.length ? q.answer.join(" → ") : "Sin ordenar";
+        q.answer && q.answer.length
+          ? q.answer
+              .map(key => {
+                const item = (q.sequence_items || []).find(
+                  it => it.key === key
+                );
+                return item ? item.label : key;
+              })
+              .join(" → ")
+          : "Sin ordenar";
     } else if (q.type === "fill") {
       userAnswerDisplay = q.answer || "No respondida";
     } else {
@@ -570,11 +614,17 @@ finishBtn.addEventListener("click", e => {
     let reviewHtml = `<div class="review-item ${
       isCorrect ? "correct-review" : "incorrect-review"
     }">`;
-    reviewHtml += `<strong>P${q.id}. ${q.text.replace(/<[^>]+>/g, "")}</strong>`;
+    reviewHtml += `<strong>P${q.id}. ${q.text.replace(
+      /<[^>]+>/g,
+      ""
+    )}</strong>`;
     reviewHtml += `<p class="user-answer">Tu respuesta: ${userAnswerDisplay}</p>`;
 
     if (!isCorrect) {
-      reviewHtml += `<p class="hint-text">💡 Pista: ${generateHint(q)}</p>`;
+      const hintText = generateHint(q);
+      if (hintText) {
+        reviewHtml += `<p class="hint-text">💡 Pista: ${hintText}</p>`;
+      }
       if (q.explanation) {
         reviewHtml += `<p class="explanation-text">Explicación: ${q.explanation}</p>`;
       }
@@ -591,8 +641,7 @@ finishBtn.addEventListener("click", e => {
   let title = "";
 
   if (score >= 9) {
-    rubric =
-      "Fibra óptica (Excelente): Domina los conceptos de la Capa de Red.";
+    rubric = "Fibra óptica (Excelente): Domina los conceptos de la Capa de Red.";
     title = "¡Excelente trabajo!";
     icon = "🌟";
     bgColor = "#0f9d58";
@@ -621,7 +670,7 @@ finishBtn.addEventListener("click", e => {
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
           <div>
             <div class="rubric-title">${title}
-              <span class="rubric-score-badge">${score}/10</span>
+              <span class="rubric-score-badge">${score}/${questions.length}</span>
             </div>
             <div class="rubric-text"><strong>Clasificación:</strong> ${rubric}</div>
           </div>
@@ -640,7 +689,8 @@ finishBtn.addEventListener("click", e => {
       </div>
     </div>`;
 
-  // umbral de desbloqueo (≥ 7/10)
+  // umbral de desbloqueo: siempre 7 puntos (basado en 10 preguntas)
+  // Esto aplica independientemente de si el nivel tiene 10 o 20 preguntas
   const shouldUnlock = score >= 7;
   if (shouldUnlock) {
     try {
@@ -690,9 +740,36 @@ finishBtn.addEventListener("click", e => {
   document.querySelector(".nav-controls").style.display = "none";
   scoreResults.style.display = "block";
   document.getElementById("final-score").textContent = finalScore;
+  const finalTotalEl = document.getElementById("final-total");
+  if (finalTotalEl) {
+    finalTotalEl.textContent = questions.length;
+  }
   document.getElementById("finish-btn").disabled = true;
 });
 
 // ---- inicialización ----
 renderQuestion(currentQuestionIndex);
 
+// Función para mostrar/ocultar pista (igual que nivel 1)
+window.showHint = function (qid) {
+  const hintBox = document.getElementById(`hint-box-${qid}`);
+  if (!hintBox) return;
+
+  if (hintBox.style.display === "block") {
+    // Si está visible, ocultarla
+    hintBox.style.display = "none";
+  } else {
+    // Si está oculta, mostrarla
+    const q = questions.find(qq => qq.id === qid);
+    if (!q || !q.pista) return;
+
+    let hintText = String(q.pista || "").trim();
+    hintText = hintText.replace(/^\s*Pista\s*[:\-–—]?\s*/i, "");
+
+    hintBox.innerHTML = `
+      <div class="hint-inner">
+        <div class="hint-content">${hintText}</div>
+      </div>`;
+    hintBox.style.display = "block";
+  }
+};

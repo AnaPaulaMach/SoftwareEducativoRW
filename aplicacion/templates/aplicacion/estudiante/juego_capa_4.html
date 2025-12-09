@@ -25,7 +25,7 @@
         </div>
         
         <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel 4: Capa de Enlace</h2>
-        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de <span id="total-questions">20</span>. ¡Cada acierto te acerca a la Fibra Óptica!</p>
         
         <div class="progress-bar-container">
             <div class="progress-bar" id="progress-bar"></div>
@@ -64,9 +64,319 @@
           imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
         };
 
-        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Capa de Enlace) ---------
+        // --------- BANCO DE PREGUNTAS (20 preguntas de Capa de Enlace) ---------
         window.QUIZ_QUESTIONS = [
-            // TODO: Agregar preguntas aquí
+          // 1. Situación Hipotética (ARP y Subredes)
+          {
+            id: 1,
+            type: "mc",
+            text: "Situación: El Host A (111.111.111.111) quiere enviar un datagrama IP al Host B (222.222.222.222) que se encuentra en una subred diferente. La tabla ARP del Host A está vacía. ¿Cuál es el contenido de la trama Ethernet que el Host A envía a la red tras generar el paquete ARP?",
+            options: [
+              "Dirección Destino: MAC del Host B / Carga: Solicitud ARP preguntando \"¿Quién tiene 222.222.222.222?\"",
+              "Dirección Destino: FF-FF-FF-FF-FF-FF / Carga: Solicitud ARP preguntando \"¿Quién tiene 111.111.111.110 (Router)?\"",
+              "Dirección Destino: MAC del Router / Carga: Datagrama IP hacia Host B."
+            ],
+            correct_answer: "Dirección Destino: FF-FF-FF-FF-FF-FF / Carga: Solicitud ARP preguntando \"¿Quién tiene 111.111.111.110 (Router)?\"",
+            pista: "Recordá que un host solo puede entregar tramas a dispositivos que estén “cerca” en la misma red física.",
+            explanation: "Cuando el destino está en otra subred, el host debe enviar el datagrama al router (gateway). Para hacerlo, necesita la MAC del router, por lo que envía una solicitud ARP broadcast (FF-FF-FF-FF-FF-FF) preguntando por la IP del router."
+          },
+          // 2. Drag and Drop (Estructura de Trama ARP)
+          {
+            id: 2,
+            type: "drag_drop",
+            text: "Tarea: Arrastre los valores correctos a los campos de una trama de Consulta ARP (ARP Query).",
+            drag_items: [
+              { value: "A", label: "FF-FF-FF-FF-FF-FF" },
+              { value: "B", label: "MAC del Emisor" },
+              { value: "C", label: "IP que se quiere resolver" },
+              { value: "D", label: "00-00-00-00-00-00 (Vacío/Ignorado)" }
+            ],
+            drop_zones: [
+              { function: "mac_dest", label: "Campo: Dirección MAC Destino de la Trama Ethernet" },
+              { function: "mac_orig", label: "Campo: Dirección MAC Origen de la Trama Ethernet" },
+              { function: "ip_obj", label: "Campo: Dirección IP Objetivo en el paquete ARP" },
+              { function: "mac_obj", label: "Campo: Dirección MAC Objetivo en el paquete ARP" }
+            ],
+            correct_map: {
+              mac_dest: "A",
+              mac_orig: "B",
+              ip_obj: "C",
+              mac_obj: "D"
+            },
+            pista: "Si todavía no conocés a quién entregar la trama, ¿cómo te asegurás de que llegue a quien pueda responder?",
+            explanation: "En una consulta ARP, la MAC destino es broadcast (FF-FF-FF-FF-FF-FF) para que todos los hosts reciban la solicitud. La MAC objetivo en el paquete ARP se deja en ceros porque es lo que se está buscando."
+          },
+          // 3. Selección Múltiple (Direccionamiento MAC)
+          {
+            id: 3,
+            type: "mc",
+            text: "A diferencia de las direcciones IP que son jerárquicas, las direcciones MAC tienen una estructura plana. ¿Qué implicación directa tiene esto para un adaptador de red (NIC)?",
+            options: [
+              "La dirección cambia cada vez que el adaptador se conecta a una subred distinta.",
+              "El adaptador debe solicitar una dirección a un servidor DHCP de capa 2.",
+              "La dirección es portátil y no cambia, independientemente de dónde se conecte el adaptador.",
+              "Los switches no pueden aprender la ubicación del adaptador."
+            ],
+            correct_answer: "La dirección es portátil y no cambia, independientemente de dónde se conecte el adaptador.",
+            pista: "Kurose compara la dirección MAC con un número de seguridad social (identidad fija) y la IP con un código postal (ubicación variable).",
+            explanation: "Las direcciones MAC son únicas y fijas para cada adaptador de red, asignadas por el fabricante. No cambian cuando el dispositivo se mueve a otra red, a diferencia de las direcciones IP que pueden cambiar según la ubicación."
+          },
+          // 4. Ordenar Secuencia (Algoritmo CSMA/CD en Ethernet)
+          {
+            id: 4,
+            type: "sequence",
+            text: "Ordene los pasos que realiza un adaptador Ethernet cuando ocurre una colisión durante la transmisión.",
+            sequence_items: [
+              { key: "1", label: "El adaptador detecta interferencia de señal mientras transmite." },
+              { key: "2", label: "El adaptador aborta la transmisión y envía una señal de interferencia (jam signal)." },
+              { key: "3", label: "El adaptador entra en fase de espera exponencial (backoff)." },
+              { key: "4", label: "El adaptador elige un valor K aleatorio del conjunto {0, 1, ... 2^n-1}." },
+              { key: "5", label: "El adaptador espera K * 512 tiempos de bit y vuelve a escuchar el canal." }
+            ],
+            correct_sequence: ["1", "2", "3", "4", "5"],
+            pista: "La señal de jam es crucial para asegurar que todos los demás adaptadores en el cable también detecten la colisión inmediatamente.",
+            explanation: "El algoritmo CSMA/CD primero detecta la colisión, luego envía una señal de jam para asegurar que todos detecten la colisión, entra en backoff exponencial, elige un tiempo aleatorio y espera antes de reintentar."
+          },
+          // 5. Cálculo/Input Numérico (Backoff Exponencial)
+          {
+            id: 5,
+            type: "mc",
+            text: "En el algoritmo de backoff exponencial binario de Ethernet, después de experimentar la tercera colisión consecutiva para la misma trama, ¿cuál es la probabilidad de que el nodo elija esperar 0 tiempos de bit antes de reintentar?",
+            options: [
+              "0.5 (1/2)",
+              "0.25 (1/4)",
+              "0.125 (1/8)",
+              "0.33 (1/3)"
+            ],
+            correct_answer: "0.125 (1/8)",
+            pista: "Después de n=3 colisiones, K se elige del conjunto {0,1,2,...2³−1}, es decir {0,1,…,7}. Hay 8 opciones posibles.",
+            explanation: "Después de 3 colisiones, n=3, entonces K se elige del conjunto {0,1,2,...,2³-1} = {0,1,2,3,4,5,6,7}, que tiene 8 valores. La probabilidad de elegir 0 es 1/8 = 0.125."
+          },
+          // 6. True/False (Protocolos de Acceso)
+          {
+            id: 6,
+            type: "tf",
+            text: "En un protocolo de toma de turnos (como el paso de testigo o Token Ring), si solo un nodo tiene datos para enviar, este puede transmitir continuamente a la tasa completa R del canal sin esperar, similar a como lo haría en ALOHA.",
+            options: ["Verdadero", "Falso"],
+            correct_answer: "Falso",
+            pista: "La desventaja de los protocolos de toma de turnos es que introducen un retardo de sondeo o paso de testigo; el nodo debe esperar a que le llegue el \"turno\" o el \"token\" aunque sea el único activo.",
+            explanation: "En protocolos de toma de turnos, incluso si solo un nodo tiene datos, debe esperar a recibir el token o su turno en el ciclo de sondeo, lo que introduce latencia. En ALOHA puro, puede transmitir inmediatamente (aunque con riesgo de colisión)."
+          },
+          // 7. Situación Hipotética (Tabla de Conmutación)
+          {
+            id: 7,
+            type: "mc",
+            text: "Contexto: Un Switch tiene su tabla de conmutación vacía. Recibe una trama en el Puerto 1 con Origen MAC: A y Destino MAC: B. Pregunta: ¿Qué dos acciones realiza el switch simultáneamente?",
+            options: [
+              "Registra MAC A en Puerto 1 y descarta la trama.",
+              "Registra MAC B en Puerto 1 y reenvía la trama por todos los puertos.",
+              "Registra MAC A en Puerto 1 e inunda (floods) la trama por todos los puertos excepto el 1.",
+              "Envía una consulta ARP al Puerto 1 y espera respuesta."
+            ],
+            correct_answer: "Registra MAC A en Puerto 1 e inunda (floods) la trama por todos los puertos excepto el 1.",
+            pista: "El switch \"aprende\" observando el origen de las tramas entrantes. Si no conoce el destino, debe reenviar la trama a todos lados por si acaso el destinatario está en otro puerto.",
+            explanation: "El switch aprende asociando la MAC de origen (A) con el puerto de entrada (1). Como no conoce dónde está la MAC de destino (B), inunda la trama por todos los puertos excepto el de entrada para asegurar que llegue al destinatario."
+          },
+          // 8. Drag and Drop (Trama Ethernet 802.1Q)
+          {
+            id: 8,
+            type: "drag_drop",
+            text: "Tarea: En una trama Ethernet 802.1Q que viaja por un enlace troncal (trunk) VLAN, ¿dónde se inserta la etiqueta VLAN en relación con los otros campos?",
+            drag_items: [
+              { value: "A", label: "Después de Dir. Origen, antes de Tipo" },
+              { value: "B", label: "Antes de Dir. Destino" },
+              { value: "C", label: "Después de Tipo, antes de Datos" },
+              { value: "D", label: "Al final, después de CRC" }
+            ],
+            drop_zones: [
+              { function: "posicion", label: "Posición de la Etiqueta VLAN en la cabecera Ethernet 802.1Q" }
+            ],
+            correct_map: {
+              posicion: "A"
+            },
+            pista: "La etiqueta añade 4 bytes a la cabecera estándar para identificar a qué VLAN pertenece la trama y contiene el TPID y el VID.",
+            explanation: "La etiqueta VLAN (Tag) se inserta después de la dirección de origen y antes del campo Tipo/Longitud original. Esto permite que la trama identifique a qué VLAN pertenece cuando viaja por un enlace troncal."
+          },
+          // 9. True/False (Dominios de Colisión)
+          {
+            id: 9,
+            type: "tf",
+            text: "Al reemplazar un Hub por un Switch en una red LAN, el dominio de colisión se amplía, haciendo que todos los nodos conectados sigan compitiendo por el mismo medio compartido, pero con mayor velocidad.",
+            options: ["Verdadero", "Falso"],
+            correct_answer: "Falso",
+            pista: "El switch aísla las interfaces; cada puerto del switch se convierte en su propio dominio de colisión independiente, eliminando colisiones entre nodos de puertos distintos.",
+            explanation: "Un switch crea dominios de colisión separados para cada puerto, eliminando colisiones entre nodos conectados a puertos diferentes. Un hub, en cambio, crea un solo dominio de colisión compartido."
+          },
+          // 10. Identificar Anomalía (Loop de Red)
+          {
+            id: 10,
+            type: "mc",
+            text: "Situación: Un administrador conecta tres switches formando un triángulo físico para redundancia, pero olvida configurar el protocolo STP (Spanning Tree Protocol). De repente, la red se satura y las luces de los switches parpadean incesantemente. ¿Qué fenómeno está ocurriendo?",
+            options: [
+              "Tormenta de difusión (Broadcast Storm).",
+              "Bloqueo de cabeza de línea (HOL).",
+              "Agotamiento de direcciones DHCP."
+            ],
+            correct_answer: "Tormenta de difusión (Broadcast Storm).",
+            pista: "Sin STP que bloquee lógicamente un camino, las tramas de broadcast circulan infinitamente en bucle, consumiendo todo el ancho de banda.",
+            explanation: "Sin STP, los switches forman un bucle físico. Las tramas de broadcast se reenvían indefinidamente en el bucle, creando una tormenta de broadcast que satura la red y consume todo el ancho de banda disponible."
+          },
+          // 11. Unir Afirmaciones (Técnicas de Error)
+          {
+            id: 11,
+            type: "drag_drop",
+            text: "Tarea: Empareje la técnica con su descripción.",
+            drag_items: [
+              { value: "A", label: "Paridad Bidimensional" },
+              { value: "B", label: "Checksum (Suma de comprobación)" },
+              { value: "C", label: "CRC (Redundancia Cíclica)" }
+            ],
+            drop_zones: [
+              { function: "desc1", label: "Utiliza aritmética de complemento a 1; común en capa de transporte (software)." },
+              { function: "desc2", label: "Utiliza división polinómica en aritmética módulo 2; común en adaptadores de red (hardware)." },
+              { function: "desc3", label: "Permite detectar y corregir un error de bit simple mediante una matriz de filas y columnas." }
+            ],
+            correct_map: {
+              desc1: "B",
+              desc2: "C",
+              desc3: "A"
+            },
+            pista: "El CRC es mucho más robusto y se implementa en hardware en la NIC, mientras que el Checksum es más ligero para el software del OS.",
+            explanation: "A-3: Paridad Bidimensional permite detectar y corregir errores mediante matrices. B-1: Checksum usa complemento a 1 y es común en software (capa de transporte). C-2: CRC usa división polinómica y se implementa en hardware (NIC)."
+          },
+          // 12. Cálculo/Análisis (CRC)
+          {
+            id: 12,
+            type: "mc",
+            text: "En el cálculo de CRC, si el generador G es 1001 (4 bits), ¿cuántos bits de cero (r) se deben añadir a los datos D antes de realizar la división polinómica en el emisor?",
+            options: [
+              "4 bits.",
+              "3 bits.",
+              "8 bits (un byte)."
+            ],
+            correct_answer: "3 bits.",
+            pista: "Se añaden r bits de ceros, donde r es el grado del generador G, o longitud de G menos 1 (r=len(G)−1).",
+            explanation: "Si G tiene 4 bits, su grado es 3 (el número de bits menos 1). Por lo tanto, se añaden r=3 bits de ceros a los datos antes de realizar la división polinómica."
+          },
+          // 13. Selección Múltiple (WiFi - Direcciones MAC)
+          {
+            id: 13,
+            type: "mc",
+            text: "En una trama 802.11 (WiFi) enviada desde un host inalámbrico hacia un Router a través de un Punto de Acceso (AP), ¿qué dirección MAC contiene el campo Dirección 3?",
+            options: [
+              "La MAC del host inalámbrico (Origen).",
+              "La MAC del Punto de Acceso (AP).",
+              "La MAC de la interfaz del Router de pasarela."
+            ],
+            correct_answer: "La MAC de la interfaz del Router de pasarela.",
+            pista: "La Dirección 3 es crucial para interconectar el BSS (aire) con la red cableada; el AP la usa para saber a qué router entregar el datagrama una vez convertido a Ethernet.",
+            explanation: "En 802.11, la Dirección 3 contiene la MAC del destino final en la red cableada (el router). El AP usa esta dirección para saber a dónde entregar el datagrama una vez que lo convierte a formato Ethernet."
+          },
+          // 14. True/False (MPLS)
+          {
+            id: 14,
+            type: "tf",
+            text: "Un router compatible con MPLS reenvía los paquetes basándose en la dirección IP de destino y buscando la coincidencia con el prefijo más largo en su tabla de reenvío.",
+            options: ["Verdadero", "Falso"],
+            correct_answer: "Falso",
+            pista: "MPLS actúa como una \"capa 2.5\"; reenvía basándose en una etiqueta fija de longitud corta agregada al paquete, no mirando la IP de destino, lo que permite búsquedas más rápidas.",
+            explanation: "MPLS reenvía basándose en etiquetas (labels) de longitud fija y corta, no en direcciones IP. Esto permite búsquedas más rápidas en hardware y simplifica el reenvío, actuando como una capa intermedia entre la capa de red y la de enlace."
+          },
+          // 15. Drag and Drop (Problema del Terminal Oculto)
+          {
+            id: 15,
+            type: "drag_drop",
+            text: "Escenario: Dos estaciones (A y C) quieren transmitir a B, pero A y C no se escuchan entre sí por un obstáculo físico. Tarea: Arrastre la solución que mitiga las colisiones en este escenario 802.11.",
+            drag_items: [
+              { value: "A", label: "Detección de Colisiones (CD)" },
+              { value: "B", label: "Tramas RTS/CTS" },
+              { value: "C", label: "Token Passing" }
+            ],
+            drop_zones: [
+              { function: "sol", label: "Solución que mitiga colisiones en el problema del terminal oculto" }
+            ],
+            correct_map: {
+              sol: "B"
+            },
+            pista: "Como no pueden detectar colisiones directamente (CD), reservan el canal enviando una solicitud (RTS) y esperando que el AP confirme \"limpieza\" para enviar (CTS).",
+            explanation: "RTS/CTS (Request to Send / Clear to Send) permite que las estaciones reserven el canal antes de transmitir. La estación envía RTS, el AP responde con CTS, y esto notifica a todas las estaciones cercanas (incluidas las que no se escuchan entre sí) que el canal está reservado."
+          },
+          // 16. Identificar Componente (Interfaz)
+          {
+            id: 16,
+            type: "mc",
+            text: "Según la terminología de Kurose, ¿qué componente es la \"interfaz\" entre el software de la capa de enlace (driver) y el hardware físico de transmisión?",
+            options: [
+              "El Socket.",
+              "El adaptador de red (NIC).",
+              "El Bus PCI."
+            ],
+            correct_answer: "El adaptador de red (NIC).",
+            pista: "La mayor parte de la capa de enlace se implementa en este adaptador; es donde el software se encuentra con el hardware.",
+            explanation: "El adaptador de red (NIC) es la interfaz entre el software de la capa de enlace (implementado en el driver) y el hardware físico. Contiene la mayor parte de la funcionalidad de la capa de enlace."
+          },
+          // 17. Situación Hipotética (MTU y Fragmentación)
+          {
+            id: 17,
+            type: "mc",
+            text: "Situación: Un router recibe un datagrama IP de 4000 bytes. Debe enviarlo por un enlace Ethernet cuya MTU es 1500 bytes. ¿Qué sucede en la capa de enlace?",
+            options: [
+              "La capa de enlace fragmenta la trama Ethernet en tres tramas más pequeñas.",
+              "La capa de enlace rechaza el datagrama y pide a la capa de red que lo fragmente.",
+              "La capa de enlace encapsula los datos en tres tramas distintas transparentemente."
+            ],
+            correct_answer: "La capa de enlace rechaza el datagrama y pide a la capa de red que lo fragmente.",
+            pista: "La capa de enlace no fragmenta; tiene un límite rígido de carga útil (MTU). Es el protocolo IP (capa 3) el que debe fragmentar su datagrama para ajustarse a la MTU de la capa de enlace.",
+            explanation: "Técnicamente, es la capa de Red la que fragmenta el Datagrama IP para que quepa en la carga útil de la trama. La capa de enlace tiene un límite rígido (MTU) y no fragmenta; simplemente rechaza datagramas que excedan su MTU."
+          },
+          // 18. True/False (Duplex)
+          {
+            id: 18,
+            type: "tf",
+            text: "En una red Ethernet moderna basada en switches (conmutadores), el protocolo CSMA/CD es innecesario y a menudo se desactiva porque los enlaces operan en modo Full-Duplex.",
+            options: ["Verdadero", "Falso"],
+            correct_answer: "Verdadero",
+            pista: "En Full-Duplex con switches, un nodo puede enviar y recibir simultáneamente sin colisiones; por lo tanto, no se necesita el protocolo de detección de colisiones.",
+            explanation: "En modo Full-Duplex, cada enlace puede transmitir y recibir simultáneamente sin colisiones. Por lo tanto, CSMA/CD (que fue diseñado para detectar y manejar colisiones en medios compartidos) no es necesario y se desactiva."
+          },
+          // 19. Ordenar Estructura (Encapsulamiento en el Host)
+          {
+            id: 19,
+            type: "sequence",
+            text: "Ordene las direcciones que se utilizan al enviar un paquete a un host remoto (fuera de la subred).",
+            sequence_items: [
+              { key: "1", label: "Socket del navegador: www.google.com" },
+              { key: "2", label: "Capa de Transporte: Puerto 80" },
+              { key: "3", label: "Capa de Red: IP Destino (IP del servidor Google)" },
+              { key: "4", label: "Capa de Enlace: MAC Destino (MAC del Router/Gateway local)" }
+            ],
+            correct_sequence: ["1", "2", "3", "4"],
+            pista: "Aunque el destino final es Google (IP), la trama de enlace físico solo puede viajar hasta el siguiente salto inmediato (el Router).",
+            explanation: "El encapsulamiento sigue el modelo de capas: primero se identifica el servicio (socket), luego el puerto de transporte, después la IP de destino final, y finalmente la MAC del siguiente salto (router) ya que la trama física solo puede llegar al siguiente dispositivo en el enlace."
+          },
+          // 20. Drag and Drop (Switches de Centro de Datos)
+          {
+            id: 20,
+            type: "drag_drop",
+            text: "Tarea: Clasifique los tipos de switches en una arquitectura jerárquica de centro de datos.",
+            drag_items: [
+              { value: "A", label: "Router de Frontera" },
+              { value: "B", label: "Switches de Agregación / Nivel 2" },
+              { value: "C", label: "Switch TOR (Top of Rack)" }
+            ],
+            drop_zones: [
+              { function: "nivel1", label: "Nivel Superior" },
+              { function: "nivel2", label: "Nivel Intermedio" },
+              { function: "nivel3", label: "Parte Superior del Bastidor (Rack)" }
+            ],
+            correct_map: {
+              nivel1: "A",
+              nivel2: "B",
+              nivel3: "C"
+            },
+            pista: "Los hosts (servidores blade) se conectan directamente al switch TOR, que a su vez se conecta a la jerarquía superior.",
+            explanation: "En la arquitectura jerárquica de centro de datos: Nivel Superior = Router de Frontera (conecta con el exterior), Nivel Intermedio = Switches de Agregación (conectan múltiples racks), Parte Superior del Rack = Switch TOR (conecta directamente a los servidores del rack)."
+          }
         ];
       </script>
       <script src="{% static 'aplicacion/estudiante/juego_capa_4.js' %}"></script>

@@ -607,3 +607,34 @@ body .nav-controls button:disabled,
     transform: none !important;
 }
 
+/* ===== RESPONSIVE: Pistas en móvil (niveles 1, 2 y 3) ===== */
+/* Contenedor flex de pistas: en móvil se apila verticalmente */
+@media (max-width: 768px) {
+    /* Contenedor que envuelve botón y pista */
+    .hint-container {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    
+    /* Asegurar que el botón ocupe todo el ancho en móvil */
+    .hint-container .btn-show-hint {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Asegurar que la pista ocupe todo el ancho en móvil */
+    .hint-container .hint-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 0 !important;
+        flex: none !important;
+    }
+    
+    /* Ajustar el contenido de la pista en móvil */
+    .hint-container .hint-content {
+        font-size: 1em !important;
+        padding: 14px 16px !important;
+    }
+}
+
