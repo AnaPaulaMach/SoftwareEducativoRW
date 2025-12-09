@@ -261,6 +261,7 @@ NIVEL_CHOICES = (
     (3, 'Nivel 3 - Capa de Red'),
     (4, 'Nivel 4 - Capa de Enlace'),
     (5, 'Nivel 5 - Capa Física'),
+    (6, 'Nivel Final - Prueba Global'),
 )
 
 
@@ -271,3 +272,7 @@ class ConfigurarNivelesForm(forms.Form):
     level_3 = forms.BooleanField(label=NIVEL_CHOICES[2][1], required=False)
     level_4 = forms.BooleanField(label=NIVEL_CHOICES[3][1], required=False)
     level_5 = forms.BooleanField(label=NIVEL_CHOICES[4][1], required=False)
+    level_6 = forms.BooleanField(label=NIVEL_CHOICES[5][1], required=False)
+    
+    # Especificar el orden de los campos para asegurar que se muestren en el orden correcto
+    field_order = ['level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'level_6']

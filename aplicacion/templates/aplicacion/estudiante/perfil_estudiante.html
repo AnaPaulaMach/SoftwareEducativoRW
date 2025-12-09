@@ -126,7 +126,17 @@
             {% endif %}
             {% endwith %}
 
-            <!-- NIVEL 4: CAPA DE ENLACE (Bloqueado) -->
+            <!-- NIVEL 4: CAPA DE ENLACE -->
+            {% with nivel4=niveles_habilitados.4 %}
+            {% if puede_jugar_nivel_4 %}
+            <div class="level-card unlocked">
+                <h3>🔗 Nivel 4</h3>
+                <p>Capa de Enlace</p>
+                <a href="{% url 'juego_capa_4' %}" class="level-button">
+                    INICIAR
+                </a>
+            </div>
+            {% else %}
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
                 <h3>🔗 Nivel 4</h3>
@@ -134,9 +144,28 @@
                 <a href="#" class="level-button">
                     BLOQUEADO
                 </a>
+                <p class="level-note">
+                    {% if not nivel4 %}
+                        Nivel bloqueado por el profesor.
+                    {% else %}
+                        Debes completar el nivel anterior para continuar.
+                    {% endif %}
+                </p>
             </div>
+            {% endif %}
+            {% endwith %}
 
-            <!-- NIVEL 5: CAPA FÍSICA (Bloqueado) -->
+            <!-- NIVEL 5: CAPA FÍSICA -->
+            {% with nivel5=niveles_habilitados.5 %}
+            {% if puede_jugar_nivel_5 %}
+            <div class="level-card unlocked">
+                <h3>⚡ Nivel 5</h3>
+                <p>Capa Física</p>
+                <a href="{% url 'juego_capa_5' %}" class="level-button">
+                    INICIAR
+                </a>
+            </div>
+            {% else %}
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
                 <h3>⚡ Nivel 5</h3>
@@ -144,9 +173,28 @@
                 <a href="#" class="level-button">
                     BLOQUEADO
                 </a>
+                <p class="level-note">
+                    {% if not nivel5 %}
+                        Nivel bloqueado por el profesor.
+                    {% else %}
+                        Debes completar el nivel anterior para continuar.
+                    {% endif %}
+                </p>
             </div>
+            {% endif %}
+            {% endwith %}
 
             <!-- Nivel FINAL -->
+            {% with nivel6=niveles_habilitados.6 %}
+            {% if puede_jugar_nivel_final %}
+            <div class="level-card unlocked">
+                <h3>🏆 FINAL</h3>
+                <p>Prueba Global</p>
+                <a href="{% url 'juego_final' %}" class="level-button">
+                    INICIAR
+                </a>
+            </div>
+            {% else %}
             <div class="level-card locked">
                 <span class="locked-icon">🔒</span>
                 <h3>🏆 FINAL</h3>
@@ -154,7 +202,16 @@
                 <a href="#" class="level-button">
                     BLOQUEADO
                 </a>
+                <p class="level-note">
+                    {% if not nivel6 %}
+                        Nivel bloqueado por el profesor.
+                    {% else %}
+                        Debes completar el nivel anterior para continuar.
+                    {% endif %}
+                </p>
             </div>
+            {% endif %}
+            {% endwith %}
         </div>
 
         {% else %}
@@ -191,17 +248,25 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
-            <!-- Lado izquierdo (marca + info) -->
+            <!-- Bloque izquierdo: Marca + créditos -->
             <div class="footer-left">
                 <p class="footer-brand">Aventura TCP/IP</p>
                 <p class="footer-meta">
                     Desarrollado por: Coria Luz Antonella, Proserpio Eliana Naily y Ana Paula Machado
                 </p>
                 <p class="footer-meta">
-                    Informática Educativa · Licenciatura en Sistemas de Información · UNSE · 2025
+                    Asignatura Optativa: Informática Educativa · Licenciatura en Sistemas de Información · UNSE · 2025
+                </p>
+                <!-- Bibliografía -->
+                <p class="footer-meta footer-biblio">
+                    Basado en contenidos de: Redes de Computadoras. Un Enfoque Descendente (7ma Ed.)
+                </p>
+                <!-- Uso ético de IA -->
+                <p class="footer-meta footer-ai">
+                    Herramientas de apoyo utilizadas: ChatGPT, Gemini y NotebookLM
                 </p>
             </div>
-            <!-- Lado derecho (tags estilo moderno) -->
+            <!-- Bloque derecho: etiquetas -->
             <div class="footer-right">
                 <span class="footer-tag">Proyecto académico</span>
                 <span class="footer-tag footer-role">Versión 1.0</span>

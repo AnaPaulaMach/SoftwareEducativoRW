@@ -556,6 +556,23 @@ textarea {
     margin-top: 2px;
 }
 
+.footer-biblio {
+    margin-top: 10px;
+    font-size: 0.85em;
+    line-height: 1.4;
+}
+
+.footer-ai {
+    margin-top: 8px;
+    font-size: 0.85em;
+    line-height: 1.4;
+}
+
+.footer-ai-note {
+    font-size: 0.78em;
+    opacity: 0.8;
+}
+
 /* Lado derecho: tags tipo pill */
 .footer-right {
     display: flex;

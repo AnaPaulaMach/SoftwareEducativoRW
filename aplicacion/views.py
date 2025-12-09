@@ -29,15 +29,15 @@ from .models import (
     QuizAttempt,
 )
 
-# Helper que garantiza que cada clase tenga 5 registros de configuración.
+# Helper que garantiza que cada clase tenga 6 registros de configuración (5 niveles + final).
 def asegurar_configuracion_niveles(clase):
     """
-    Garantiza que exista configuración para los cinco niveles de la clase.
+    Garantiza que exista configuración para los seis niveles de la clase (5 niveles + final).
     """
     configuraciones = {
         cfg.level: cfg for cfg in NivelClase.objects.filter(clase=clase)
     }
-    for level in range(1, 6):
+    for level in range(1, 7):  # Niveles 1-5 + nivel 6 (Final)
         if level not in configuraciones:
             configuraciones[level] = NivelClase.objects.create(
                 clase=clase,
@@ -372,7 +372,7 @@ def configurar_niveles_view(request):
             niveles_form = ConfigurarNivelesForm(request.POST)
             if niveles_form.is_valid():
                 # Guardamos el estado de cada checkbox sobre la clase actual.
-                for level in range(1, 6):
+                for level in range(1, 7):  # Niveles 1-5 + nivel 6 (Final)
                     cfg = configuraciones[level]
                     cfg.habilitado = niveles_form.cleaned_data[f'level_{level}']
                     cfg.save()

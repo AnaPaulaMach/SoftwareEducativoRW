@@ -132,6 +132,8 @@
             <span>{{ field.label }}</span>
             {% if field.name == 'level_1' %}
             <small style="color:#6b7280;">(nivel base siempre habilitado)</small>
+            {% elif field.name == 'level_6' %}
+            <small style="color:#6b7280;">(prueba global final)</small>
             {% endif %}
         </label>
         {% endfor %}
