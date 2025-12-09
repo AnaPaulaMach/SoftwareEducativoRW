@@ -582,3 +582,14 @@ def salir_clase_view(request):
     perfil.save()
 
     return redirect("join_clase")
+
+
+@requires_csrf_token
+def csrf_failure(request, reason=""):
+    """
+    Vista personalizada para manejar errores CSRF.
+    """
+    context = {
+        "reason": reason,
+    }
+    return render(request, "aplicacion/csrf_error.html", context, status=403)
