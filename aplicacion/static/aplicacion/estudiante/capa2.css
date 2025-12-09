@@ -8,6 +8,7 @@
     flex-direction: row; /* Elementos en fila */
     justify-content: space-between;
     gap: 10px;
+    flex-wrap: wrap;   
 }
 
 .dropzone {
@@ -148,4 +149,6 @@
   margin: 0 auto;
   gap: 20px;
 }
+
+
 

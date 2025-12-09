@@ -33,6 +33,11 @@
         border-radius: 6px;
         border: 1px solid #b6c8e3;
     }
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
     table {
         width: 100%;
         border-collapse: collapse;
@@ -40,6 +45,7 @@
         background: #fff;
         border-radius: 10px;
         overflow: hidden;
+        min-width: 520px; /* evita que se colapsen columnas en mobile */
     }
     th, td {
         padding: 10px 14px;
@@ -122,36 +128,38 @@
         <div class="empty-state">Todavía no hay intentos registrados para esta clase.</div>
     {% else %}
         {# Tabla resumida de intentos realizados por los estudiantes de la clase seleccionada #}
-        <table>
-            <thead>
-                <tr>
-                    <th>Estudiante</th>
-                    <th>Nivel</th>
-                    <th>Puntaje</th>
-                    <th>Clasificación</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for intento in intentos %}
-                <tr>
-                    <td>{{ intento.user.alias|default:intento.user.get_full_name|default:intento.user.username }}</td>
-                    <td> Nivel {{ intento.level }}</td>
-                    <td>{{ intento.score }}/10</td>
-                    <td>
-                        {% if intento.score >= 9 %}
-                            <span class="badge badge-fibra">Fibra</span>
-                        {% elif intento.score >= 7 %}
-                            <span class="badge badge-cat6">UTP Cat 6</span>
-                        {% else %}
-                            <span class="badge badge-cat3">UTP Cat 3/5</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ intento.created_at|date:"d/m/Y H:i" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Nivel</th>
+                        <th>Puntaje</th>
+                        <th>Clasificación</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for intento in intentos %}
+                    <tr>
+                        <td>{{ intento.user.alias|default:intento.user.get_full_name|default:intento.user.username }}</td>
+                        <td> Nivel {{ intento.level }}</td>
+                        <td>{{ intento.score }}/10</td>
+                        <td>
+                            {% if intento.score >= 9 %}
+                                <span class="badge badge-fibra">Fibra</span>
+                            {% elif intento.score >= 7 %}
+                                <span class="badge badge-cat6">UTP Cat 6</span>
+                            {% else %}
+                                <span class="badge badge-cat3">UTP Cat 3/5</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ intento.created_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </div>
 

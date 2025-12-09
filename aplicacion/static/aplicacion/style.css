@@ -369,6 +369,30 @@ textarea {
         overflow-x: hidden;
     }
     
+    /* EXCEPCIÓN: Las páginas de juego NO deben ser responsive */
+    body:has(.game-area),
+    html:has(.game-area) {
+        overflow-x: auto !important; /* Permitir scroll horizontal en páginas de juego */
+    }
+    
+    .game-area {
+        min-width: 900px !important; /* Forzar ancho mínimo */
+        max-width: 1000px !important;
+        width: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    /* Forzar que el contenedor de preguntas no se comprima */
+    #questions-container {
+        min-width: 800px !important;
+    }
+    
+    .question-module {
+        min-width: 800px !important;
+        width: auto !important;
+    }
+    
     .profile-container {
         padding: 30px 25px;
         max-width: 95%;
@@ -401,12 +425,21 @@ textarea {
         flex-direction: column;
         align-items: center;
         margin-bottom: 15px;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .profile-info {
         width: 100%;
         text-align: center;
         margin-bottom: 10px;
+    }
+    
+    .profile-meta .btn-cerrar-sesion {
+        width: 100%;
+        max-width: 200px;
+        box-sizing: border-box;
+        margin-top: 10px;
     }
     
     .profile-header h1 {
@@ -435,6 +468,30 @@ textarea {
         overflow-x: hidden;
     }
     
+    /* EXCEPCIÓN: Las páginas de juego NO deben ser responsive */
+    body:has(.game-area),
+    html:has(.game-area) {
+        overflow-x: auto !important; /* Permitir scroll horizontal en páginas de juego */
+    }
+    
+    .game-area {
+        min-width: 900px !important; /* Forzar ancho mínimo */
+        max-width: 1000px !important;
+        width: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    /* Forzar que el contenedor de preguntas no se comprima */
+    #questions-container {
+        min-width: 800px !important;
+    }
+    
+    .question-module {
+        min-width: 800px !important;
+        width: auto !important;
+    }
+    
     .profile-container {
         padding: 20px 15px;
         max-width: 100%;
@@ -442,6 +499,31 @@ textarea {
         margin: 15px auto;
         border-radius: 12px;
         box-sizing: border-box;
+    }
+    
+    .profile-meta {
+        font-size: 0.95em;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 5px;
+    }
+    
+    .profile-info {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .profile-meta .btn-cerrar-sesion {
+        width: 100%;
+        max-width: 180px;
+        box-sizing: border-box;
+        margin-top: 10px;
+        padding: 8px 12px;
+        font-size: 0.85em;
     }
     
     .game-levels {

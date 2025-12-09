@@ -183,3 +183,33 @@
 .info-wrapper:hover .tooltip {
     display: block;
 }
+
+/* --- Responsive: centrar en móvil --- */
+@media (max-width: 640px) {
+    .code-container {
+        max-width: 95%;
+        margin: 20px auto;
+        padding: 24px 18px;
+        text-align: center;
+    }
+    .info-container {
+        justify-content: center;
+    }
+    .code-container form p {
+        text-align: center;
+    }
+    .code-container form p label {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 0 0 6px 0;
+    }
+    .code-container form p input,
+    .code-container form p textarea {
+        width: 100%;
+    }
+    .btn-generar, .btn-nueva {
+        width: 100%;
+        max-width: 240px;
+    }
+}
