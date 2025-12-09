@@ -35,6 +35,8 @@ CSRF_TRUSTED_ORIGINS = [ # <-- ¡AGREGADO!
     "https://softwareeducativorw-production.up.railway.app",
 ]
 
+CSRF_FAILURE_VIEW = "aplicacion.views.csrf_failure"
+
 
 # Application definition
 

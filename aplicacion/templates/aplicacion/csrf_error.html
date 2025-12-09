@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sesión actualizada</title>
+    <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
+</head>
+<body class="fondo-pag">
+
+    <div class="contenedor-mensaje-error">
+        <h1>⚠️ Tu sesión se actualizó</h1>
+        <p>
+            Por seguridad, tu sesión se actualizó o el formulario que estabas usando ya no es válido.
+        </p>
+        <p>
+            Volvé al menú principal e iniciá sesión de nuevo para continuar trabajando.
+        </p>
+
+        <!-- Si querés, podés mostrar el motivo técnico solo en modo debug -->
+        {# <p class="detalle-error">Detalle técnico: {{ reason }}</p> #}
+
+        <a class="btn-volver" href="{% url 'index' %}">
+            ⬅ Volver al inicio
+        </a>
+    </div>
+
+</body>
+</html>
