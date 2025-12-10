@@ -8,6 +8,7 @@ const IMG_CAT6 = CFG.imgCat6 || "";
 const IMG_CAT35 = CFG.imgCat35 || "";
 const SAVE_RESULT_URL = CFG.saveResultUrl || "#";
 
+
 // --------- Las preguntas vienen del HTML (window.QUIZ_QUESTIONS) ---------
 if (!window.QUIZ_QUESTIONS || window.QUIZ_QUESTIONS.length === 0) {
   console.error('Error: No se encontraron preguntas en window.QUIZ_QUESTIONS');
@@ -741,8 +742,16 @@ prevBtn.addEventListener("click", () => {
 /* -------------------------
    Finalizar y revisión
    ------------------------- */
+/* -------------------------
+   Finalizar y revisión
+------------------------- */
+
+const IS_LAST_LEVEL = true;  
+const CERT_IMAGE = "/static/aplicacion/Imagenes/certificadofin.png";
+
 finishBtn.addEventListener("click", e => {
   e.preventDefault();
+
   const lastQ = questions[questions.length - 1];
   if (!lastQ.checked) {
     if (checkCurrentAnswer(lastQ)) finalScore++;
@@ -752,7 +761,6 @@ finishBtn.addEventListener("click", e => {
   reviewList.innerHTML = "";
   questions.forEach(q => {
     const isCorrect = checkCurrentAnswer(q);
-
     let userAnswerDisplay = "";
 
     function findLabel(q, val) {
@@ -779,12 +787,14 @@ finishBtn.addEventListener("click", e => {
     if (q.type === "drag_drop") {
       const totalItems = (q.drag_items || []).length;
       const placedCount = q.answer ? Object.keys(q.answer).length : 0;
+
       const parts = (q.drop_zones || []).map(dz => {
         const placed = q.answer && q.answer[dz.function];
         const label = placed ? findLabel(q, placed) : "—";
         const zoneLabel = dz.label ? dz.label : dz.function;
         return `<strong>${zoneLabel}:</strong> ${label}`;
       });
+
       userAnswerDisplay = `${parts.join(" / ")} <br><small>(${placedCount}/${totalItems} colocados)</small>`;
     }
     else if (q.type === "mc") {
@@ -797,20 +807,9 @@ finishBtn.addEventListener("click", e => {
       }
     }
     else if (q.type === "tf") {
-      if (!q.answer) {
-        userAnswerDisplay = "No respondida";
-      } else {
-        userAnswerDisplay = findLabel(q, q.answer) || String(q.answer);
-      }
+      userAnswerDisplay = q.answer ? (findLabel(q, q.answer) || String(q.answer)) : "No respondida";
     }
-    else if (q.type === "sequence") {
-      if (!q.answer || !Array.isArray(q.answer) || q.answer.length === 0) {
-        userAnswerDisplay = "Sin ordenar";
-      } else {
-        userAnswerDisplay = q.answer.map(k => findLabel(q, k)).join(" → ");
-      }
-    }
-    else if (q.type === "drag_sort") {
+    else if (q.type === "sequence" || q.type === "drag_sort") {
       if (!q.answer || !Array.isArray(q.answer) || q.answer.length === 0) {
         userAnswerDisplay = "Sin ordenar";
       } else {
@@ -824,21 +823,21 @@ finishBtn.addEventListener("click", e => {
       userAnswerDisplay = q.answer ? JSON.stringify(q.answer) : "No respondida";
     }
 
-    let reviewHtml = `<div class="review-item ${isCorrect ? "correct-review" : "incorrect-review"}">`;
-    reviewHtml += `<strong>P${q.id}. ${q.text.replace(/<[^>]+>/g, "")}</strong>`;
-    reviewHtml += `<p class="user-answer">Tu respuesta: ${userAnswerDisplay}</p>`;
+    let reviewHtml = `
+      <div class="review-item ${isCorrect ? "correct-review" : "incorrect-review"}">
+        <strong>P${q.id}. ${q.text.replace(/<[^>]+>/g, "")}</strong>
+        <p class="user-answer">Tu respuesta: ${userAnswerDisplay}</p>
+    `;
 
-    if (!isCorrect) {
-      if (q.pista && q.pista.trim() !== "") {
-        reviewHtml += `<p class="hint-text">💡 Pista: ${q.pista}</p>`;
-      }
+    if (!isCorrect && q.pista && q.pista.trim() !== "") {
+      reviewHtml += `<p class="hint-text">💡 Pista: ${q.pista}</p>`;
     }
 
     reviewHtml += `</div>`;
     reviewList.innerHTML += reviewHtml;
   });
 
-  // rúbrica (sobre 10)
+  // ---- Rúbrica -----
   const score = finalScore;
   let rubric = "";
   let icon = "🎯";
@@ -846,25 +845,26 @@ finishBtn.addEventListener("click", e => {
   let title = "";
 
   if (score >= 9) {
-    rubric = "Fibra óptica (Excelente): Domina los conceptos de la Capa de Transporte.";
+    rubric = "Fibra óptica (Excelente): Domina los conceptos.";
     title = "¡Excelente trabajo!";
     icon = "🌟";
     bgColor = "#0f9d58";
   } else if (score >= 7) {
-    rubric = "UTP Categoria 6 (Bueno): Comprende la mayoría de los conceptos. Puede pulir algunos detalles.";
+    rubric = "UTP Categoria 6 (Bueno): Comprende la mayoría.";
     title = "Muy buen desempeño";
     icon = "🎉";
     bgColor = "#029ad6";
   } else {
-    rubric = "UTP Categoria 3/5 (Necesita mejorar): Conviene repasar teoría y reintentar el nivel.";
+    rubric = "UTP Categoria 3/5 (Necesita mejorar).";
     title = "Hay margen para mejorar";
     icon = "🔧";
     bgColor = "#ff6b6b";
   }
 
   const imgSrc = score >= 9 ? IMG_FIBRA : score >= 7 ? IMG_CAT6 : IMG_CAT35;
+
   let cardHtml = `
-    <div class="rubric-card" role="region" aria-label="Resultado final">
+    <div class="rubric-card" role="region">
       <div class="rubric-icon" style="background:${bgColor};">
         <img src="${imgSrc}" alt="icono" onerror="this.style.display='none'; this.parentNode.textContent='${icon}';">
       </div>
@@ -878,29 +878,49 @@ finishBtn.addEventListener("click", e => {
           </div>
         </div>
         <div class="rubric-suggestion">
-          Sugerencia: ${score >= 7 ? "Podés pasar al siguiente nivel y revisar los ítems donde fallaste." : "Repasá el capítulo de Capa de Transporte y vuelve a intentar."}
+          ${IS_LAST_LEVEL ? "Has completado todos los niveles. ¡Gran trabajo!" :
+            (score >= 7 ? "Podés pasar al siguiente nivel." : "Repasá y volvé a intentar.")}
         </div>
+
         <div class="rubric-cta">
           <button type="button" class="btn-retry" onclick="location.reload();">🔁 Reintentar</button>
-          <a href="/perfil/estudiante/" class="btn-menu" role="button">🏠 Volver al Menú</a>
+          <a href="/perfil/estudiante/" class="btn-menu">🏠 Volver al Menú</a>
         </div>
       </div>
-    </div>`;
+    </div>
+  `;
 
-  const shouldUnlock = score >= 7;
-  if (shouldUnlock) {
-    try { localStorage.setItem("unlocked_level_3", "true"); } catch (e) {}
+  /* ----------------------------
+       SECCIÓN FINAL CORRECTA
+  ---------------------------- */
+
+  let extraHtml = "";
+
+  if (IS_LAST_LEVEL) {
+    extraHtml = `
+      <div class="certificado-final">
+        <div style="text-align:center; margin-top:16px;">
+          <img src="${CERT_IMAGE}" alt="Certificado Final" style="width:600px; height:auto; border-radius:12px;">
+        </div>
+      </div>
+    `;
   }
 
+  cardHtml += extraHtml;
+
+  // ---- Enviar resultados ----
   (function sendResultsToServer() {
     try {
       const answersPayload = questions.map(q => ({ id: q.id, type: q.type, answer: q.answer }));
+
       function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(";").shift();
       }
+
       const csrftoken = getCookie("csrftoken");
+
       fetch(SAVE_RESULT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken || "" },
@@ -909,19 +929,18 @@ finishBtn.addEventListener("click", e => {
     } catch (e) {}
   })();
 
-  if (shouldUnlock) {
-    cardHtml += `<div style="text-align:center; margin-top:14px;"><a href="/perfil/estudiante/" class="btn-go-profile">➡️ Ir al Perfil — Nivel 3</a></div>`;
-  }
-
+  // ---- Mostrar pantalla final ----
   document.getElementById("feedback-final").innerHTML = cardHtml;
-
   document.getElementById("questions-container").style.display = "none";
+
   const nav = document.querySelector(".nav-controls");
   if (nav) nav.style.display = "none";
+
   scoreResults.style.display = "block";
   document.getElementById("final-score").textContent = finalScore;
   document.getElementById("finish-btn").disabled = true;
 });
+
 
 /* -------------------------
    Render principal de pregunta
