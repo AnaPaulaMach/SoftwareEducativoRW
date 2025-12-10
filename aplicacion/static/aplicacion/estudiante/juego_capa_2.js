@@ -350,6 +350,7 @@ function applyQuestionState(q) {
   const qElement = document.querySelector(`[data-qid="${q.id}"]`);
   const feedbackBox = document.getElementById(`q-feedback-${q.id}`);
   const isChecked = q.checked;
+  const questionIsCorrect = isChecked ? checkCurrentAnswer(q) : null;
 
   if (!qElement) return;
 
@@ -380,18 +381,6 @@ function applyQuestionState(q) {
             "dd-badge " + (isCorrect ? "dd-correct" : "dd-incorrect");
           badge.textContent = isCorrect ? "✓" : "✖";
           droppedItem.appendChild(badge);
-
-          if (!isCorrect) {
-            const correctProtocol = ddMap[zone.dataset.function];
-            const correctLabel = (q.drag_items || []).find(
-              it => it.value === correctProtocol
-            );
-            const labelText = correctLabel ? correctLabel.label : correctProtocol;
-            const correctEl = document.createElement("div");
-            correctEl.className = "correct-answer";
-            correctEl.textContent = "Correcto: " + labelText;
-            zone.appendChild(correctEl);
-          }
         }
       });
     }
@@ -439,12 +428,12 @@ function applyQuestionState(q) {
           const isUserSelected = Array.isArray(q.answer) && q.answer.includes(val);
           const isCorrect = q.correct_answer.includes(val);
 
-          if (isCorrect) btn.classList.add("correct");
+          if (questionIsCorrect && isCorrect) btn.classList.add("correct");
           if (isUserSelected && !isCorrect) btn.classList.add("incorrect");
 
         } else {
           // 🔹 MC simple / TF
-          if (normalizeVal(val) === normalizeVal(q.correct_answer)) {
+          if (questionIsCorrect && normalizeVal(val) === normalizeVal(q.correct_answer)) {
             btn.classList.add("correct");
           } else if (normalizeVal(val) === normalizeVal(q.answer)) {
             btn.classList.add("incorrect");

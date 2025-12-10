@@ -339,6 +339,7 @@ function applyQuestionState(q) {
   const qElement = document.querySelector(`[data-qid="${q.id}"]`);
   const feedbackBox = document.getElementById(`q-feedback-${q.id}`);
   const isChecked = q.checked;
+  const questionIsCorrect = isChecked ? checkCurrentAnswer(q) : null;
 
   if (!qElement) return;
 
@@ -413,10 +414,10 @@ function applyQuestionState(q) {
                     isCorrect = Array.isArray(q.correct_answer) && q.correct_answer.includes(val);
                 }
 
-                if (isCorrect) btn.classList.add("correct");
+                if (questionIsCorrect && isCorrect) btn.classList.add("correct");
                 if (isUserSelected && !isCorrect) btn.classList.add("incorrect");
             } else {
-                if (normalizeVal(val) === normalizeVal(q.correct_answer)) btn.classList.add("correct");
+                if (questionIsCorrect && normalizeVal(val) === normalizeVal(q.correct_answer)) btn.classList.add("correct");
                 else if (normalizeVal(val) === normalizeVal(q.answer)) btn.classList.add("incorrect");
             }
         }
