@@ -105,6 +105,7 @@
             {
                 id: 2,
                 type: "mc",
+                singleSelect: true,  
                 text: `
                 En la imagen, el elemento marcado con el símbolo “?” representa el punto donde la aplicación 
                 (en la Capa de Aplicación) se comunica con la Capa de Transporte (como TCP o UDP). 
@@ -201,6 +202,7 @@
             {
                 id: 6,
                 type: "mc", // multiple-choice simple
+                singleSelect: true,  
                 text: "¿A qué capa corresponden los protocolos de la imagen?",
                 image: "/static/aplicacion/Imagenes/protocolosdeaplicacion.jpg", // ruta de la imagen
                 options: [
@@ -219,6 +221,7 @@
             {
                 id: 7,
                 type: "mc",
+                singleSelect: true,  
                 text: "¿Cómo logra la capa de Transporte entregar los datos recibidos de la capa de Red al proceso correcto de la capa de Aplicación?",
                 options: [
                     { value: "multiplexacion", label: "Usando multiplexación y desmultiplexación con números de puerto" },
@@ -294,10 +297,10 @@
             text: "CAPA DE RED - Ordena de forma simplificada el recorrido de un datagrama IP desde un host de origen hasta un servidor remoto.",
 
             sequence_items: [
-                { key: "origen", label: "Host de origen envía el datagrama a su router de borde" },
-                { key: "router_local", label: "Router local consulta su tabla de enrutamiento" },
                 { key: "routers_intermedios", label: "Routers intermedios reenvían el datagrama hacia la red destino" },
+                { key: "origen", label: "Host de origen envía el datagrama a su router de borde" },
                 { key: "router_destino", label: "Router de la red destino entrega el datagrama a la red local" },
+                { key: "router_local", label: "Router local consulta su tabla de enrutamiento" },
                 { key: "host_destino", label: "Host de destino recibe el datagrama y lo pasa a la capa superior" }
             ],
 
@@ -342,7 +345,7 @@
 ];
 </script>
 
-    <script src="{% static 'aplicacion/estudiante/juego_capa_2.js' %}"></script>
+    <script src="{% static 'aplicacion/estudiante/juego_final.js' %}"></script>
     {% else %}
     <h1>Acceso Denegado</h1>
     <p>Necesitas iniciar sesión para ver esta página.</p>
