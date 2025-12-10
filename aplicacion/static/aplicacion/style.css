@@ -712,3 +712,88 @@ textarea {
         justify-content: center;
     }
 }
+
+
+
+/* Contenedor de cada botón + ícono */
+.role-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+/* Ícono de información */
+.info-icon {
+    font-size: 1.3em;
+    cursor: pointer;
+    color: #4b5563;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.info-icon:hover {
+    color: #1f2937;
+}
+
+/* Contenedor botón + icono */
+.role-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+/* Ícono de información */
+.info-icon {
+    font-size: 1.3em;
+    cursor: pointer;
+    color: #4b5563;
+    font-weight: bold;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.info-icon:hover {
+    color: #1f2937;
+}
+
+/* TOOLTIP — estilo similar al hint-box pero más pequeño y sin negrita */
+.info-icon:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+
+    /* APARICIÓN ABAJO Y A LA DERECHA */
+    top: 115%;
+    right: 0;
+
+    /* ESTILOS TIPO HINT */
+    min-width: 320px;
+    max-width: 380px;
+    background: linear-gradient(90deg, #fffaf0, #fff6f6);
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid #ffddc8;
+
+    color: #073b4c;
+    font-weight: 400;        
+    font-size: 0.85em;       
+    line-height: 1.35;
+    font-family: "Segoe UI", sans-serif;
+
+    box-shadow: 0 6px 20px rgba(2, 62, 138, 0.08);
+
+    z-index: 999;
+    text-align: left;
+}
+
+/* Flechita */
+.info-icon:hover::before {
+    content: "";
+    position: absolute;
+    top: 108%;
+    right: 18px;
+    border-width: 7px;
+    border-style: solid;
+    border-color: #fffaf0 transparent transparent transparent;
+}

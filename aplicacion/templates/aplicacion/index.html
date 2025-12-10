@@ -16,22 +16,27 @@
     <h1 class="title">
         AVENTURA TCP/IP: CARRERA DE CAPAS 🏁
     </h1>
-    
-<!--     <p class="subtitle">
-        ¿Listo para el desafío?
-    </p> -->
 
     <div class="button-container">
-        
-        <a href="{% url 'login_profesor' %}" class="btn btn-profesor">
-            👨‍🏫 Ingresar como profesor
-        </a>
-        
-        <a href="{% url 'login_estudiante' %}" class="btn btn-estudiante">
-            🎓 Ingresar como estudiante
-        </a>
-        
+
+        <div class="role-wrapper">
+            <a href="{% url 'login_profesor' %}" class="btn btn-profesor">
+                👨‍🏫 Ingresar como profesor
+            </a>
+            <span class="info-icon right" data-tooltip="Si sos profesor: podés crear clases, generar códigos de acceso y ver el desempeño de tus estudiantes.">ⓘ</span>
+        </div>
+    
+        <div class="role-wrapper">
+            <a href="{% url 'login_estudiante' %}" class="btn btn-estudiante">
+                🎓 Ingresar como estudiante
+            </a>
+            <span class="info-icon right" data-tooltip="Si sos estudiante: te unís con un código de clase y resolvés los niveles del juego.">ⓘ</span>
+        </div>
+    
     </div>
+    
+    
+    
     
     <!-- Footer -->
     <footer class="footer">
