@@ -1,44 +1,56 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     
     <title>Nivel FINAL: Prueba Global</title>
     
     <!-- Favicon para Nivel FINAL -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
     
+=======
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 2: Capa de Transporte</title>
+
+    <!-- Favicon para Nivel 2 -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚚</text></svg>">
+>>>>>>> 99a818c (Nivel 6 - pero el id 12 no pude hacer que permita solo una eleccion)
     <link rel="stylesheet" href="{% static 'aplicacion/estudiante/niveles.css' %}">
-    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/juego_final.css' %}">
     <link rel="stylesheet" href="{% static 'aplicacion/style.css' %}">
+    <link rel="stylesheet" href="{% static 'aplicacion/estudiante/juego_final.css' %}">
 </head>
+
 <body>
     {% if user.is_authenticated %}
-    
+
     <h1 class="title" style="margin-top: 30px; margin-bottom: 10px;">AVENTURA TCP/IP: CARRERA DE CAPAS 🏁</h1>
 
     <div class="game-area">
-        
+
         <div class="game-profile-meta">
             Jugando como: <strong>{{ user.alias|default:user.username }}</strong> | Rol: {{ user.rol }}
         </div>
-        
-        <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel FINAL: Prueba Global</h2>
-        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
-        
+
+        <h2 style="color: #0077B6; margin-bottom: 5px;">Nivel FINAL: Prueba de todas las capas vistas </h2>
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px;">Pregunta <span
+                id="current-q-number">1</span> de 10. ¡Cada acierto te acerca a la Fibra Óptica!</p>
+
         <div class="progress-bar-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
 
-        <form id="quiz-form" onsubmit="return false;"> 
+        <form id="quiz-form" onsubmit="return false;">
             <div id="questions-container">
-                </div>
-            
+            </div>
+
             <div id="score-results" style="display: none;">
                 <div class="score-display">Puntuación Final: <span id="final-score"></span>/10</div>
                 <div id="feedback-final" class="feedback"></div>
-                
+
                 <div id="review-container">
                     <h4>Revisión Detallada (Aciertos y Errores)</h4>
                     <div id="review-list"></div>
@@ -53,29 +65,294 @@
             </div>
         </form>
 
-        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al Menú de Niveles</a>
+        <a href="{% url 'perfil_estudiante' %}" class="link-return" style="display: block; margin-top: 20px;">Volver al
+            Menú de Niveles</a>
     </div>
 
     <script>
         window.QUIZ_CONFIG = {
-          saveResultUrl: "{% url 'save_quiz_result' %}",
-          imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
-          imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
-          imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
+            saveResultUrl: "{% url 'save_quiz_result' %}",
+            imgFibra: "{% static 'aplicacion/images/fibra.svg' %}",
+            imgCat6: "{% static 'aplicacion/images/cat6.svg' %}",
+            imgCat35: "{% static 'aplicacion/images/cat3_5.svg' %}"
         };
 
-        // --------- BANCO DE PREGUNTAS (10 preguntas fijas de Prueba Global) ---------
+        // BANCO DE PREGUNTAS
         window.QUIZ_QUESTIONS = [
-            // TODO: Agregar preguntas aquí
-        ];
-      </script>
-      <script src="{% static 'aplicacion/estudiante/juego_final.js' %}"></script>
+
+            {
+                id: 1,
+                type: "sequence",
+                text: "Ordená las capas del modelo TCP/IP de forma descendente, tal como las presentan Kurose y Ross.",
+                sequence_items: [
+                    { key: "red", label: "Capa de Red" },
+                    { key: "aplicacion", label: "Capa de Aplicación" },
+                    { key: "enlace", label: "Capa de Enlace" },
+                    { key: "transporte", label: "Capa de Transporte" },
+                    { key: "fisica", label: "Capa Física" }
+                ],
+                // orden correcto (de arriba hacia abajo)
+                correct_answer: [
+                    "aplicacion",
+                    "transporte",
+                    "red",
+                    "enlace",
+                    "fisica"
+                ],
+                answer: [],          // empieza vacío; el código llenará esto al arrastrar
+                checked: false,
+                score_value: 1,
+                pista: "Pensá desde la capa más cercana al usuario hacia la más cercana al hardware.",
+                correct_msg: "¡Excelente! Ordenaste correctamente las capas del modelo TCP/IP.",
+                incorrect_msg: "Incorrecto. Revisá el orden descendente desde Aplicación hasta Física."
+            },
+            {
+                id: 2,
+                type: "mc",
+                text: `
+                En la imagen, el elemento marcado con el símbolo “?” representa el punto donde la aplicación 
+                (en la Capa de Aplicación) se comunica con la Capa de Transporte (como TCP o UDP). 
+                Esta interfaz actúa como una puerta de software, permitiendo que el proceso pueda enviar y 
+                recibir datos utilizando los servicios de transporte del sistema operativo.<br><br>
+
+        <img src="/static/aplicacion/Imagenes/socket.png" width="500" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
+        <br><br>
+        ¿Cómo se llama esa interfaz?`,
+                options: [
+                    { value: "segmento", label: "Segmento" },
+                    { value: "socket", label: "Socket" },
+                    { value: "direccionIP", label: "Dirección IP" },
+                    { value: "datagrama", label: "Datagrama" }
+                ],
+
+                correct_answer: ["socket"],
+
+                answer: [],
+                checked: false,
+                score_value: 1,
+
+                pista: "Es la interfaz que permite que las aplicaciones usen los servicios de transporte.",
+
+                correct_msg: "¡Correcto! El socket es la interfaz entre la aplicación y la Capa de Transporte.",
+                incorrect_msg: "Respuesta incorrecta. Observá la interfaz marcada en la imagen."
+            },
+
+            {
+                id: 3,
+                type: "tf",
+                text: "La función principal de la Capa de Enlace es trasladar un datagrama de la Capa de Red a través de un único enlace, desde un nodo hasta el siguiente en la ruta.",
+                correct_answer: "verdadero",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+                pista: "Pensá en qué hace la capa de enlace entre dos nodos vecinos, no en todo el recorrido extremo a extremo.",
+                correct_msg: "¡Correcto! La Capa de Enlace se encarga de mover un datagrama a través de un único enlace entre nodos adyacentes, como un salto dentro de la ruta.",
+                incorrect_msg: "Incorrecto. Recordá que la Capa de Enlace opera solo entre nodos que comparten un enlace. El recorrido extremo a extremo es responsabilidad de la Capa de Red."
+            },
+
+            {
+                id: 4,
+                type: "tf",
+                text: `La función principal de la Capa de Red es mover una trama que contiene un datagrama entre nodos adyacentes a través de un único enlace de comunicaciones, 
+                mientras que la Capa de Enlace tiene la responsabilidad de trasladar el datagrama del host de origen al host de destino a través de múltiples enlaces y routers.`,
+                correct_answer: "falso",
+                options: [
+                    { value: "verdadero", label: "VERDADERO" },
+                    { value: "falso", label: "FALSO" }
+                ],
+
+                pista: "Una capa trabaja “salto a salto”; la otra trabaja “de origen a destino”. Pensá cuál es cuál.",
+                correct_msg: "¡Correcto! La afirmación es falsa porque describe al revés las funciones. ",
+                incorrect_msg: "Incorrecto. La descripción invierte las funciones."
+
+            },
+            {
+                id: 5,
+                type: "drag_drop",
+                text: `En la arquitectura de cinco capas presentada por Kurose y Ross, cada capa maneja los datos en una unidad específica. 
+                Emparejá cada capa con el nombre de la unidad de datos correspondiente. (Arrastrar)`,
+                drag_items: [
+                    { value: "trama", label: "Trama" },
+                    { value: "mensaje", label: "Mensaje" },
+                    { value: "datagrama", label: "Datagrama" },
+                    { value: "bits", label: "Bits" },
+                    { value: "segmento", label: "Segmento" }
+                ],
+                drop_zones: [
+                    { function: "capa_aplicacion", label: "Capa de APLICACIÓN", active: true },
+                    { function: "capa_trasporte", label: "Capa de TRANSPORTE", active: true },
+                    { function: "capa_red", label: "Capa de RED", active: true },
+                    { function: "capa_enlace", label: "Capa de ENLACE", active: true },
+                    { function: "capa_fisica", label: "Capa FÍSICA", active: true }
+                ],
+
+                correct_map: {
+                    capa_aplicacion: "mensaje",
+                    capa_trasporte: "segmento",
+                    capa_red: "datagrama",
+                    capa_enlace: "trama",
+                    capa_fisica: "bits"
+                },
+
+                checked: false,
+                score_value: 1,
+                pista: `Recordá que cada capa agrega su propia información (encapsulación). 
+                <br> La unidad de datos cambia a medida que bajamos: mensaje → ... → bits.`,
+                correct_msg: "¡Excelente! La encapsulación sigue exactamente ese orden en el modelo descendente de Kurose y Ross.",
+                incorrect_msg: "Incorrecto. Algunas asociaciones no son correctas."
+            },
+            {
+                id: 6,
+                type: "mc", // multiple-choice simple
+                text: "¿A qué capa corresponden los protocolos de la imagen?",
+                image: "/static/aplicacion/Imagenes/protocolosdeaplicacion.jpg", // ruta de la imagen
+                options: [
+                    { value: "capadered", label: "Capa de RED" },
+                    { value: "capadeenlace", label: "Capa de ENLACE" },
+                    { value: "capadeapp", label: "Capa de APLICACIÓN" },
+                    { value: "capadetransporte", label: "Capa de TRANSPORTE" }
+                ],
+                correct_answer: "capadeapp",
+                checked: false,
+                score_value: 1,
+                pista: "Estos protocolos permiten que las aplicaciones del usuario funcionen y se comuniquen a través de la red.",
+                correct_msg: "¡Correcto! Estos protocolos pertenecen a la capa de aplicación",
+                incorrect_msg: "Incorrecto. Revisá qué capa trabaja directamente con las aplicaciones y servicios que usamos en la red."
+            },
+            {
+                id: 7,
+                type: "mc",
+                text: "¿Cómo logra la capa de Transporte entregar los datos recibidos de la capa de Red al proceso correcto de la capa de Aplicación?",
+                options: [
+                    { value: "multiplexacion", label: "Usando multiplexación y desmultiplexación con números de puerto" },
+                    { value: "solo_ip", label: "Usando únicamente la dirección IP del host receptor" },
+                    { value: "tcp_udp", label: "Combinando TCP y UDP para determinar a qué proceso enviar los datos" },
+                    { value: "orden_paquetes", label: "Ordenando los paquetes en el mismo orden en que llegaron sin diferenciar procesos" }
+                ],
+                correct_answer: "multiplexacion",
+                checked: false,
+                score_value: 1,
+                pista: "Observá cómo la capa de Transporte distingue entre distintos procesos en el mismo host, ¿qué mecanismo podría usar?",
+                correct_msg: "¡Correcto! La capa de Transporte usa multiplexación y desmultiplexación para entregar los datos al proceso adecuado según el número de puerto.",
+                incorrect_msg: "Incorrecto. Para entregar los datos que recibe de capa de red usa multiplexación y desmultiplexación "
+            },
+            {
+                id: 8,
+                type: "mc", // multiple-choice
+                text: "¿Qué funciones son realizadas por la CAPA DE RED del modelo TCP/IP? (3 opciones correctas)",
+                options: [
+                    { value: "routing", label: "Encaminamiento de paquetes mediante algoritmos de routing" },
+                    { value: "ip", label: "Asignación y uso de direcciones IP para el envío entre redes" },
+                    { value: "dns", label: "Traducción de nombres de dominio (DNS)" },
+                    { value: "flujo", label: "Control de flujo extremo a extremo" },
+                    { value: "conmutacion", label: "Conmutación y transporte de datagramas desde el host origen hacia el host destino" }
+
+                ],
+                correct_answer: ["routing", "ip", "conmutacion"], // las que no se ofrecen
+                checked: false,
+                score_value: 1,
+                pista: "Reflexioná sobre lo siguiente: ¿Internet puede asegurar tiempos de entrega o que los datos viajen a una velocidad constante?",
+                correct_msg: "¡Correcto! La capa de transporte no garantiza retardo ni ancho de banda.",
+                incorrect_msg: "Incorrecto. La capa de transporte lo que no garantiza es retardo ni ancho de banda."
+        },
+        {
+            id: 9, 
+            type: 'drag_drop', 
+            text: " CAPA DE APLICACIÓN - ¡Asocia la función con el Protocolo que la realiza!",
+            
+            drag_items: [
+                { value: 'web_request', label: 'Petición de una página web' },
+                { value: 'mail_address', label: 'Traducción de nombre a IP' },
+                { value: 'encrypted_remote', label: 'Acceso remoto cifrado' },
+                { value: 'mailbox_access', label: 'Gestión de tu buzón de correo' }
+            ],
+
+            drop_zones: [
+                { function: 'http_p', label: 'Protocolo HTTP/S', active: true },
+                { function: 'dns_p', label: 'Protocolo DNS', active: true },
+                { function: 'ssh_p', label: 'Protocolo SSH', active: true },
+                { function: 'imap_p', label: 'Protocolo IMAP', active: true }
+            ],
+
+            correct_map: { 
+                'http_p': 'web_request',
+                'dns_p': 'mail_address',
+                'ssh_p': 'encrypted_remote',
+                'imap_p': 'mailbox_access'
+            },
+
+            answer: {},
+            checked: false,
+            
+            score_value: 1,
+
+            pista: "Recuerda la función principal de cada protocolo: ¿Cuál está asociado con la encriptación? ¿Cuál usa TCP en el puerto 80/443? ¿Cuál almacena mensajes en el buzón?",
+            correct_msg: "¡Correcto! ",
+            incorrect_msg: "Incorrecto. "
+        },
+
+        {
+            id: 10,
+            type: "sequence",
+            text: "CAPA DE RED - Ordena de forma simplificada el recorrido de un datagrama IP desde un host de origen hasta un servidor remoto.",
+
+            sequence_items: [
+                { key: "origen", label: "Host de origen envía el datagrama a su router de borde" },
+                { key: "router_local", label: "Router local consulta su tabla de enrutamiento" },
+                { key: "routers_intermedios", label: "Routers intermedios reenvían el datagrama hacia la red destino" },
+                { key: "router_destino", label: "Router de la red destino entrega el datagrama a la red local" },
+                { key: "host_destino", label: "Host de destino recibe el datagrama y lo pasa a la capa superior" }
+            ],
+
+            correct_answer: [
+                "origen",
+                "router_local",
+                "routers_intermedios",
+                "router_destino",
+                "host_destino"
+            ],
+
+            answer: [],
+            checked: false,
+            score_value: 1,
+
+            pista: "Pensá en el camino que recorre un datagrama: primero el host, luego routers, y por último el destino.",
+            correct_msg: "¡Muy bien! Ese es el orden correcto en el recorrido de un datagrama IP.",
+            incorrect_msg: "Incorrecto. Revisá el flujo desde el host origen hasta el destino final.",
+        },
+        {
+            id: 12,
+            type: "mc",
+            singleSelect: true,  // <-- aquí indicamos que solo se puede seleccionar una opción
+            text: `CAPA DE ENLACE – ¿Qué tipo de unidad de datos es la que aparece en la imagen?<br><br>
+            <img src="/static/aplicacion/Imagenes/tramaethernet.png" width="700" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:6px;">
+            <br>`,
+            options: [
+                { value: "trama1", label: "Trama 802.11 (Wi-Fi)" },
+                { value: "trama2", label: "Trama PPP (Point-to-Point Protocol)" },
+                { value: "trama3", label: "Trama HDLC" },
+                { value: "trama4", label: "Trama Ethernet" }
+            ],
+            correct_answer: ["trama4"],
+            answer: [],
+            checked: false,
+            score_value: 1,
+            pista: "Observá si aparecen direcciones físicas (MAC) de origen y destino y un campo Type. " +
+                "Estos campos son característicos de un protocolo de acceso múltiple de capa de enlace ampliamente utilizado en redes LAN.",
+            correct_msg: "¡Correcto! La unidad de datos mostrada es una trama Ethernet",
+            incorrect_msg: "Incorrecto. Revisá nuevamente: si ves direcciones MAC y un campo Type, estás ante una trama utilizada en redes LAN cableadas"
+        }
+];
+</script>
+
+    <script src="{% static 'aplicacion/estudiante/juego_capa_2.js' %}"></script>
     {% else %}
-        <h1>Acceso Denegado</h1>
-        <p>Necesitas iniciar sesión para ver esta página.</p>
+    <h1>Acceso Denegado</h1>
+    <p>Necesitas iniciar sesión para ver esta página.</p>
     </div>
     {% endif %}
-    
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
@@ -105,5 +382,5 @@
         </div>
     </footer>
 </body>
-</html>
 
+</html>

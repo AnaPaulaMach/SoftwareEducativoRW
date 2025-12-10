@@ -522,8 +522,13 @@
 /* Estilos para la caja de pista por pregunta (inline hint) */
 .hint-box {
     display: none;
+<<<<<<< HEAD
     margin-top: 0px;
     min-width: 400px; /* Ancho mínimo pero puede crecer */
+=======
+    margin-top: 2px;
+    width: 100%;
+>>>>>>> 99a818c (Nivel 6 - pero el id 12 no pude hacer que permita solo una eleccion)
     max-width: 820px;
 }
 .hint-inner {

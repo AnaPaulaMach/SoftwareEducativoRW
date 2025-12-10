@@ -116,6 +116,7 @@ if (q.type === "drag_drop") {
     if (q.id === 7) {
         html += renderDragDrop7(q);
     } else if (q.id === 11){
+      
         html += renderDragDrop11(q); 
     } else {
         html += renderDragDrop(q);

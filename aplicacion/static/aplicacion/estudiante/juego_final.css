@@ -13,3 +13,63 @@
 
 /* Agregar estilos específicos del Nivel Final aquí */
 
+.hint-box {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #e7f1fa;
+    border-left: 4px solid #0077B6;
+    border-radius: 8px;
+    font-size: 0.95em;
+}
+
+/* id 11 */
+.question-module[data-qid="11"] .dropzone {
+  width: 180px;
+  height: 55px;
+  border: 2px dashed #0077B6;
+  border-radius: 10px;
+  background-color: #f8fbff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Hover solo en la 11 */
+.question-module[data-qid="11"] .dropzone.hover {
+  background-color: #e3f2fd;
+  border-color: #005fa3;
+}
+
+/* ✅ Drag centrado solo en la 11 */
+.question-module[data-qid="11"] .drag-container11 {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.question-module[data-qid="11"] .drop-titles {
+  display: flex;
+  justify-content: center;
+  gap: 120px;
+  margin-bottom: 10px;
+}
+
+.question-module[data-qid="11"] .drop-title {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1em;
+  color: #0077B6;
+    justify-content: center;
+
+}
+
+.question-module[data-qid="11"] .drop-columns11 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 420px;
+  margin: 0 auto;
+  gap: 20px;
+}
